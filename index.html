@@ -1,260 +1,1397 @@
 <!DOCTYPE html>
 <html lang="km">
+
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>G1-NW-B | Digital Network Dashboard</title>
-  
-  <!-- Google Fonts: Kantumruy Pro & Inter -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Kantumruy+Pro:ital,wght@0,300..700;1,300..700&display=swap" rel="stylesheet">
-  
-  <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>G1-NW-B | Digital Network Dashboard</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Kantumruy+Pro:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
-  <!-- Sidebar -->
-  <aside class="sidebar">
-    <!-- Mobile Top Bar Row (Logo & Login លើជួរជាមួយគ្នាលើទូរស័ព្ទ) -->
-    <div class="mobile-top-bar">
-      <div class="brand">
-        <img src="logo.png" alt="DUC Logo" class="brand-logo">
-        <div class="brand-text">
-          <h2>CLASS G1-NW-B</h2>
-          <span>Network Engineering</span>
-        </div>
-      </div>
+    <!-- =========================
+         MOBILE MENU OVERLAY
+    ========================== -->
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
 
-      <!-- User Profile & Auth Status Panel -->
-      <div class="auth-status-card" id="auth-status-card">
-        <span class="user-badge" id="role-badge">USER</span>
-        <button id="auth-btn" class="btn-auth-toggle">🔑 Login</button>
-      </div>
+
+    <!-- =========================
+         SIDEBAR
+    ========================== -->
+    <aside class="sidebar" id="sidebar">
+
+        <div class="sidebar-header">
+
+            <div class="brand">
+
+                <div class="logo-wrapper">
+                    <img src="logo.png" alt="DUC Logo" class="brand-logo">
+                </div>
+
+                <div class="brand-text">
+                    <h2>CLASS G1-NW-B</h2>
+                    <span>Network Engineering</span>
+                </div>
+
+            </div>
+
+            <button class="mobile-close-btn" id="mobile-close-btn">
+                ✕
+            </button>
+
+        </div>
+
+
+        <!-- USER STATUS -->
+
+        <div class="sidebar-user">
+
+            <div class="user-avatar">
+                G1
+            </div>
+
+            <div class="user-info">
+
+                <strong id="sidebar-user-name">
+                    Student
+                </strong>
+
+                <span id="sidebar-user-role">
+                    User Access
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <!-- NAVIGATION -->
+
+        <div class="nav-title">
+            MAIN MENU
+        </div>
+
+        <nav class="nav-menu">
+
+            <a href="#" id="menu-schedule" class="nav-link active">
+
+                <span class="nav-icon">
+                    📅
+                </span>
+
+                <span class="nav-text">
+                    កាលវិភាគ
+                </span>
+
+            </a>
+
+
+            <a href="#" id="menu-attendance" class="nav-link">
+
+                <span class="nav-icon">
+                    👥
+                </span>
+
+                <span class="nav-text">
+                    បញ្ជីនិស្សិត
+                </span>
+
+            </a>
+
+
+            <a href="#" id="menu-materials" class="nav-link">
+
+                <span class="nav-icon">
+                    📚
+                </span>
+
+                <span class="nav-text">
+                    មេរៀន
+                </span>
+
+            </a>
+
+        </nav>
+
+
+        <div class="sidebar-spacer"></div>
+
+
+        <!-- SYSTEM STATUS -->
+
+        <div class="sidebar-footer">
+
+            <div class="system-status">
+
+                <span class="pulse-dot"></span>
+
+                <span>
+                    System Online
+                </span>
+
+            </div>
+
+
+            <button id="auth-btn" class="btn-auth-toggle">
+
+                🔑 Login
+
+            </button>
+
+        </div>
+
+    </aside>
+
+
+
+    <!-- =========================
+         MAIN CONTAINER
+    ========================== -->
+
+    <main class="main-container">
+
+
+        <!-- =========================
+             GLOBAL TOPBAR
+        ========================== -->
+
+        <header class="global-topbar">
+
+
+            <div class="topbar-left">
+
+                <button class="mobile-menu-btn" id="mobile-menu-btn">
+
+                    ☰
+
+                </button>
+
+
+                <div class="breadcrumb">
+
+                    <span class="breadcrumb-label">
+                        G1-NW-B
+                    </span>
+
+                    <span class="breadcrumb-separator">
+                        /
+                    </span>
+
+                    <span id="current-page">
+                        Dashboard
+                    </span>
+
+                </div>
+
+            </div>
+
+
+
+            <div class="topbar-right">
+
+
+                <!-- GLOBAL SEARCH -->
+
+                <div class="global-search">
+
+                    <span class="global-search-icon">
+                        🔍
+                    </span>
+
+                    <input
+                        type="text"
+                        id="global-search"
+                        placeholder="Search anything...">
+
+                </div>
+
+
+
+                <!-- NOTIFICATION -->
+
+                <button class="icon-btn notification-btn">
+
+                    🔔
+
+                    <span class="notification-badge">
+                        0
+                    </span>
+
+                </button>
+
+
+
+                <!-- USER PROFILE -->
+
+                <div class="top-user-profile">
+
+                    <div class="user-avatar small">
+
+                        G1
+
+                    </div>
+
+
+                    <div class="top-user-info">
+
+                        <strong id="top-user-name">
+                            Student
+                        </strong>
+
+                        <span id="top-user-role">
+                            User
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </header>
+
+
+
+        <!-- =================================
+             PAGE 1 : SCHEDULE
+        ================================== -->
+
+        <section
+            id="section-schedule"
+            class="page-content active">
+
+
+            <!-- PAGE HEADER -->
+
+            <header class="page-header">
+
+                <div>
+
+                    <span class="page-eyebrow">
+                        CLASS MANAGEMENT
+                    </span>
+
+                    <h1>
+                        តារាងកាលវិភាគសិក្សា
+                    </h1>
+
+                    <p class="subtitle">
+
+                        ព័ត៌មានកាលវិភាគប្រចាំសប្តាហ៍
+                        សម្រាប់ថ្នាក់បច្ចេកវិទ្យាបណ្តាញកុំព្យូទ័រ
+
+                    </p>
+
+                </div>
+
+
+                <div class="header-actions">
+
+                    <button class="quick-add" id="quick-add-btn">
+
+                        <span>＋</span>
+
+                        <span class="quick-add-text">
+                            Add Material
+                        </span>
+
+                    </button>
+
+                </div>
+
+            </header>
+
+
+
+            <!-- METRICS -->
+
+            <div class="metrics-grid">
+
+
+                <div class="metric-card">
+
+                    <div class="metric-info">
+
+                        <span class="metric-label">
+                            មុខវិជ្ជាសរុប
+                        </span>
+
+                        <p
+                            id="total-subjects"
+                            class="metric-value">
+
+                            0
+
+                        </p>
+
+                        <span class="metric-sub">
+
+                            Updated today
+
+                        </span>
+
+                    </div>
+
+
+                    <div class="metric-icon">
+
+                        📖
+
+                    </div>
+
+                </div>
+
+
+
+                <div class="metric-card">
+
+                    <div class="metric-info">
+
+                        <span class="metric-label">
+
+                            ស្ថានភាពប្រព័ន្ធ
+
+                        </span>
+
+                        <p class="metric-value status-active">
+
+                            Active
+
+                        </p>
+
+                        <span class="metric-sub">
+
+                            All systems operational
+
+                        </span>
+
+                    </div>
+
+
+                    <div class="metric-icon">
+
+                        ⚡
+
+                    </div>
+
+                </div>
+
+
+
+                <div class="metric-card">
+
+                    <div class="metric-info">
+
+                        <span class="metric-label">
+
+                            ចំនួននិស្សិត
+
+                        </span>
+
+                        <p class="metric-value">
+
+                            47
+
+                        </p>
+
+                        <span class="metric-sub">
+
+                            Registered students
+
+                        </span>
+
+                    </div>
+
+
+                    <div class="metric-icon">
+
+                        🎓
+
+                    </div>
+
+                </div>
+
+
+            </div>
+
+
+
+            <!-- SCHEDULE PANEL -->
+
+            <div class="glass-panel">
+
+                <div class="panel-header flex-header">
+
+
+                    <div>
+
+                        <h2>
+
+                            📅 កាលវិភាគប្រចាំសប្តាហ៍
+
+                        </h2>
+
+                        <p class="panel-description">
+
+                            Weekly class schedule
+
+                        </p>
+
+                    </div>
+
+
+                    <div class="table-actions">
+
+                        <button class="filter-btn">
+
+                            ⚙ Filter
+
+                        </button>
+
+                    </div>
+
+
+                </div>
+
+
+                <div class="table-wrapper">
+
+                    <table>
+
+                        <thead>
+
+                            <tr>
+
+                                <th>ថ្ងៃ</th>
+                                <th>ម៉ោង</th>
+                                <th>មុខវិជ្ជា</th>
+                                <th>បន្ទប់</th>
+                                <th>គ្រូបង្រៀន</th>
+
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody id="schedule-body">
+
+                            <!-- Render by JS -->
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+
+                <div class="table-footer">
+
+                    <span>
+
+                        Schedule automatically updated
+
+                    </span>
+
+                    <span class="status active">
+
+                        <span class="status-dot"></span>
+
+                        Live
+
+                    </span>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- QUICK ACTIONS -->
+
+            <div class="section-heading">
+
+                <div>
+
+                    <h2>
+
+                        Quick Actions
+
+                    </h2>
+
+                    <p>
+
+                        Quick access to important features
+
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="quick-actions-grid">
+
+
+                <button
+                    class="quick-action-card"
+                    id="action-students">
+
+                    <span class="quick-action-icon">
+
+                        👥
+
+                    </span>
+
+                    <span>
+
+                        View Students
+
+                    </span>
+
+                </button>
+
+
+
+                <button
+                    class="quick-action-card"
+                    id="action-materials">
+
+                    <span class="quick-action-icon">
+
+                        📚
+
+                    </span>
+
+                    <span>
+
+                        Study Materials
+
+                    </span>
+
+                </button>
+
+
+
+                <button
+                    class="quick-action-card"
+                    id="action-upload">
+
+                    <span class="quick-action-icon">
+
+                        📤
+
+                    </span>
+
+                    <span>
+
+                        Upload Material
+
+                    </span>
+
+                </button>
+
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =================================
+             PAGE 2 : STUDENTS
+        ================================== -->
+
+        <section
+            id="section-attendance"
+            class="page-content">
+
+
+            <header class="page-header">
+
+                <div>
+
+                    <span class="page-eyebrow">
+
+                        STUDENT DIRECTORY
+
+                    </span>
+
+                    <h1>
+
+                        បញ្ជីឈ្មោះនិស្សិត
+
+                    </h1>
+
+                    <p class="subtitle">
+
+                        ព័ត៌មាននិស្សិតថ្នាក់ G1-NW-B
+
+                    </p>
+
+                </div>
+
+            </header>
+
+
+
+            <div class="metrics-grid">
+
+
+                <div class="metric-card">
+
+                    <div class="metric-info">
+
+                        <span class="metric-label">
+
+                            ចំនួនសិស្សសរុប
+
+                        </span>
+
+                        <p
+                            id="total-students"
+                            class="metric-value">
+
+                            47
+
+                        </p>
+
+                    </div>
+
+
+                    <div class="metric-icon">
+
+                        🎓
+
+                    </div>
+
+                </div>
+
+
+
+                <div class="metric-card">
+
+                    <div class="metric-info">
+
+                        <span class="metric-label">
+
+                            សមាមាត្រ ស្រី/ប្រុស
+
+                        </span>
+
+                        <p class="metric-value-sm">
+
+                            <span class="female-txt">
+
+                                ស្រី 14
+
+                            </span>
+
+                            |
+
+                            <span class="male-txt">
+
+                                ប្រុស 33
+
+                            </span>
+
+                        </p>
+
+                    </div>
+
+
+                    <div class="metric-icon">
+
+                        📊
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+
+            <div class="glass-panel">
+
+
+                <div class="panel-header flex-header">
+
+
+                    <div>
+
+                        <h2>
+
+                            បញ្ជីឈ្មោះនិស្សិត
+
+                        </h2>
+
+                        <p class="panel-description">
+
+                            Search and view student information
+
+                        </p>
+
+                    </div>
+
+
+                    <div class="table-toolbar">
+
+                        <div class="search-box">
+
+                            <span class="search-icon">
+
+                                🔍
+
+                            </span>
+
+                            <input
+                                type="text"
+                                id="student-search"
+                                placeholder="ស្វែងរកឈ្មោះ ឬ អត្តលេខ...">
+
+                        </div>
+
+
+                        <button class="filter-btn">
+
+                            Filter
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+
+                <div class="table-wrapper">
+
+                    <table>
+
+                        <thead>
+
+                            <tr>
+
+                                <th>ល.រ</th>
+                                <th>អត្តលេខ</th>
+                                <th>គោត្តនាម-នាម</th>
+                                <th>ឈ្មោះជាអក្សរឡាតាំង</th>
+                                <th>ភេទ</th>
+                                <th>ថ្ងៃខែឆ្នាំកំណើត</th>
+
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody id="student-body">
+
+                            <!-- Render by JS -->
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+
+                <div class="pagination">
+
+                    <span class="pagination-info">
+
+                        Showing students
+
+                    </span>
+
+
+                    <div class="pagination-buttons">
+
+                        <button class="page-btn">
+
+                            ‹
+
+                        </button>
+
+                        <button class="page-btn active">
+
+                            1
+
+                        </button>
+
+                        <button class="page-btn">
+
+                            ›
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =================================
+             PAGE 3 : MATERIALS
+        ================================== -->
+
+        <section
+            id="section-materials"
+            class="page-content">
+
+
+            <header class="page-header">
+
+                <div>
+
+                    <span class="page-eyebrow">
+
+                        LEARNING CENTER
+
+                    </span>
+
+                    <h1>
+
+                        ឯកសារសិក្សា
+
+                    </h1>
+
+                    <p class="subtitle">
+
+                        មេរៀន ស្លាយ និង Lab Manuals
+
+                    </p>
+
+                </div>
+
+
+                <button
+                    class="quick-add"
+                    id="open-upload-btn">
+
+                    <span>
+
+                        ＋
+
+                    </span>
+
+                    <span>
+
+                        Add Material
+
+                    </span>
+
+                </button>
+
+            </header>
+
+
+
+            <!-- UPLOAD PANEL -->
+
+            <div
+                id="upload-panel"
+                class="glass-panel admin-only"
+                style="display: none;">
+
+
+                <div class="panel-header">
+
+                    <div>
+
+                        <h2>
+
+                            📤 បន្ថែមឯកសារថ្មី
+
+                        </h2>
+
+                        <p class="panel-description">
+
+                            Add a new learning resource
+
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+
+                <form
+                    id="upload-form"
+                    class="upload-grid">
+
+
+                    <div class="input-group">
+
+                        <label>
+
+                            ឈ្មោះមេរៀន
+
+                        </label>
+
+                        <input
+                            type="text"
+                            id="doc-title"
+                            placeholder="ឧ. Lab 01: OSPF Configuration"
+                            required>
+
+                    </div>
+
+
+
+                    <div class="input-group">
+
+                        <label>
+
+                            មុខវិជ្ជា
+
+                        </label>
+
+                        <select
+                            id="doc-subject"
+                            required>
+
+                            <option value="">
+
+                                -- ជ្រើសរើសមុខវិជ្ជា --
+
+                            </option>
+
+                            <option value="DA II">
+
+                                Database Administration II
+
+                            </option>
+
+                            <option value="CTN I">
+
+                                Container I
+
+                            </option>
+
+                            <option value="CS IV">
+
+                                Cisco IV
+
+                            </option>
+
+                            <option value="NA II">
+
+                                Network Administration II
+
+                            </option>
+
+                            <option value="CYB II">
+
+                                Cybersecurity II
+
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+
+                    <div class="input-group">
+
+                        <label>
+
+                            ប្រភេទ File
+
+                        </label>
+
+                        <select
+                            id="doc-type"
+                            required>
+
+                            <option value="PDF">
+
+                                PDF Document
+
+                            </option>
+
+                            <option value="LAB">
+
+                                Lab Manual / Topology
+
+                            </option>
+
+                            <option value="SLIDE">
+
+                                Lecture Slide
+
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+
+                    <div class="input-group">
+
+                        <label>
+
+                            Link ឯកសារ
+
+                        </label>
+
+                        <input
+                            type="url"
+                            id="doc-url"
+                            placeholder="https://drive.google.com/..."
+                            required>
+
+                    </div>
+
+
+
+                    <div class="form-actions">
+
+                        <button
+                            type="button"
+                            id="cancel-upload-btn"
+                            class="btn-cancel">
+
+                            Cancel
+
+                        </button>
+
+
+                        <button
+                            type="submit"
+                            class="btn-upload">
+
+                            💾 រក្សាទុក
+
+                        </button>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+
+
+            <!-- MATERIALS -->
+
+            <div class="glass-panel">
+
+
+                <div class="panel-header flex-header">
+
+
+                    <div>
+
+                        <h2>
+
+                            📚 បញ្ជីមេរៀន
+
+                        </h2>
+
+                        <p class="panel-description">
+
+                            Browse all available learning materials
+
+                        </p>
+
+                    </div>
+
+
+                    <div class="search-box">
+
+                        <span class="search-icon">
+
+                            🔍
+
+                        </span>
+
+                        <input
+                            type="text"
+                            id="material-search"
+                            placeholder="ស្វែងរកមេរៀន...">
+
+                    </div>
+
+                </div>
+
+
+
+                <div
+                    class="materials-grid"
+                    id="materials-list">
+
+                    <!-- Render by JavaScript -->
+
+                </div>
+
+
+
+                <div
+                    id="materials-empty"
+                    class="empty-state"
+                    style="display: none;">
+
+                    <div class="empty-state-icon">
+
+                        📭
+
+                    </div>
+
+                    <h3>
+
+                        មិនមានឯកសារទេ
+
+                    </h3>
+
+                    <p>
+
+                        សាកល្បងស្វែងរកពាក្យផ្សេង
+                        ឬបន្ថែមឯកសារថ្មី។
+
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+    </main>
+
+
+
+    <!-- =========================
+         LOGIN MODAL
+    ========================== -->
+
+    <div
+        id="login-modal"
+        class="modal-backdrop"
+        style="display: none;">
+
+
+        <div class="modal-box">
+
+
+            <button
+                class="modal-close"
+                id="close-modal-btn">
+
+                ✕
+
+            </button>
+
+
+            <div class="modal-icon">
+
+                🔐
+
+            </div>
+
+
+            <h3>
+
+                Admin Login
+
+            </h3>
+
+
+            <p class="modal-sub">
+
+                ចូលប្រព័ន្ធដើម្បីគ្រប់គ្រងឯកសារ
+
+            </p>
+
+
+            <form id="login-form">
+
+
+                <div class="input-group">
+
+                    <label>
+
+                        Username
+
+                    </label>
+
+                    <input
+                        type="text"
+                        id="login-user"
+                        placeholder="admin"
+                        required>
+
+                </div>
+
+
+
+                <div class="input-group">
+
+                    <label>
+
+                        Password
+
+                    </label>
+
+                    <input
+                        type="password"
+                        id="login-pass"
+                        placeholder="••••••••"
+                        required>
+
+                </div>
+
+
+
+                <div
+                    id="login-error"
+                    class="form-error"
+                    style="display: none;">
+
+                    Username ឬ Password មិនត្រឹមត្រូវឡើយ!
+
+                </div>
+
+
+                <div class="modal-actions">
+
+
+                    <button
+                        type="button"
+                        class="btn-cancel"
+                        id="login-cancel-btn">
+
+                        Cancel
+
+                    </button>
+
+
+                    <button
+                        type="submit"
+                        class="btn-primary">
+
+                        Login
+
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
     </div>
 
-    <nav class="nav-menu">
-      <a href="#" id="menu-schedule" class="nav-link active">
-        <span class="icon">📅</span> កាលវិភាគ (Schedule)
-      </a>
-      <a href="#" id="menu-attendance" class="nav-link">
-        <span class="icon">👥</span> បញ្ជីឈ្មោះ (Students)
-      </a>
-      <a href="#" id="menu-materials" class="nav-link">
-        <span class="icon">📚</span> មេរៀន (Materials)
-      </a>
-    </nav>
 
-    <div class="sidebar-footer">
-      <div class="system-status">
-        <span class="pulse-dot"></span> System Online
-      </div>
+
+    <!-- =========================
+         CONFIRM MODAL
+    ========================== -->
+
+    <div
+        id="confirm-modal"
+        class="modal-backdrop"
+        style="display: none;">
+
+
+        <div class="modal-box confirm-modal">
+
+
+            <div class="modal-icon warning">
+
+                ⚠️
+
+            </div>
+
+
+            <h3>
+
+                Confirm Action
+
+            </h3>
+
+
+            <p class="modal-sub">
+
+                តើអ្នកពិតជាចង់លុបទិន្នន័យនេះមែនទេ?
+
+            </p>
+
+
+            <div class="modal-actions">
+
+
+                <button
+                    id="confirm-cancel"
+                    class="btn-cancel">
+
+                    Cancel
+
+                </button>
+
+
+                <button
+                    id="confirm-action"
+                    class="btn-danger">
+
+                    Delete
+
+                </button>
+
+            </div>
+
+        </div>
+
     </div>
-  </aside>
 
-  <!-- Main Content -->
-  <main class="main-container">
-    
-    <!-- PAGE 1: SCHEDULE -->
-    <section id="section-schedule" class="page-content active">
-      <header class="top-header">
-        <div>
-          <h1>តារាងកាលវិភាគសិក្សា</h1>
-          <p class="subtitle">ព័ត៌មានកាលវិភាគប្រចាំសប្តាហ៍ ថ្នាក់បច្ចេកវិទ្យាបណ្តាញកុំព្យូទ័រ</p>
-        </div>
-      </header>
 
-      <div class="metrics-grid">
-        <div class="metric-card">
-          <div class="metric-info">
-            <span class="metric-label">មុខវិជ្ជាសរុប</span>
-            <p id="total-subjects" class="metric-value">0</p>
-          </div>
-          <div class="metric-icon">📖</div>
-        </div>
 
-        <div class="metric-card">
-          <div class="metric-info">
-            <span class="metric-label">ស្ថានភាពប្រព័ន្ធ</span>
-            <p class="metric-value status-active">Active</p>
-          </div>
-          <div class="metric-icon">⚡</div>
-        </div>
-      </div>
+    <!-- =========================
+         TOAST NOTIFICATIONS
+    ========================== -->
 
-      <div class="glass-panel">
-        <div class="panel-header">
-          <h2>កាលវិភាគប្រចាំសប្តាហ៍</h2>
-        </div>
-        <div class="table-wrapper">
-          <table>
-            <thead>
-              <tr>
-                <th>ថ្ងៃ</th>
-                <th>ម៉ោង</th>
-                <th>មុខវិជ្ជា</th>
-                <th>បន្ទប់</th>
-                <th>គ្រូបង្រៀន</th>
-              </tr>
-            </thead>
-            <tbody id="schedule-body">
-              <!-- Render by JS -->
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </section>
+    <div
+        id="toast-container"
+        class="toast-container">
 
-    <!-- PAGE 2: ATTENDANCE / STUDENTS -->
-    <section id="section-attendance" class="page-content">
-      <header class="top-header">
-        <div>
-          <h1>បញ្ជីឈ្មោះនិស្សិត</h1>
-          <p class="subtitle">ព័ត៌មានសិស្សថ្នាក់ G1-NW-B សរុប ៤៧ នាក់</p>
-        </div>
-      </header>
-
-      <div class="metrics-grid">
-        <div class="metric-card">
-          <div class="metric-info">
-            <span class="metric-label">ចំនួនសិស្សសរុប</span>
-            <p id="total-students" class="metric-value">47</p>
-          </div>
-          <div class="metric-icon">🎓</div>
-        </div>
-
-        <div class="metric-card">
-          <div class="metric-info">
-            <span class="metric-label">សមាមាត្រ ស្រី/ប្រុស</span>
-            <p class="metric-value-sm"><span class="female-txt">ស្រី 14</span> | <span class="male-txt">ប្រុស 33</span></p>
-          </div>
-          <div class="metric-icon">📊</div>
-        </div>
-      </div>
-
-      <div class="glass-panel">
-        <div class="panel-header flex-header">
-          <h2>បញ្ជីឈ្មោះនិស្សិត</h2>
-          <div class="search-box">
-            <span class="search-icon">🔍</span>
-            <input type="text" id="student-search" placeholder="ស្វែងរកឈ្មោះ ឬ អត្តលេខ...">
-          </div>
-        </div>
-        <div class="table-wrapper">
-          <table>
-            <thead>
-              <tr>
-                <th>ល.រ</th>
-                <th>អត្តលេខ</th>
-                <th>គោត្តនាម-នាម</th>
-                <th>ឈ្មោះជាអក្សរឡាតាំង</th>
-                <th>ភេទ</th>
-                <th>ថ្ងៃខែឆ្នាំកំណើត</th>
-              </tr>
-            </thead>
-            <tbody id="student-body">
-              <!-- Render by JS -->
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </section>
-
-    <!-- PAGE 3: MATERIALS -->
-    <section id="section-materials" class="page-content">
-      <header class="top-header">
-        <div>
-          <h1>ឯកសារសិក្សា & Lab Manuals</h1>
-          <p class="subtitle">ប្រភពមេរៀន ស្លាយ និងលំហាត់អនុវត្ត</p>
-        </div>
-      </header>
-
-      <!-- Form សម្រាប់ Upload/បញ្ចូលមេរៀន (បង្ហាញតែពេលជា Admin) -->
-      <div id="upload-panel" class="glass-panel admin-only" style="margin-bottom: 24px; display: none;">
-        <div class="panel-header">
-          <h2>📤 បន្ថែមឯកសារមេរៀនថ្មី (Admin Only)</h2>
-        </div>
-        <form id="upload-form" class="upload-grid">
-          <div class="input-group">
-            <label>ឈ្មោះមេរៀន / ឯកសារ</label>
-            <input type="text" id="doc-title" placeholder="ឧ. Lab 01: OSPF Configuration" required>
-          </div>
-
-          <div class="input-group">
-            <label>មុខវិជ្ជា</label>
-            <select id="doc-subject" required>
-              <option value="">-- ជ្រើសរើសមុខវិជ្ជា --</option>
-              <option value="DA II">Database Administration II</option>
-              <option value="CTN I">Container I</option>
-              <option value="CS IV">Cisco IV</option>
-              <option value="NA II">Network Administration II</option>
-              <option value="CYB II">Cybersecurity II</option>
-            </select>
-          </div>
-
-          <div class="input-group">
-            <label>ប្រភេទ File</label>
-            <select id="doc-type" required>
-              <option value="PDF">PDF Document</option>
-              <option value="LAB">Lab Manual / Topology</option>
-              <option value="SLIDE">Lecture Slide</option>
-            </select>
-          </div>
-
-          <div class="input-group">
-            <label>Link ឯកសារ (Google Drive / Direct Link)</label>
-            <input type="url" id="doc-url" placeholder="https://drive.google.com/..." required>
-          </div>
-
-          <div class="input-group">
-            <button type="submit" class="btn-upload">រក្សាទុកមេរៀន</button>
-          </div>
-        </form>
-      </div>
-
-      <!-- បញ្ជីបង្ហាញមេរៀន -->
-      <div class="glass-panel">
-        <div class="panel-header flex-header">
-          <h2>📚 បញ្ជីមេរៀនទាំងអស់</h2>
-          <div class="search-box">
-            <span class="search-icon">🔍</span>
-            <input type="text" id="material-search" placeholder="ស្វែងរកមេរៀន...">
-          </div>
-        </div>
-        
-        <div class="materials-grid" id="materials-list">
-          <!-- Render ដោយ JavaScript -->
-        </div>
-      </div>
-    </section>
-
-  </main>
-
-  <!-- Login Modal -->
-  <div id="login-modal" class="modal-backdrop" style="display: none;">
-    <div class="modal-box">
-      <h3>🔐 ចូលប្រព័ន្ធជា Admin</h3>
-      <p class="modal-sub">សូមបញ្ចូល Username និង Password ដើម្បីគ្រប់គ្រងទិន្នន័យ</p>
-      <form id="login-form">
-        <div class="input-group" style="margin-bottom: 12px;">
-          <label>Username</label>
-          <input type="text" id="login-user" placeholder="admin" required>
-        </div>
-        <div class="input-group" style="margin-bottom: 16px;">
-          <label>Password</label>
-          <input type="password" id="login-pass" placeholder="••••••••" required>
-        </div>
-        <div id="login-error" style="color: #f87171; font-size: 0.85rem; display: none; margin-bottom: 10px;">
-          Username ឬ Password មិនត្រឹមត្រូវឡើយ!
-        </div>
-        <div class="modal-actions">
-          <button type="button" id="close-modal-btn" class="btn-cancel">បោះបង់</button>
-          <button type="submit" class="btn-primary">Login</button>
-        </div>
-      </form>
     </div>
-  </div>
 
-  <script src="script.js"></script>
+
+
+    <!-- =========================
+         SCROLL TO TOP
+    ========================== -->
+
+    <button
+        id="scroll-top"
+        class="scroll-top">
+
+        ↑
+
+    </button>
+
+
+
+    <script src="script.js"></script>
+
 </body>
+
 </html>
