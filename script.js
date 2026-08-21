@@ -1,12 +1,12 @@
 // =========================================================
-// CLASS NW-B APP
-// Google Sheets + Google Apps Script
-// GitHub + Vercel
+// CLASS G1-NW-B
+// Network Engineering Class Management
+// GitHub + Vercel + Google Sheets + Apps Script
 // =========================================================
 
 
 // =========================================================
-// 1. GOOGLE APPS SCRIPT API
+// 1. GOOGLE SHEETS API
 // =========================================================
 
 const GOOGLE_SHEET_API_URL =
@@ -17,8 +17,9 @@ const GOOGLE_SHEET_API_URL =
 // 2. ADMIN CONFIGURATION
 // =========================================================
 // NOTE:
-// This is okay for learning/demo.
-// Do NOT use client-side password for a real production system.
+// This is frontend authentication.
+// It is OK for a school/class project,
+// but NOT secure for a real production system.
 
 const ADMIN_USER = "admin";
 const ADMIN_PASS = "admin123";
@@ -35,39 +36,12 @@ let studentList = [];
 let scheduleList = [];
 
 
-// Materials
-// Currently stored in LocalStorage.
-// If your Apps Script has Materials API, this can later
-// be changed to Google Sheets.
-
-let materialsList = [];
+// Materials currently stored in browser localStorage
+let materialsList = loadMaterials();
 
 
 // =========================================================
 // 4. DEFAULT MATERIALS
-// =========================================================
-
-const DEFAULT_MATERIALS = [
-  {
-    id: 1,
-    title: "Lab 01: OSPF Multi-Area Setup",
-    subject: "CS IV",
-    type: "LAB",
-    url: "https://drive.google.com"
-  },
-
-  {
-    id: 2,
-    title: "Database Administration II Slide",
-    subject: "DA II",
-    type: "SLIDE",
-    url: "https://drive.google.com"
-  }
-];
-
-
-// =========================================================
-// 5. LOAD MATERIALS
 // =========================================================
 
 function loadMaterials() {
@@ -79,27 +53,11 @@ function loadMaterials() {
 
     if (savedMaterials) {
 
-      const parsed =
-        JSON.parse(savedMaterials);
+      const parsed = JSON.parse(savedMaterials);
 
       if (Array.isArray(parsed)) {
-
-        materialsList = parsed;
-
-      } else {
-
-        materialsList = DEFAULT_MATERIALS;
-
+        return parsed;
       }
-
-    } else {
-
-      materialsList = DEFAULT_MATERIALS;
-
-      localStorage.setItem(
-        "materialsData",
-        JSON.stringify(materialsList)
-      );
 
     }
 
@@ -110,15 +68,34 @@ function loadMaterials() {
       error
     );
 
-    materialsList = DEFAULT_MATERIALS;
-
   }
+
+
+  return [
+
+    {
+      id: 1,
+      title: "Lab 01: OSPF Multi-Area Setup",
+      subject: "CS IV",
+      type: "LAB",
+      url: "https://drive.google.com"
+    },
+
+    {
+      id: 2,
+      title: "Database Administration II Slide",
+      subject: "DA II",
+      type: "SLIDE",
+      url: "https://drive.google.com"
+    }
+
+  ];
 
 }
 
 
 // =========================================================
-// 6. DOM READY
+// 5. PAGE INITIALIZATION
 // =========================================================
 
 document.addEventListener(
@@ -126,12 +103,8 @@ document.addEventListener(
   () => {
 
     console.log(
-      "CLASS NW-B APP started"
+      "CLASS G1-NW-B Application Started"
     );
-
-
-    // Load Local Data
-    loadMaterials();
 
 
     // Navigation
@@ -140,52 +113,62 @@ document.addEventListener(
 
     // Authentication
     setupAuthEvents();
+
+
+    // Update User/Admin UI
     updateRoleUI();
 
 
-    // Schedule
+    // Load Schedule
     fetchSchedule();
 
 
-    // Students
+    // Load Students
     fetchStudents();
-    setupSearch();
+
+
+    // Student Search
+    setupStudentSearch();
 
 
     // Materials
     renderMaterials(materialsList);
+
     setupMaterialsForm();
+
     setupMaterialsSearch();
 
 
-    // Close modal by clicking outside
-    setupModalOutsideClick();
+    // Global Search
+    setupGlobalSearch();
+
+
+    // Update Dashboard
+    updateDashboardStats();
 
   }
 );
 
 
 // =========================================================
-// 7. NAVIGATION
+// 6. NAVIGATION
 // =========================================================
 
 function setupNavigation() {
 
   const links =
-    document.querySelectorAll(".nav-link");
+    document.querySelectorAll(
+      ".nav-link"
+    );
 
   const pages =
-    document.querySelectorAll(".page-content");
+    document.querySelectorAll(
+      ".page-content"
+    );
 
 
   if (!links.length) {
-
-    console.warn(
-      "Navigation links not found."
-    );
-
     return;
-
   }
 
 
@@ -201,44 +184,46 @@ function setupNavigation() {
         // Remove active
         links.forEach(item => {
 
-          item.classList.remove("active");
+          item.classList.remove(
+            "active"
+          );
 
         });
 
 
         pages.forEach(page => {
 
-          page.classList.remove("active");
+          page.classList.remove(
+            "active"
+          );
 
         });
 
 
         // Add active
-        link.classList.add("active");
+        link.classList.add(
+          "active"
+        );
 
 
-        const target =
+        // Find target section
+        const targetId =
           link.id.replace(
             "menu-",
             "section-"
           );
 
 
-        const targetPage =
-          document.getElementById(target);
-
-
-        if (targetPage) {
-
-          targetPage.classList.add(
-            "active"
+        const target =
+          document.getElementById(
+            targetId
           );
 
-        } else {
 
-          console.warn(
-            "Page not found:",
-            target
+        if (target) {
+
+          target.classList.add(
+            "active"
           );
 
         }
@@ -252,26 +237,34 @@ function setupNavigation() {
 
 
 // =========================================================
-// 8. AUTHENTICATION
+// 7. AUTHENTICATION
 // =========================================================
 
 function setupAuthEvents() {
 
   const authBtn =
-    document.getElementById("auth-btn");
+    document.getElementById(
+      "auth-btn"
+    );
+
 
   const loginModal =
-    document.getElementById("login-modal");
+    document.getElementById(
+      "login-modal"
+    );
+
 
   const closeModalBtn =
     document.getElementById(
       "close-modal-btn"
     );
 
+
   const loginForm =
     document.getElementById(
       "login-form"
     );
+
 
   const loginError =
     document.getElementById(
@@ -289,17 +282,48 @@ function setupAuthEvents() {
       "click",
       () => {
 
-        // ADMIN -> LOGOUT
-        if (currentRole === "admin") {
+        if (
+          currentRole ===
+          "admin"
+        ) {
 
-          logoutAdmin();
+          // Logout
 
-        }
+          currentRole =
+            "user";
 
-        // USER -> OPEN LOGIN
-        else {
 
-          openLoginModal();
+          localStorage.setItem(
+            "userRole",
+            "user"
+          );
+
+
+          updateRoleUI();
+
+          renderMaterials(
+            materialsList
+          );
+
+
+        } else {
+
+          // Login
+
+          if (loginModal) {
+
+            loginModal.style.display =
+              "flex";
+
+          }
+
+
+          if (loginError) {
+
+            loginError.style.display =
+              "none";
+
+          }
 
         }
 
@@ -310,7 +334,7 @@ function setupAuthEvents() {
 
 
   // -----------------------------------------
-  // CLOSE MODAL
+  // CLOSE LOGIN MODAL
   // -----------------------------------------
 
   if (
@@ -322,7 +346,34 @@ function setupAuthEvents() {
       "click",
       () => {
 
-        closeLoginModal();
+        loginModal.style.display =
+          "none";
+
+      }
+    );
+
+  }
+
+
+  // -----------------------------------------
+  // CLICK OUTSIDE MODAL
+  // -----------------------------------------
+
+  if (loginModal) {
+
+    loginModal.addEventListener(
+      "click",
+      event => {
+
+        if (
+          event.target ===
+          loginModal
+        ) {
+
+          loginModal.style.display =
+            "none";
+
+        }
 
       }
     );
@@ -355,13 +406,17 @@ function setupAuthEvents() {
           )?.value;
 
 
-        // Check login
         if (
-          username === ADMIN_USER &&
-          password === ADMIN_PASS
+          username ===
+            ADMIN_USER &&
+          password ===
+            ADMIN_PASS
         ) {
 
-          currentRole = "admin";
+          // Login success
+
+          currentRole =
+            "admin";
 
 
           localStorage.setItem(
@@ -370,15 +425,17 @@ function setupAuthEvents() {
           );
 
 
-          // Close modal
-          closeLoginModal();
+          if (loginModal) {
+
+            loginModal.style.display =
+              "none";
+
+          }
 
 
-          // Reset form
           loginForm.reset();
 
 
-          // Hide error
           if (loginError) {
 
             loginError.style.display =
@@ -387,20 +444,19 @@ function setupAuthEvents() {
           }
 
 
-          // Update UI
           updateRoleUI();
 
 
-          // Render materials
           renderMaterials(
             materialsList
           );
 
 
           showMessage(
-            "ចូល Admin បានជោគជ័យ!",
+            "Login Admin បានជោគជ័យ ✅",
             "success"
           );
+
 
         } else {
 
@@ -422,125 +478,7 @@ function setupAuthEvents() {
 
 
 // =========================================================
-// 9. OPEN LOGIN MODAL
-// =========================================================
-
-function openLoginModal() {
-
-  const modal =
-    document.getElementById(
-      "login-modal"
-    );
-
-  const error =
-    document.getElementById(
-      "login-error"
-    );
-
-
-  if (modal) {
-
-    modal.style.display = "flex";
-
-  }
-
-
-  if (error) {
-
-    error.style.display = "none";
-
-  }
-
-}
-
-
-// =========================================================
-// 10. CLOSE LOGIN MODAL
-// =========================================================
-
-function closeLoginModal() {
-
-  const modal =
-    document.getElementById(
-      "login-modal"
-    );
-
-
-  if (modal) {
-
-    modal.style.display = "none";
-
-  }
-
-}
-
-
-// =========================================================
-// 11. MODAL OUTSIDE CLICK
-// =========================================================
-
-function setupModalOutsideClick() {
-
-  const modal =
-    document.getElementById(
-      "login-modal"
-    );
-
-
-  if (!modal) return;
-
-
-  modal.addEventListener(
-    "click",
-    event => {
-
-      if (
-        event.target === modal
-      ) {
-
-        closeLoginModal();
-
-      }
-
-    }
-  );
-
-}
-
-
-// =========================================================
-// 12. LOGOUT ADMIN
-// =========================================================
-
-function logoutAdmin() {
-
-  currentRole = "user";
-
-
-  localStorage.setItem(
-    "userRole",
-    "user"
-  );
-
-
-  updateRoleUI();
-
-
-  renderMaterials(
-    materialsList
-  );
-
-
-  showMessage(
-    "បាន Logout រួចរាល់!",
-    "success"
-  );
-
-}
-
-
-// =========================================================
-// 13. UPDATE ROLE UI
+// 8. UPDATE ROLE UI
 // =========================================================
 
 function updateRoleUI() {
@@ -563,112 +501,175 @@ function updateRoleUI() {
     );
 
 
+  // IMPORTANT:
+  // Support different IDs/classes
+  // from your new index.html
+
+  const addMaterialBtn =
+    document.getElementById(
+      "add-material-btn"
+    );
+
+
   const adminOnlyElements =
     document.querySelectorAll(
       ".admin-only"
     );
 
 
+  const isAdmin =
+    currentRole ===
+    "admin";
+
+
   // -----------------------------------------
-  // ADMIN
+  // ROLE BADGE
   // -----------------------------------------
 
-  if (currentRole === "admin") {
+  if (roleBadge) {
 
-    if (roleBadge) {
+    roleBadge.textContent =
+      isAdmin
+        ? "ADMIN"
+        : "USER";
 
-      roleBadge.textContent =
-        "ADMIN";
+
+    if (isAdmin) {
 
       roleBadge.style.background =
-        "rgba(16, 185, 129, 0.2)";
+        "rgba(16, 185, 129, 0.20)";
 
       roleBadge.style.color =
         "#10b981";
 
-    }
-
-
-    if (authBtn) {
-
-      authBtn.textContent =
-        "🚪 Logout";
-
-    }
-
-
-    if (uploadPanel) {
-
-      uploadPanel.style.display =
-        "block";
-
-    }
-
-
-    adminOnlyElements.forEach(
-      element => {
-
-        element.style.display =
-          "";
-
-      }
-    );
-
-  }
-
-
-  // -----------------------------------------
-  // USER
-  // -----------------------------------------
-
-  else {
-
-    if (roleBadge) {
-
-      roleBadge.textContent =
-        "USER";
+    } else {
 
       roleBadge.style.background =
-        "rgba(148, 163, 184, 0.2)";
+        "rgba(148, 163, 184, 0.20)";
 
       roleBadge.style.color =
         "#94a3b8";
 
     }
 
-
-    if (authBtn) {
-
-      authBtn.textContent =
-        "🔑 Login Admin";
-
-    }
+  }
 
 
-    if (uploadPanel) {
+  // -----------------------------------------
+  // AUTH BUTTON
+  // -----------------------------------------
 
-      uploadPanel.style.display =
-        "none";
+  if (authBtn) {
 
-    }
-
-
-    adminOnlyElements.forEach(
-      element => {
-
-        element.style.display =
-          "none";
-
-      }
-    );
+    authBtn.textContent =
+      isAdmin
+        ? "🚪 Logout"
+        : "🔑 Login Admin";
 
   }
+
+
+  // -----------------------------------------
+  // ADD MATERIAL BUTTON
+  // -----------------------------------------
+
+  if (addMaterialBtn) {
+
+    addMaterialBtn.style.display =
+      isAdmin
+        ? ""
+        : "none";
+
+  }
+
+
+  // -----------------------------------------
+  // UPLOAD PANEL
+  // -----------------------------------------
+
+  if (uploadPanel) {
+
+    uploadPanel.style.display =
+      isAdmin
+        ? "block"
+        : "none";
+
+  }
+
+
+  // -----------------------------------------
+  // ALL ADMIN ONLY ELEMENTS
+  // -----------------------------------------
+
+  adminOnlyElements.forEach(
+    element => {
+
+      element.style.display =
+        isAdmin
+          ? ""
+          : "none";
+
+    }
+  );
 
 }
 
 
 // =========================================================
-// 14. FETCH SCHEDULE
+// 9. GOOGLE SHEETS REQUEST HELPER
+// =========================================================
+
+async function googleSheetRequest(
+  action
+) {
+
+  const url =
+    `${GOOGLE_SHEET_API_URL}?action=${encodeURIComponent(action)}`;
+
+
+  const response =
+    await fetch(
+      url,
+      {
+        method: "GET",
+        redirect: "follow",
+        cache: "no-store"
+      }
+    );
+
+
+  if (!response.ok) {
+
+    throw new Error(
+      `HTTP Error ${response.status}`
+    );
+
+  }
+
+
+  const data =
+    await response.json();
+
+
+  if (
+    data &&
+    data.error
+  ) {
+
+    throw new Error(
+      data.error
+    );
+
+  }
+
+
+  return data;
+
+}
+
+
+// =========================================================
+// 10. FETCH SCHEDULE
 // =========================================================
 
 async function fetchSchedule() {
@@ -688,11 +689,17 @@ async function fetchSchedule() {
   const daysMap = {
 
     0: "អាទិត្យ",
+
     1: "ច័ន្ទ",
+
     2: "អង្គារ",
+
     3: "ពុធ",
+
     4: "ព្រហស្បតិ៍",
+
     5: "សុក្រ",
+
     6: "សៅរ៍"
 
   };
@@ -704,16 +711,27 @@ async function fetchSchedule() {
     ];
 
 
-  // Loading
   if (tbody) {
 
     tbody.innerHTML = `
+
       <tr>
-        <td colspan="5"
-          style="text-align:center;">
-          កំពុងភ្ជាប់ទៅកាន់ Google Sheets...
+
+        <td
+          colspan="5"
+          style="
+            text-align:center;
+            color:var(--text-muted);
+            padding:25px;
+          "
+        >
+
+          កំពុងភ្ជាប់ទៅ Google Sheets...
+
         </td>
+
       </tr>
+
     `;
 
   }
@@ -721,46 +739,40 @@ async function fetchSchedule() {
 
   try {
 
-    const response =
-      await fetch(
-        `${GOOGLE_SHEET_API_URL}?action=getSchedule`
-      );
-
-
-    if (!response.ok) {
-
-      throw new Error(
-        `HTTP Error: ${response.status}`
-      );
-
-    }
-
-
     const data =
-      await response.json();
-
-
-    console.log(
-      "Schedule:",
-      data
-    );
+      await googleSheetRequest(
+        "getSchedule"
+      );
 
 
     if (
       !Array.isArray(data) ||
-      data.length === 0 ||
-      data.error
+      data.length === 0
     ) {
+
+      scheduleList = [];
+
 
       if (tbody) {
 
         tbody.innerHTML = `
+
           <tr>
-            <td colspan="5"
-              style="text-align:center;">
+
+            <td
+              colspan="5"
+              style="
+                text-align:center;
+                padding:25px;
+              "
+            >
+
               ពុំមានទិន្នន័យកាលវិភាគឡើយ
+
             </td>
+
           </tr>
+
         `;
 
       }
@@ -779,97 +791,20 @@ async function fetchSchedule() {
     }
 
 
-    scheduleList = data;
+    scheduleList =
+      data;
 
 
-    if (tbody) {
-
-      tbody.innerHTML = "";
-
-    }
-
-
-    data.forEach(
-      item => {
-
-        const tr =
-          document.createElement(
-            "tr"
-          );
-
-
-        // Highlight today
-        if (
-          item.day &&
-          String(item.day)
-            .trim() ===
-            todayKhmer
-        ) {
-
-          tr.classList.add(
-            "today-highlight"
-          );
-
-        }
-
-
-        tr.innerHTML = `
-
-          <td>
-            <strong>
-              ${escapeHTML(
-                item.day || ""
-              )}
-            </strong>
-          </td>
-
-          <td>
-            ${escapeHTML(
-              item.time || ""
-            )}
-          </td>
-
-          <td>
-            ${escapeHTML(
-              item.subject || ""
-            )}
-          </td>
-
-          <td>
-            <span class="room-badge">
-              ${escapeHTML(
-                item.room || ""
-              )}
-            </span>
-          </td>
-
-          <td>
-            ${escapeHTML(
-              item.instructor || ""
-            )}
-          </td>
-
-        `;
-
-
-        tbody.appendChild(tr);
-
-      }
+    renderSchedule(
+      scheduleList,
+      todayKhmer
     );
-
-
-    if (totalSubj) {
-
-      totalSubj.textContent =
-        data.length;
-
-    }
 
 
   } catch (error) {
 
     console.error(
-      "Schedule error:",
+      "Schedule Error:",
       error
     );
 
@@ -877,12 +812,24 @@ async function fetchSchedule() {
     if (tbody) {
 
       tbody.innerHTML = `
+
         <tr>
-          <td colspan="5"
-            style="text-align:center;color:#f87171;">
-            មិនអាចភ្ជាប់ទៅ Google Sheets បានទេ!
+
+          <td
+            colspan="5"
+            style="
+              text-align:center;
+              color:#f87171;
+              padding:25px;
+            "
+          >
+
+            ⚠️ មិនអាចភ្ជាប់ Google Sheets បាន
+
           </td>
+
         </tr>
+
       `;
 
     }
@@ -901,7 +848,126 @@ async function fetchSchedule() {
 
 
 // =========================================================
-// 15. FETCH STUDENTS
+// 11. RENDER SCHEDULE
+// =========================================================
+
+function renderSchedule(
+  data,
+  todayKhmer
+) {
+
+  const tbody =
+    document.getElementById(
+      "schedule-body"
+    );
+
+
+  const totalSubj =
+    document.getElementById(
+      "total-subjects"
+    );
+
+
+  if (!tbody) {
+    return;
+  }
+
+
+  tbody.innerHTML = "";
+
+
+  data.forEach(
+    item => {
+
+      const tr =
+        document.createElement(
+          "tr"
+        );
+
+
+      const day =
+        safeText(item.day);
+
+
+      const time =
+        safeText(item.time);
+
+
+      const subject =
+        safeText(item.subject);
+
+
+      const room =
+        safeText(item.room);
+
+
+      const instructor =
+        safeText(item.instructor);
+
+
+      if (
+        day.trim() ===
+        todayKhmer
+      ) {
+
+        tr.classList.add(
+          "today-highlight"
+        );
+
+      }
+
+
+      tr.innerHTML = `
+
+        <td>
+          <strong>
+            ${day}
+          </strong>
+        </td>
+
+        <td>
+          ${time}
+        </td>
+
+        <td>
+          ${subject}
+        </td>
+
+        <td>
+
+          <span class="room-badge">
+            ${room}
+          </span>
+
+        </td>
+
+        <td>
+          ${instructor}
+        </td>
+
+      `;
+
+
+      tbody.appendChild(
+        tr
+      );
+
+    }
+  );
+
+
+  if (totalSubj) {
+
+    totalSubj.textContent =
+      data.length;
+
+  }
+
+}
+
+
+// =========================================================
+// 12. FETCH STUDENTS
 // =========================================================
 
 async function fetchStudents() {
@@ -912,22 +978,27 @@ async function fetchStudents() {
     );
 
 
-  const totalStudentsEl =
-    document.getElementById(
-      "total-students"
-    );
-
-
-  // Loading
   if (tbody) {
 
     tbody.innerHTML = `
+
       <tr>
-        <td colspan="6"
-          style="text-align:center;">
-          កំពុងទាញយកទិន្នន័យសិស្សពី Google Sheets...
+
+        <td
+          colspan="6"
+          style="
+            text-align:center;
+            color:var(--text-muted);
+            padding:25px;
+          "
+        >
+
+          កំពុងទាញយកទិន្នន័យសិស្ស...
+
         </td>
+
       </tr>
+
     `;
 
   }
@@ -935,51 +1006,19 @@ async function fetchStudents() {
 
   try {
 
-    const response =
-      await fetch(
-        `${GOOGLE_SHEET_API_URL}?action=getStudents`
-      );
-
-
-    if (!response.ok) {
-
-      throw new Error(
-        `HTTP Error: ${response.status}`
-      );
-
-    }
-
-
     const data =
-      await response.json();
-
-
-    console.log(
-      "Students:",
-      data
-    );
+      await googleSheetRequest(
+        "getStudents"
+      );
 
 
     if (
-      data?.error ||
       !Array.isArray(data)
     ) {
 
-      if (tbody) {
-
-        tbody.innerHTML = `
-          <tr>
-            <td colspan="6"
-              style="text-align:center;color:#f87171;">
-              មិនអាចទាញយកទិន្នន័យសិស្សបាន!
-            </td>
-          </tr>
-        `;
-
-      }
-
-
-      return;
+      throw new Error(
+        "Students data is not an array"
+      );
 
     }
 
@@ -993,18 +1032,13 @@ async function fetchStudents() {
     );
 
 
-    if (totalStudentsEl) {
-
-      totalStudentsEl.textContent =
-        studentList.length;
-
-    }
+    updateStudentCount();
 
 
   } catch (error) {
 
     console.error(
-      "Students error:",
+      "Students Error:",
       error
     );
 
@@ -1012,21 +1046,25 @@ async function fetchStudents() {
     if (tbody) {
 
       tbody.innerHTML = `
+
         <tr>
-          <td colspan="6"
-            style="text-align:center;color:#f87171;">
-            មិនអាចទាញយកទិន្នន័យសិស្សបានឡើយ!
+
+          <td
+            colspan="6"
+            style="
+              text-align:center;
+              color:#f87171;
+              padding:25px;
+            "
+          >
+
+            ⚠️ មិនអាចទាញយកទិន្នន័យសិស្សពី Google Sheets បាន
+
           </td>
+
         </tr>
+
       `;
-
-    }
-
-
-    if (totalStudentsEl) {
-
-      totalStudentsEl.textContent =
-        "0";
 
     }
 
@@ -1036,10 +1074,12 @@ async function fetchStudents() {
 
 
 // =========================================================
-// 16. RENDER STUDENTS
+// 13. RENDER STUDENTS
 // =========================================================
 
-function renderStudents(data) {
+function renderStudents(
+  data
+) {
 
   const tbody =
     document.getElementById(
@@ -1047,7 +1087,9 @@ function renderStudents(data) {
     );
 
 
-  if (!tbody) return;
+  if (!tbody) {
+    return;
+  }
 
 
   tbody.innerHTML = "";
@@ -1059,12 +1101,24 @@ function renderStudents(data) {
   ) {
 
     tbody.innerHTML = `
+
       <tr>
-        <td colspan="6"
-          style="text-align:center;color:var(--text-muted);">
-          រកមិនឃើញទិន្នន័យដែលស្វែងរកឡើយ
+
+        <td
+          colspan="6"
+          style="
+            text-align:center;
+            color:var(--text-muted);
+            padding:25px;
+          "
+        >
+
+          🔍 រកមិនឃើញទិន្នន័យសិស្ស
+
         </td>
+
       </tr>
+
     `;
 
 
@@ -1083,9 +1137,9 @@ function renderStudents(data) {
 
 
       const gender =
-        String(
-          student.gender || ""
-        ).trim();
+        safeText(
+          student.gender
+        );
 
 
       const genderClass =
@@ -1097,52 +1151,62 @@ function renderStudents(data) {
       tr.innerHTML = `
 
         <td>
-          ${escapeHTML(
-            student.id ||
-            index + 1
-          )}
+          ${
+            safeText(
+              student.id ||
+              index + 1
+            )
+          }
         </td>
 
         <td>
+
           <strong
-            style="color:var(--accent-cyan);">
-            ${escapeHTML(
-              student.student_id || ""
-            )}
+            style="
+              color:var(--accent-cyan);
+            "
+          >
+
+            ${
+              safeText(
+                student.student_id
+              )
+            }
+
           </strong>
+
         </td>
 
         <td>
-          ${escapeHTML(
-            student.name_kh || ""
-          )}
+          ${safeText(student.name_kh)}
         </td>
 
         <td>
-          ${escapeHTML(
-            student.name_en || ""
-          )}
+          ${safeText(student.name_en)}
         </td>
 
         <td>
+
           <span
-            class="gender-badge ${genderClass}">
-            ${escapeHTML(
-              gender
-            )}
+            class="gender-badge ${genderClass}"
+          >
+
+            ${gender}
+
           </span>
+
         </td>
 
         <td>
-          ${escapeHTML(
-            student.dob || ""
-          )}
+          ${safeText(student.dob)}
         </td>
 
       `;
 
 
-      tbody.appendChild(tr);
+      tbody.appendChild(
+        tr
+      );
 
     }
   );
@@ -1151,10 +1215,32 @@ function renderStudents(data) {
 
 
 // =========================================================
-// 17. STUDENT SEARCH
+// 14. UPDATE STUDENT COUNT
 // =========================================================
 
-function setupSearch() {
+function updateStudentCount() {
+
+  const totalStudents =
+    document.getElementById(
+      "total-students"
+    );
+
+
+  if (totalStudents) {
+
+    totalStudents.textContent =
+      studentList.length;
+
+  }
+
+}
+
+
+// =========================================================
+// 15. STUDENT SEARCH
+// =========================================================
+
+function setupStudentSearch() {
 
   const input =
     document.getElementById(
@@ -1162,7 +1248,9 @@ function setupSearch() {
     );
 
 
-  if (!input) return;
+  if (!input) {
+    return;
+  }
 
 
   input.addEventListener(
@@ -1190,28 +1278,30 @@ function setupSearch() {
         studentList.filter(
           student => {
 
-            const nameKh =
+            return (
+
               String(
                 student.name_kh || ""
-              ).toLowerCase();
+              )
+                .toLowerCase()
+                .includes(query)
 
+              ||
 
-            const nameEn =
               String(
                 student.name_en || ""
-              ).toLowerCase();
+              )
+                .toLowerCase()
+                .includes(query)
 
+              ||
 
-            const studentId =
               String(
                 student.student_id || ""
-              ).toLowerCase();
+              )
+                .toLowerCase()
+                .includes(query)
 
-
-            return (
-              nameKh.includes(query) ||
-              nameEn.includes(query) ||
-              studentId.includes(query)
             );
 
           }
@@ -1229,10 +1319,12 @@ function setupSearch() {
 
 
 // =========================================================
-// 18. RENDER MATERIALS
+// 16. MATERIALS RENDER
 // =========================================================
 
-function renderMaterials(data) {
+function renderMaterials(
+  data
+) {
 
   const container =
     document.getElementById(
@@ -1240,7 +1332,9 @@ function renderMaterials(data) {
     );
 
 
-  if (!container) return;
+  if (!container) {
+    return;
+  }
 
 
   if (
@@ -1249,17 +1343,24 @@ function renderMaterials(data) {
   ) {
 
     container.innerHTML = `
+
       <p
         style="
           color:var(--text-muted);
           grid-column:1/-1;
           text-align:center;
-          padding:20px;
-        ">
-        មិនទាន់មានឯកសារមេរៀនឡើយ...
+          padding:30px;
+        "
+      >
+
+        📚 មិនទាន់មានឯកសារមេរៀនឡើយ
+
       </p>
+
     `;
 
+
+    updateMaterialsCount();
 
     return;
 
@@ -1270,46 +1371,65 @@ function renderMaterials(data) {
     data.map(
       material => {
 
-        const deleteButton =
-          currentRole === "admin"
-            ? `
-              <button
-                onclick="deleteMaterial(${material.id})"
-                class="btn-delete-mat"
-                title="លុបមេរៀន">
-                🗑️
-              </button>
-            `
-            : "";
+        const id =
+          Number(
+            material.id
+          );
+
+
+        const title =
+          safeText(
+            material.title
+          );
+
+
+        const subject =
+          safeText(
+            material.subject
+          );
+
+
+        const type =
+          safeText(
+            material.type
+          );
+
+
+        const url =
+          safeAttribute(
+            material.url
+          );
 
 
         return `
 
-          <div class="material-card">
+          <div
+            class="material-card"
+          >
 
-            <div class="material-meta">
+            <div
+              class="material-meta"
+            >
 
-              <span class="badge-subject">
-                ${escapeHTML(
-                  material.subject || ""
-                )}
+              <span
+                class="badge-subject"
+              >
+                ${subject}
               </span>
 
-              <span class="badge-type">
-                ${escapeHTML(
-                  material.type || ""
-                )}
+              <span
+                class="badge-type"
+              >
+                ${type}
               </span>
 
             </div>
 
 
-            <div class="material-title">
-
-              ${escapeHTML(
-                material.title || ""
-              )}
-
+            <div
+              class="material-title"
+            >
+              ${title}
             </div>
 
 
@@ -1318,20 +1438,42 @@ function renderMaterials(data) {
                 display:flex;
                 gap:8px;
                 margin-top:12px;
-              ">
+              "
+            >
 
               <a
-                href="${safeURL(material.url)}"
+                href="${url}"
                 target="_blank"
                 rel="noopener noreferrer"
                 class="btn-download"
-                style="flex:1;">
+                style="flex:1;"
+              >
 
                 📥 ទាញយកឯកសារ
 
               </a>
 
-              ${deleteButton}
+
+              ${
+                currentRole === "admin"
+
+                  ? `
+
+                    <button
+                      type="button"
+                      onclick="deleteMaterial(${id})"
+                      class="btn-delete-mat"
+                      title="លុបមេរៀន"
+                    >
+
+                      🗑️
+
+                    </button>
+
+                  `
+
+                  : ""
+              }
 
             </div>
 
@@ -1341,6 +1483,91 @@ function renderMaterials(data) {
 
       }
     ).join("");
+
+
+  updateMaterialsCount();
+
+}
+
+
+// =========================================================
+// 17. MATERIAL COUNT
+// =========================================================
+
+function updateMaterialsCount() {
+
+  const elements =
+    document.querySelectorAll(
+      "#total-materials, #material-count, [data-stat='materials']"
+    );
+
+
+  elements.forEach(
+    element => {
+
+      element.textContent =
+        materialsList.length;
+
+    }
+  );
+
+}
+
+
+// =========================================================
+// 18. DELETE MATERIAL
+// =========================================================
+
+function deleteMaterial(
+  id
+) {
+
+  if (
+    currentRole !==
+    "admin"
+  ) {
+
+    showMessage(
+      "មានតែ Admin ប៉ុណ្ណោះអាចលុបមេរៀនបាន!",
+      "error"
+    );
+
+    return;
+
+  }
+
+
+  const confirmed =
+    confirm(
+      "តើអ្នកពិតជាចង់លុបឯកសារមេរៀននេះមែនទេ?"
+    );
+
+
+  if (!confirmed) {
+    return;
+  }
+
+
+  materialsList =
+    materialsList.filter(
+      material =>
+        Number(material.id) !==
+        Number(id)
+    );
+
+
+  saveMaterials();
+
+
+  renderMaterials(
+    materialsList
+  );
+
+
+  showMessage(
+    "បានលុបមេរៀនរួចរាល់ 🗑️",
+    "success"
+  );
 
 }
 
@@ -1357,7 +1584,9 @@ function setupMaterialsForm() {
     );
 
 
-  if (!form) return;
+  if (!form) {
+    return;
+  }
 
 
   form.addEventListener(
@@ -1367,15 +1596,14 @@ function setupMaterialsForm() {
       event.preventDefault();
 
 
-      // Check admin
       if (
-        currentRole !== "admin"
+        currentRole !==
+        "admin"
       ) {
 
         alert(
           "មានតែ Admin ប៉ុណ្ណោះដែលអាចបន្ថែមមេរៀនបាន!"
         );
-
 
         return;
 
@@ -1406,7 +1634,6 @@ function setupMaterialsForm() {
         )?.value.trim();
 
 
-      // Validation
       if (
         !title ||
         !subject ||
@@ -1418,22 +1645,6 @@ function setupMaterialsForm() {
           "សូមបំពេញព័ត៌មានទាំងអស់!"
         );
 
-
-        return;
-
-      }
-
-
-      // Validate URL
-      if (
-        !isValidURL(url)
-      ) {
-
-        alert(
-          "សូមបញ្ចូល URL ត្រឹមត្រូវ!"
-        );
-
-
         return;
 
       }
@@ -1443,13 +1654,13 @@ function setupMaterialsForm() {
 
         id: Date.now(),
 
-        title: title,
+        title,
 
-        subject: subject,
+        subject,
 
-        type: type,
+        type,
 
-        url: url
+        url
 
       };
 
@@ -1459,27 +1670,19 @@ function setupMaterialsForm() {
       );
 
 
-      // Save LocalStorage
-      localStorage.setItem(
-        "materialsData",
-        JSON.stringify(
-          materialsList
-        )
-      );
+      saveMaterials();
 
 
-      // Render
       renderMaterials(
         materialsList
       );
 
 
-      // Reset form
       form.reset();
 
 
       showMessage(
-        "បានបន្ថែមមេរៀនដោយជោគជ័យ!",
+        "បានបន្ថែមមេរៀនថ្មី ✅",
         "success"
       );
 
@@ -1490,57 +1693,16 @@ function setupMaterialsForm() {
 
 
 // =========================================================
-// 20. DELETE MATERIAL
+// 20. SAVE MATERIALS
 // =========================================================
 
-function deleteMaterial(id) {
-
-  if (
-    currentRole !== "admin"
-  ) {
-
-    alert(
-      "មានតែ Admin ប៉ុណ្ណោះដែលអាចលុបមេរៀនបាន!"
-    );
-
-
-    return;
-
-  }
-
-
-  const confirmed =
-    confirm(
-      "តើអ្នកពិតជាចង់លុបឯកសារមេរៀននេះមែនទេ?"
-    );
-
-
-  if (!confirmed) return;
-
-
-  materialsList =
-    materialsList.filter(
-      material =>
-        material.id !== id
-    );
-
+function saveMaterials() {
 
   localStorage.setItem(
     "materialsData",
     JSON.stringify(
       materialsList
     )
-  );
-
-
-  renderMaterials(
-    materialsList
-  );
-
-
-  showMessage(
-    "បានលុបមេរៀនរួចរាល់!",
-    "success"
   );
 
 }
@@ -1558,7 +1720,9 @@ function setupMaterialsSearch() {
     );
 
 
-  if (!input) return;
+  if (!input) {
+    return;
+  }
 
 
   input.addEventListener(
@@ -1577,7 +1741,6 @@ function setupMaterialsSearch() {
           materialsList
         );
 
-
         return;
 
       }
@@ -1587,28 +1750,30 @@ function setupMaterialsSearch() {
         materialsList.filter(
           material => {
 
-            const title =
+            return (
+
               String(
                 material.title || ""
-              ).toLowerCase();
+              )
+                .toLowerCase()
+                .includes(query)
 
+              ||
 
-            const subject =
               String(
                 material.subject || ""
-              ).toLowerCase();
+              )
+                .toLowerCase()
+                .includes(query)
 
+              ||
 
-            const type =
               String(
                 material.type || ""
-              ).toLowerCase();
+              )
+                .toLowerCase()
+                .includes(query)
 
-
-            return (
-              title.includes(query) ||
-              subject.includes(query) ||
-              type.includes(query)
             );
 
           }
@@ -1626,29 +1791,289 @@ function setupMaterialsSearch() {
 
 
 // =========================================================
-// 22. REFRESH DATA
+// 22. GLOBAL SEARCH
 // =========================================================
-// You can call these from browser console if needed:
-//
-// refreshAllData();
 
-function refreshAllData() {
+function setupGlobalSearch() {
 
-  fetchSchedule();
+  const searchInput =
+    document.querySelector(
+      'input[placeholder*="Search"]'
+    );
 
-  fetchStudents();
+
+  if (!searchInput) {
+    return;
+  }
+
+
+  searchInput.addEventListener(
+    "keydown",
+    event => {
+
+      if (
+        event.key !==
+        "Enter"
+      ) {
+
+        return;
+
+      }
+
+
+      const query =
+        searchInput.value
+          .toLowerCase()
+          .trim();
+
+
+      if (!query) {
+        return;
+      }
+
+
+      // Search Students
+
+      const studentResults =
+        studentList.filter(
+          student =>
+
+            String(
+              student.name_kh || ""
+            )
+              .toLowerCase()
+              .includes(query)
+
+            ||
+
+            String(
+              student.name_en || ""
+            )
+              .toLowerCase()
+              .includes(query)
+
+            ||
+
+            String(
+              student.student_id || ""
+            )
+              .toLowerCase()
+              .includes(query)
+
+        );
+
+
+      // Search Materials
+
+      const materialResults =
+        materialsList.filter(
+          material =>
+
+            String(
+              material.title || ""
+            )
+              .toLowerCase()
+              .includes(query)
+
+            ||
+
+            String(
+              material.subject || ""
+            )
+              .toLowerCase()
+              .includes(query)
+
+        );
+
+
+      if (
+        studentResults.length >
+        0
+      ) {
+
+        const studentSearch =
+          document.getElementById(
+            "student-search"
+          );
+
+
+        if (studentSearch) {
+
+          studentSearch.value =
+            query;
+
+
+          renderStudents(
+            studentResults
+          );
+
+        }
+
+
+        activateSection(
+          "section-students"
+        );
+
+
+        return;
+
+      }
+
+
+      if (
+        materialResults.length >
+        0
+      ) {
+
+        const materialSearch =
+          document.getElementById(
+            "material-search"
+          );
+
+
+        if (materialSearch) {
+
+          materialSearch.value =
+            query;
+
+          renderMaterials(
+            materialResults
+          );
+
+        }
+
+
+        activateSection(
+          "section-materials"
+        );
+
+
+        return;
+
+      }
+
+
+      showMessage(
+        `រកមិនឃើញ "${query}" ឡើយ`,
+        "error"
+      );
+
+    }
+  );
 
 }
 
 
 // =========================================================
-// 23. ESCAPE HTML
+// 23. ACTIVATE SECTION
 // =========================================================
-// Prevent HTML injection from Google Sheets data.
 
-function escapeHTML(value) {
+function activateSection(
+  sectionId
+) {
 
-  return String(value ?? "")
+  const section =
+    document.getElementById(
+      sectionId
+    );
+
+
+  if (!section) {
+    return;
+  }
+
+
+  document
+    .querySelectorAll(
+      ".page-content"
+    )
+    .forEach(
+      page =>
+        page.classList.remove(
+          "active"
+        )
+    );
+
+
+  section.classList.add(
+    "active"
+  );
+
+
+  const menuId =
+    sectionId.replace(
+      "section-",
+      "menu-"
+    );
+
+
+  document
+    .querySelectorAll(
+      ".nav-link"
+    )
+    .forEach(
+      link => {
+
+        link.classList.toggle(
+          "active",
+          link.id === menuId
+        );
+
+      }
+    );
+
+}
+
+
+// =========================================================
+// 24. DASHBOARD STATISTICS
+// =========================================================
+
+function updateDashboardStats() {
+
+  updateMaterialsCount();
+
+  updateStudentCount();
+
+
+  const scheduleCount =
+    document.getElementById(
+      "total-subjects"
+    );
+
+
+  if (
+    scheduleCount &&
+    scheduleList.length
+  ) {
+
+    scheduleCount.textContent =
+      scheduleList.length;
+
+  }
+
+}
+
+
+// =========================================================
+// 25. SAFE TEXT
+// =========================================================
+
+function safeText(
+  value
+) {
+
+  if (
+    value === null ||
+    value === undefined
+  ) {
+
+    return "";
+
+  }
+
+
+  return String(value)
     .replace(
       /&/g,
       "&amp;"
@@ -1674,66 +2099,51 @@ function escapeHTML(value) {
 
 
 // =========================================================
-// 24. SAFE URL
+// 26. SAFE URL
 // =========================================================
 
-function safeURL(url) {
+function safeAttribute(
+  value
+) {
 
-  try {
-
-    const parsed =
-      new URL(url);
-
-
-    if (
-      parsed.protocol === "http:" ||
-      parsed.protocol === "https:"
-    ) {
-
-      return parsed.href;
-
-    }
-
-
-    return "#";
-
-  } catch {
+  if (
+    !value
+  ) {
 
     return "#";
 
   }
 
-}
+
+  const url =
+    String(value).trim();
 
 
-// =========================================================
-// 25. URL VALIDATION
-// =========================================================
+  // Allow common web links
 
-function isValidURL(url) {
+  if (
+    url.startsWith(
+      "https://"
+    ) ||
+    url.startsWith(
+      "http://"
+    )
+  ) {
 
-  try {
-
-    const parsed =
-      new URL(url);
-
-
-    return (
-      parsed.protocol === "http:" ||
-      parsed.protocol === "https:"
+    return safeText(
+      url
     );
 
-  } catch {
-
-    return false;
-
   }
+
+
+  return "#";
 
 }
 
 
 // =========================================================
-// 26. SIMPLE MESSAGE
+// 27. MESSAGE
 // =========================================================
 
 function showMessage(
@@ -1741,110 +2151,124 @@ function showMessage(
   type = "success"
 ) {
 
-  // Remove old message
-  const oldMessage =
-    document.querySelector(
-      ".app-message"
+  let messageBox =
+    document.getElementById(
+      "app-message"
     );
 
 
-  if (oldMessage) {
+  if (!messageBox) {
 
-    oldMessage.remove();
+    messageBox =
+      document.createElement(
+        "div"
+      );
+
+
+    messageBox.id =
+      "app-message";
+
+
+    messageBox.style.position =
+      "fixed";
+
+    messageBox.style.top =
+      "20px";
+
+    messageBox.style.right =
+      "20px";
+
+    messageBox.style.zIndex =
+      "99999";
+
+    messageBox.style.padding =
+      "14px 20px";
+
+    messageBox.style.borderRadius =
+      "12px";
+
+    messageBox.style.fontWeight =
+      "600";
+
+    messageBox.style.boxShadow =
+      "0 10px 30px rgba(0,0,0,.35)";
+
+
+    document.body.appendChild(
+      messageBox
+    );
 
   }
-
-
-  const messageBox =
-    document.createElement(
-      "div"
-    );
-
-
-  messageBox.className =
-    "app-message";
 
 
   messageBox.textContent =
     message;
 
 
-  // Basic style
-  messageBox.style.position =
-    "fixed";
-
-  messageBox.style.top =
-    "20px";
-
-  messageBox.style.right =
-    "20px";
-
-  messageBox.style.zIndex =
-    "99999";
-
-  messageBox.style.padding =
-    "12px 18px";
-
-  messageBox.style.borderRadius =
-    "10px";
-
-  messageBox.style.fontWeight =
-    "600";
-
-  messageBox.style.boxShadow =
-    "0 10px 30px rgba(0,0,0,0.25)";
-
-
   if (
-    type === "success"
+    type ===
+    "error"
   ) {
 
     messageBox.style.background =
-      "#10b981";
+      "#7f1d1d";
 
     messageBox.style.color =
-      "#ffffff";
+      "#fecaca";
 
   } else {
 
     messageBox.style.background =
-      "#ef4444";
+      "#064e3b";
 
     messageBox.style.color =
-      "#ffffff";
+      "#a7f3d0";
 
   }
 
 
-  document.body.appendChild(
-    messageBox
+  messageBox.style.display =
+    "block";
+
+
+  clearTimeout(
+    messageBox._timer
   );
 
 
-  setTimeout(
-    () => {
+  messageBox._timer =
+    setTimeout(
+      () => {
 
-      messageBox.remove();
+        messageBox.style.display =
+          "none";
 
-    },
-    2500
-  );
+      },
+      3000
+    );
 
 }
 
 
 // =========================================================
-// 27. GLOBAL FUNCTIONS
+// 28. MAKE FUNCTIONS AVAILABLE TO HTML
 // =========================================================
-// Required because HTML uses onclick="deleteMaterial(...)"
 
 window.deleteMaterial =
   deleteMaterial;
 
-window.refreshAllData =
-  refreshAllData;
+
+window.fetchSchedule =
+  fetchSchedule;
 
 
-// =========================================================
-// END OF SCRIPT
-// =========================================================
+window.fetchStudents =
+  fetchStudents;
+
+
+window.renderMaterials =
+  renderMaterials;
+
+
+window.renderStudents =
+  renderStudents;
