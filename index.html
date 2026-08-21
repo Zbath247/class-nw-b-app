@@ -17,7 +17,6 @@
   <!-- Sidebar -->
   <aside class="sidebar">
     <div class="brand">
-      <!-- ប្តូរទៅប្រើ logo.png ដែលបានកាត់ background រួច -->
       <img src="logo.png" alt="DUC Logo" class="brand-logo">
       <div class="brand-text">
         <h2>CLASS G1-NW-B</h2>
@@ -161,11 +160,61 @@
         </div>
       </header>
 
+      <!-- Form សម្រាប់ Upload/បញ្ចូលមេរៀន -->
+      <div class="glass-panel" style="margin-bottom: 24px;">
+        <div class="panel-header">
+          <h2>📤 បន្ថែមឯកសារមេរៀនថ្មី</h2>
+        </div>
+        <form id="upload-form" class="upload-grid">
+          <div class="input-group">
+            <label>ឈ្មោះមេរៀន / ឯកសារ</label>
+            <input type="text" id="doc-title" placeholder="ឧ. Lab 01: OSPF Configuration" required>
+          </div>
+
+          <div class="input-group">
+            <label>មុខវិជ្ជា</label>
+            <select id="doc-subject" required>
+              <option value="">-- ជ្រើសរើសមុខវិជ្ជា --</option>
+              <option value="DA II">Database Administration II</option>
+              <option value="CTN I">Container I</option>
+              <option value="CS IV">Cisco IV</option>
+              <option value="NA II">Network Administration II</option>
+              <option value="CYB II">Cybersecurity II</option>
+            </select>
+          </div>
+
+          <div class="input-group">
+            <label>ប្រភេទ File</label>
+            <select id="doc-type" required>
+              <option value="PDF">PDF Document</option>
+              <option value="LAB">Lab Manual / Topology</option>
+              <option value="SLIDE">Lecture Slide</option>
+            </select>
+          </div>
+
+          <div class="input-group">
+            <label>Link ឯកសារ (Google Drive / Direct Link)</label>
+            <input type="url" id="doc-url" placeholder="https://drive.google.com/..." required>
+          </div>
+
+          <div class="input-group">
+            <button type="submit" class="btn-upload">រក្សាទុកមេរៀន</button>
+          </div>
+        </form>
+      </div>
+
+      <!-- បញ្ជីបង្ហាញមេរៀន -->
       <div class="glass-panel">
-        <div class="empty-state">
-          <div class="empty-icon">📁</div>
-          <h3>កំពុងរៀបចំប្រព័ន្ធរក្សាទុកឯកសារ (Cloud Resources)</h3>
-          <p>ប្រព័ន្ធនឹងដាក់ឱ្យប្រើប្រាស់ឆាប់ៗនេះ!</p>
+        <div class="panel-header flex-header">
+          <h2>📚 បញ្ជីមេរៀនទាំងអស់</h2>
+          <div class="search-box">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="material-search" placeholder="ស្វែងរកមេរៀន...">
+          </div>
+        </div>
+        
+        <div class="materials-grid" id="materials-list">
+          <!-- Render ដោយ JavaScript -->
         </div>
       </div>
     </section>
