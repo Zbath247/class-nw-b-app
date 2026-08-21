@@ -1,4 +1,4 @@
-const WEB_APP_URL = "YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL";
+const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwzKJ8fwImxRdKwSz8QJAgnD5ek-CgeV2is10aZY2l7KeI2ChydmwXA4NkupSQrj0mj/exec";
 
 let allData = [];
 let filteredData = [];
@@ -40,14 +40,14 @@ async function fetchData(queryParam = '', isRefresh = false) {
     const loadingEl = document.getElementById('loading');
     const bodyTbody = document.getElementById('tableBody');
 
-    loadingEl.style.display = 'flex';
+    if (loadingEl) loadingEl.style.display = 'flex';
     bodyTbody.innerHTML = '';
 
     try {
         const response = await fetch(WEB_APP_URL + queryParam);
         const result = await response.json();
 
-        loadingEl.style.display = 'none';
+        if (loadingEl) loadingEl.style.display = 'none';
         allData = result;
         filteredData = [...allData];
         currentPage = 1;
@@ -60,7 +60,7 @@ async function fetchData(queryParam = '', isRefresh = false) {
         if (isRefresh) showToast("ទាញយកទិន្នន័យថ្មីបានជោគជ័យ!");
 
     } catch (error) {
-        loadingEl.style.display = 'none';
+        if (loadingEl) loadingEl.style.display = 'none';
         console.error('មានបញ្ហាក្នុងការទាញយកទិន្នន័យ:', error);
         bodyTbody.innerHTML = `<tr><td colspan="100" style="text-align: center; color: #ef4444; padding: 40px;"><i class="fa-solid fa-triangle-exclamation"></i> មានបញ្ហាក្នុងការភ្ជាប់ Server!</td></tr>`;
         showToast("មានបញ្ហាក្នុងការភ្ជាប់ Server!", true);
@@ -69,6 +69,7 @@ async function fetchData(queryParam = '', isRefresh = false) {
 
 function setupColumnToggles() {
     const container = document.getElementById('columnCheckboxes');
+    if (!container) return;
     container.innerHTML = '';
 
     if (!allData || allData.length === 0) return;
@@ -99,11 +100,14 @@ function renderTable() {
     const headerTr = document.getElementById('tableHeaders');
     const bodyTbody = document.getElementById('tableBody');
 
+    if (!headerTr || !bodyTbody) return;
+
     headerTr.innerHTML = '';
     bodyTbody.innerHTML = '';
 
     if (!filteredData || filteredData.length === 0) {
         bodyTbody.innerHTML = `<tr><td colspan="100" style="text-align: center; color: var(--text-secondary); padding: 40px;">គ្មានទិន្នន័យបង្ហាញឡើយ</td></tr>`;
+        updatePagination();
         return;
     }
 
@@ -137,16 +141,24 @@ function renderTable() {
 }
 
 function updateStats() {
-    document.getElementById('statTotalRows').textContent = allData.length;
-    if (allData.length > 0) {
-        const keys = Object.keys(allData[0]).filter(k => k !== 'rowIndex');
-        document.getElementById('statColumns').textContent = keys.length;
-    } else {
-        document.getElementById('statColumns').textContent = 0;
+    const statTotalRows = document.getElementById('statTotalRows');
+    const statColumns = document.getElementById('statColumns');
+    const statLastUpdate = document.getElementById('statLastUpdate');
+
+    if (statTotalRows) statTotalRows.textContent = allData.length;
+    if (statColumns) {
+        if (allData.length > 0) {
+            const keys = Object.keys(allData[0]).filter(k => k !== 'rowIndex');
+            statColumns.textContent = keys.length;
+        } else {
+            statColumns.textContent = 0;
+        }
     }
     
-    const now = new Date();
-    document.getElementById('statLastUpdate').textContent = now.toLocaleTimeString('km-KH');
+    if (statLastUpdate) {
+        const now = new Date();
+        statLastUpdate.textContent = now.toLocaleTimeString('km-KH');
+    }
 }
 
 function renderCharts() {
@@ -163,58 +175,67 @@ function renderCharts() {
         counts[val] = (counts[val] || 0) + 1;
     });
 
-    const labels = Object.keys(counts).slice(0, 6); // Take top 6 items
+    const labels = Object.keys(counts).slice(0, 6);
     const dataValues = labels.map(l => counts[l]);
 
     // Pie Chart
-    const pieCtx = document.getElementById('dataPieChart').getContext('2d');
-    if (pieChartInstance) pieChartInstance.destroy();
+    const pieCanvas = document.getElementById('dataPieChart');
+    if (pieCanvas) {
+        const pieCtx = pieCanvas.getContext('2d');
+        if (pieChartInstance) pieChartInstance.destroy();
 
-    pieChartInstance = new Chart(pieCtx, {
-        type: 'doughnut',
-        data: {
-            labels: labels,
-            datasets: [{
-                data: dataValues,
-                backgroundColor: ['#6366f1', '#22c55e', '#f59e0b', '#ef4444', '#3b82f6', '#8b5cf6']
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, font: { family: 'Kantumruy Pro' } } } }
-        }
-    });
+        pieChartInstance = new Chart(pieCtx, {
+            type: 'doughnut',
+            data: {
+                labels: labels,
+                datasets: [{
+                    data: dataValues,
+                    backgroundColor: ['#6366f1', '#22c55e', '#f59e0b', '#ef4444', '#3b82f6', '#8b5cf6']
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, font: { family: 'Kantumruy Pro' } } } }
+            }
+        });
+    }
 
     // Bar Chart
-    const barCtx = document.getElementById('dataBarChart').getContext('2d');
-    if (barChartInstance) barChartInstance.destroy();
+    const barCanvas = document.getElementById('dataBarChart');
+    if (barCanvas) {
+        const barCtx = barCanvas.getContext('2d');
+        if (barChartInstance) barChartInstance.destroy();
 
-    barChartInstance = new Chart(barCtx, {
-        type: 'bar',
-        data: {
-            labels: labels,
-            datasets: [{
-                label: 'ចំនួន',
-                data: dataValues,
-                backgroundColor: '#6366f1',
-                borderRadius: 6
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: { legend: { display: false } },
-            scales: {
-                x: { ticks: { font: { family: 'Kantumruy Pro' } } },
-                y: { beginAtZero: true, ticks: { precision: 0 } }
+        barChartInstance = new Chart(barCtx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'ចំនួន',
+                    data: dataValues,
+                    backgroundColor: '#6366f1',
+                    borderRadius: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    x: { ticks: { font: { family: 'Kantumruy Pro' } } },
+                    y: { beginAtZero: true, ticks: { precision: 0 } }
+                }
             }
-        }
-    });
+        });
+    }
 }
 
 function filterTable() {
-    const input = document.getElementById('searchInput').value.toLowerCase();
+    const searchInput = document.getElementById('searchInput');
+    if (!searchInput) return;
+    const input = searchInput.value.toLowerCase();
+    
     if (!allData || allData.length === 0) return;
 
     filteredData = allData.filter(row => {
@@ -228,7 +249,9 @@ function filterTable() {
 }
 
 function changeRowsLimit() {
-    rowsPerPage = parseInt(document.getElementById('rowsLimit').value);
+    const rowsLimit = document.getElementById('rowsLimit');
+    if (!rowsLimit) return;
+    rowsPerPage = parseInt(rowsLimit.value);
     currentPage = 1;
     renderTable();
 }
@@ -239,10 +262,14 @@ function changePage(direction) {
 }
 
 function updatePagination() {
+    const pageInfo = document.getElementById('pageInfo');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+
     const totalPages = Math.ceil(filteredData.length / rowsPerPage) || 1;
-    document.getElementById('pageInfo').textContent = `ទំព័រ ${currentPage} នៃ ${totalPages}`;
-    document.getElementById('prevBtn').disabled = currentPage === 1;
-    document.getElementById('nextBtn').disabled = currentPage >= totalPages;
+    if (pageInfo) pageInfo.textContent = `ទំព័រ ${currentPage} នៃ ${totalPages}`;
+    if (prevBtn) prevBtn.disabled = currentPage === 1;
+    if (nextBtn) nextBtn.disabled = currentPage >= totalPages;
 }
 
 function sortTable(key) {
@@ -260,6 +287,10 @@ function sortTable(key) {
 function showDetails(row) {
     const modalBody = document.getElementById('modalBody');
     const modalFooterActions = document.getElementById('modalFooterActions');
+    const detailModal = document.getElementById('detailModal');
+
+    if (!modalBody || !modalFooterActions || !detailModal) return;
+
     modalBody.innerHTML = '';
     modalFooterActions.innerHTML = '';
 
@@ -283,11 +314,12 @@ function showDetails(row) {
     modalFooterActions.appendChild(deleteBtn);
     modalFooterActions.appendChild(editBtn);
 
-    document.getElementById('detailModal').style.display = 'flex';
+    detailModal.style.display = 'flex';
 }
 
 function closeModal() {
-    document.getElementById('detailModal').style.display = 'none';
+    const detailModal = document.getElementById('detailModal');
+    if (detailModal) detailModal.style.display = 'none';
 }
 
 function openAddModal() {
@@ -297,10 +329,15 @@ function openAddModal() {
     }
 
     currentEditingRowIndex = null;
-    document.getElementById('modalTitle').innerHTML = `<i class="fa-solid fa-plus-circle"></i> បន្ថែមទិន្នន័យថ្មី`;
-    document.getElementById('saveBtn').textContent = "រក្សាទុក";
-
+    const modalTitle = document.getElementById('modalTitle');
+    const saveBtn = document.getElementById('saveBtn');
     const container = document.getElementById('recordFormFields');
+    const recordModal = document.getElementById('recordModal');
+
+    if (modalTitle) modalTitle.innerHTML = `<i class="fa-solid fa-plus-circle"></i> បន្ថែមទិន្នន័យថ្មី`;
+    if (saveBtn) saveBtn.textContent = "រក្សាទុក";
+    if (!container || !recordModal) return;
+
     container.innerHTML = '';
 
     const keys = Object.keys(allData[0]).filter(k => k !== 'rowIndex');
@@ -316,7 +353,6 @@ function openAddModal() {
         input.name = key;
         input.placeholder = `បញ្ចូល ${key}...`;
         
-        // Form Validation Listener
         input.oninput = (e) => {
             if (e.target.value.trim() !== '') {
                 e.target.classList.remove('error-input');
@@ -330,17 +366,22 @@ function openAddModal() {
         container.appendChild(div);
     });
 
-    document.getElementById('recordModal').style.display = 'flex';
+    recordModal.style.display = 'flex';
 }
 
 function openEditModal(row) {
     closeModal();
     currentEditingRowIndex = row.rowIndex;
 
-    document.getElementById('modalTitle').innerHTML = `<i class="fa-solid fa-pen-to-square"></i> កែប្រែទិន្នន័យ`;
-    document.getElementById('saveBtn').textContent = "អាប់ដេត";
-
+    const modalTitle = document.getElementById('modalTitle');
+    const saveBtn = document.getElementById('saveBtn');
     const container = document.getElementById('recordFormFields');
+    const recordModal = document.getElementById('recordModal');
+
+    if (modalTitle) modalTitle.innerHTML = `<i class="fa-solid fa-pen-to-square"></i> កែប្រែទិន្នន័យ`;
+    if (saveBtn) saveBtn.textContent = "អាប់ដេត";
+    if (!container || !recordModal) return;
+
     container.innerHTML = '';
 
     const keys = Object.keys(allData[0]).filter(k => k !== 'rowIndex');
@@ -369,28 +410,29 @@ function openEditModal(row) {
         container.appendChild(div);
     });
 
-    document.getElementById('recordModal').style.display = 'flex';
+    recordModal.style.display = 'flex';
 }
 
 function closeRecordModal() {
-    document.getElementById('recordModal').style.display = 'none';
+    const recordModal = document.getElementById('recordModal');
+    if (recordModal) recordModal.style.display = 'none';
 }
 
 async function submitRecord(event) {
     event.preventDefault();
     const form = document.getElementById('recordForm');
+    if (!form) return;
     const inputs = form.querySelectorAll('input');
     let isValid = true;
 
-    // Strict Form Validation Check
     inputs.forEach(input => {
         const div = input.closest('.form-group');
-        let errSpan = div.querySelector('.error-msg');
+        let errSpan = div ? div.querySelector('.error-msg') : null;
         
         if (!input.value.trim()) {
             isValid = false;
             input.classList.add('error-input');
-            if (!errSpan) {
+            if (!errSpan && div) {
                 errSpan = document.createElement('span');
                 errSpan.className = 'error-msg';
                 errSpan.textContent = "សូមបំពេញព័ត៌មាននេះ!";
@@ -412,8 +454,10 @@ async function submitRecord(event) {
     formData.forEach((value, key) => { dataObj[key] = value; });
 
     const saveBtn = document.getElementById('saveBtn');
-    saveBtn.disabled = true;
-    saveBtn.textContent = "កំពុងដំណើរការ...";
+    if (saveBtn) {
+        saveBtn.disabled = true;
+        saveBtn.textContent = "កំពុងដំណើរការ...";
+    }
 
     const isEdit = currentEditingRowIndex !== null;
     const actionType = isEdit ? 'update' : 'add';
@@ -430,8 +474,10 @@ async function submitRecord(event) {
         });
         
         const result = await response.json();
-        saveBtn.disabled = false;
-        saveBtn.textContent = "រក្សាទុក";
+        if (saveBtn) {
+            saveBtn.disabled = false;
+            saveBtn.textContent = "រក្សាទុក";
+        }
 
         if (result.status === 'success' || result.success) {
             closeRecordModal();
@@ -442,8 +488,10 @@ async function submitRecord(event) {
         }
     } catch (error) {
         console.error('Error submitting record:', error);
-        saveBtn.disabled = false;
-        saveBtn.textContent = "រក្សាទុក";
+        if (saveBtn) {
+            saveBtn.disabled = false;
+            saveBtn.textContent = "រក្សាទុក";
+        }
         closeRecordModal();
         showToast("បានបញ្ជូនសំណើទៅកាន់ Server រួចរាល់!");
         refreshData();
@@ -486,10 +534,10 @@ function toggleDarkMode() {
     
     if (html.getAttribute('data-theme') === 'light') {
         html.setAttribute('data-theme', 'dark');
-        themeIcon.className = "fa-solid fa-sun";
+        if (themeIcon) themeIcon.className = "fa-solid fa-sun";
     } else {
         html.setAttribute('data-theme', 'light');
-        themeIcon.className = "fa-solid fa-moon";
+        if (themeIcon) themeIcon.className = "fa-solid fa-moon";
     }
 }
 
@@ -524,6 +572,7 @@ function exportToCSV() {
 
 function showToast(message, isError = false) {
     const toast = document.getElementById('toast');
+    if (!toast) return;
     toast.textContent = message;
     toast.style.background = isError ? '#ef4444' : 'var(--primary)';
     toast.classList.add('show');
