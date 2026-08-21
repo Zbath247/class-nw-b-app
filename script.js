@@ -1,2274 +1,535 @@
-// =========================================================
-// CLASS G1-NW-B
-// Network Engineering Class Management
-// GitHub + Vercel + Google Sheets + Apps Script
-// =========================================================
-
-
-// =========================================================
-// 1. GOOGLE SHEETS API
-// =========================================================
-
-const GOOGLE_SHEET_API_URL =
-  "https://script.google.com/macros/s/AKfycbwzKJ8fwImxRdKwSz8QJAgnD5ek-CgeV2is10aZY2l7KeI2ChydmwXA4NkupSQrj0mj/exec";
-
-
-// =========================================================
-// 2. ADMIN CONFIGURATION
-// =========================================================
-// NOTE:
-// This is frontend authentication.
-// It is OK for a school/class project,
-// but NOT secure for a real production system.
-
-const ADMIN_USER = "admin";
-const ADMIN_PASS = "admin123";
-
-
-// =========================================================
-// 3. GLOBAL VARIABLES
-// =========================================================
-
-let currentRole = localStorage.getItem("userRole") || "user";
-
-let studentList = [];
-
-let scheduleList = [];
-
-
-// Materials currently stored in browser localStorage
-let materialsList = loadMaterials();
-
-
-// =========================================================
-// 4. DEFAULT MATERIALS
-// =========================================================
-
-function loadMaterials() {
-
-  try {
-
-    const savedMaterials =
-      localStorage.getItem("materialsData");
-
-    if (savedMaterials) {
-
-      const parsed = JSON.parse(savedMaterials);
-
-      if (Array.isArray(parsed)) {
-        return parsed;
-      }
-
-    }
-
-  } catch (error) {
-
-    console.error(
-      "Error loading materials:",
-      error
-    );
-
-  }
-
-
-  return [
-
-    {
-      id: 1,
-      title: "Lab 01: OSPF Multi-Area Setup",
-      subject: "CS IV",
-      type: "LAB",
-      url: "https://drive.google.com"
-    },
-
-    {
-      id: 2,
-      title: "Database Administration II Slide",
-      subject: "DA II",
-      type: "SLIDE",
-      url: "https://drive.google.com"
-    }
-
-  ];
-
-}
-
-
-// =========================================================
-// 5. PAGE INITIALIZATION
-// =========================================================
-
-document.addEventListener(
-  "DOMContentLoaded",
-  () => {
-
-    console.log(
-      "CLASS G1-NW-B Application Started"
-    );
-
-
-    // Navigation
-    setupNavigation();
-
-
-    // Authentication
-    setupAuthEvents();
-
-
-    // Update User/Admin UI
-    updateRoleUI();
-
-
-    // Load Schedule
-    fetchSchedule();
-
-
-    // Load Students
-    fetchStudents();
-
-
-    // Student Search
-    setupStudentSearch();
-
-
-    // Materials
-    renderMaterials(materialsList);
-
-    setupMaterialsForm();
-
-    setupMaterialsSearch();
-
-
-    // Global Search
-    setupGlobalSearch();
-
-
-    // Update Dashboard
-    updateDashboardStats();
-
-  }
-);
-
-
-// =========================================================
-// 6. NAVIGATION
-// =========================================================
-
-function setupNavigation() {
-
-  const links =
-    document.querySelectorAll(
-      ".nav-link"
-    );
-
-  const pages =
-    document.querySelectorAll(
-      ".page-content"
-    );
-
-
-  if (!links.length) {
-    return;
-  }
-
-
-  links.forEach(link => {
-
-    link.addEventListener(
-      "click",
-      event => {
-
-        event.preventDefault();
-
-
-        // Remove active
-        links.forEach(item => {
-
-          item.classList.remove(
-            "active"
-          );
-
-        });
-
-
-        pages.forEach(page => {
-
-          page.classList.remove(
-            "active"
-          );
-
-        });
-
-
-        // Add active
-        link.classList.add(
-          "active"
-        );
-
-
-        // Find target section
-        const targetId =
-          link.id.replace(
-            "menu-",
-            "section-"
-          );
-
-
-        const target =
-          document.getElementById(
-            targetId
-          );
-
-
-        if (target) {
-
-          target.classList.add(
-            "active"
-          );
-
-        }
-
-      }
-    );
-
-  });
-
-}
-
-
-// =========================================================
-// 7. AUTHENTICATION
-// =========================================================
-
-function setupAuthEvents() {
-
-  const authBtn =
-    document.getElementById(
-      "auth-btn"
-    );
-
-
-  const loginModal =
-    document.getElementById(
-      "login-modal"
-    );
-
-
-  const closeModalBtn =
-    document.getElementById(
-      "close-modal-btn"
-    );
-
-
-  const loginForm =
-    document.getElementById(
-      "login-form"
-    );
-
-
-  const loginError =
-    document.getElementById(
-      "login-error"
-    );
-
-
-  // -----------------------------------------
-  // LOGIN / LOGOUT BUTTON
-  // -----------------------------------------
-
-  if (authBtn) {
-
-    authBtn.addEventListener(
-      "click",
-      () => {
-
-        if (
-          currentRole ===
-          "admin"
-        ) {
-
-          // Logout
-
-          currentRole =
-            "user";
-
-
-          localStorage.setItem(
-            "userRole",
-            "user"
-          );
-
-
-          updateRoleUI();
-
-          renderMaterials(
-            materialsList
-          );
-
-
-        } else {
-
-          // Login
-
-          if (loginModal) {
-
-            loginModal.style.display =
-              "flex";
-
-          }
-
-
-          if (loginError) {
-
-            loginError.style.display =
-              "none";
-
-          }
-
-        }
-
-      }
-    );
-
-  }
-
-
-  // -----------------------------------------
-  // CLOSE LOGIN MODAL
-  // -----------------------------------------
-
-  if (
-    closeModalBtn &&
-    loginModal
-  ) {
-
-    closeModalBtn.addEventListener(
-      "click",
-      () => {
-
-        loginModal.style.display =
-          "none";
-
-      }
-    );
-
-  }
-
-
-  // -----------------------------------------
-  // CLICK OUTSIDE MODAL
-  // -----------------------------------------
-
-  if (loginModal) {
-
-    loginModal.addEventListener(
-      "click",
-      event => {
-
-        if (
-          event.target ===
-          loginModal
-        ) {
-
-          loginModal.style.display =
-            "none";
-
-        }
-
-      }
-    );
-
-  }
-
-
-  // -----------------------------------------
-  // LOGIN FORM
-  // -----------------------------------------
-
-  if (loginForm) {
-
-    loginForm.addEventListener(
-      "submit",
-      event => {
-
-        event.preventDefault();
-
-
-        const username =
-          document.getElementById(
-            "login-user"
-          )?.value.trim();
-
-
-        const password =
-          document.getElementById(
-            "login-pass"
-          )?.value;
-
-
-        if (
-          username ===
-            ADMIN_USER &&
-          password ===
-            ADMIN_PASS
-        ) {
-
-          // Login success
-
-          currentRole =
-            "admin";
-
-
-          localStorage.setItem(
-            "userRole",
-            "admin"
-          );
-
-
-          if (loginModal) {
-
-            loginModal.style.display =
-              "none";
-
-          }
-
-
-          loginForm.reset();
-
-
-          if (loginError) {
-
-            loginError.style.display =
-              "none";
-
-          }
-
-
-          updateRoleUI();
-
-
-          renderMaterials(
-            materialsList
-          );
-
-
-          showMessage(
-            "Login Admin បានជោគជ័យ ✅",
-            "success"
-          );
-
-
-        } else {
-
-          if (loginError) {
-
-            loginError.style.display =
-              "block";
-
-          }
-
-        }
-
-      }
-    );
-
-  }
-
-}
-
-
-// =========================================================
-// 8. UPDATE ROLE UI
-// =========================================================
-
-function updateRoleUI() {
-
-  const roleBadge =
-    document.getElementById(
-      "role-badge"
-    );
-
-
-  const authBtn =
-    document.getElementById(
-      "auth-btn"
-    );
-
-
-  const uploadPanel =
-    document.getElementById(
-      "upload-panel"
-    );
-
-
-  // IMPORTANT:
-  // Support different IDs/classes
-  // from your new index.html
-
-  const addMaterialBtn =
-    document.getElementById(
-      "add-material-btn"
-    );
-
-
-  const adminOnlyElements =
-    document.querySelectorAll(
-      ".admin-only"
-    );
-
-
-  const isAdmin =
-    currentRole ===
-    "admin";
-
-
-  // -----------------------------------------
-  // ROLE BADGE
-  // -----------------------------------------
-
-  if (roleBadge) {
-
-    roleBadge.textContent =
-      isAdmin
-        ? "ADMIN"
-        : "USER";
-
-
-    if (isAdmin) {
-
-      roleBadge.style.background =
-        "rgba(16, 185, 129, 0.20)";
-
-      roleBadge.style.color =
-        "#10b981";
-
+const WEB_APP_URL = "YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL";
+
+let allData = [];
+let filteredData = [];
+let currentTabType = 'schedule';
+let currentPage = 1;
+let rowsPerPage = 25;
+let sortDirection = false;
+let hiddenColumns = new Set();
+let currentEditingRowIndex = null;
+let pieChartInstance = null;
+let barChartInstance = null;
+
+function switchTab(type) {
+    currentTabType = type;
+    currentPage = 1;
+    hiddenColumns.clear();
+    document.getElementById('searchInput').value = '';
+
+    const btnSchedule = document.getElementById('btnSchedule');
+    const btnStudents = document.getElementById('btnStudents');
+
+    if (type === 'schedule') {
+        btnSchedule.classList.add('active');
+        btnStudents.classList.remove('active');
+        fetchData(''); 
     } else {
-
-      roleBadge.style.background =
-        "rgba(148, 163, 184, 0.20)";
-
-      roleBadge.style.color =
-        "#94a3b8";
-
+        btnStudents.classList.add('active');
+        btnSchedule.classList.remove('active');
+        fetchData('?action=getStudents'); 
     }
-
-  }
-
-
-  // -----------------------------------------
-  // AUTH BUTTON
-  // -----------------------------------------
-
-  if (authBtn) {
-
-    authBtn.textContent =
-      isAdmin
-        ? "🚪 Logout"
-        : "🔑 Login Admin";
-
-  }
-
-
-  // -----------------------------------------
-  // ADD MATERIAL BUTTON
-  // -----------------------------------------
-
-  if (addMaterialBtn) {
-
-    addMaterialBtn.style.display =
-      isAdmin
-        ? ""
-        : "none";
-
-  }
-
-
-  // -----------------------------------------
-  // UPLOAD PANEL
-  // -----------------------------------------
-
-  if (uploadPanel) {
-
-    uploadPanel.style.display =
-      isAdmin
-        ? "block"
-        : "none";
-
-  }
-
-
-  // -----------------------------------------
-  // ALL ADMIN ONLY ELEMENTS
-  // -----------------------------------------
-
-  adminOnlyElements.forEach(
-    element => {
-
-      element.style.display =
-        isAdmin
-          ? ""
-          : "none";
-
-    }
-  );
-
 }
 
-
-// =========================================================
-// 9. GOOGLE SHEETS REQUEST HELPER
-// =========================================================
-
-async function googleSheetRequest(
-  action
-) {
-
-  const url =
-    `${GOOGLE_SHEET_API_URL}?action=${encodeURIComponent(action)}`;
-
-
-  const response =
-    await fetch(
-      url,
-      {
-        method: "GET",
-        redirect: "follow",
-        cache: "no-store"
-      }
-    );
-
-
-  if (!response.ok) {
-
-    throw new Error(
-      `HTTP Error ${response.status}`
-    );
-
-  }
-
-
-  const data =
-    await response.json();
-
-
-  if (
-    data &&
-    data.error
-  ) {
-
-    throw new Error(
-      data.error
-    );
-
-  }
-
-
-  return data;
-
+function refreshData() {
+    const query = currentTabType === 'schedule' ? '' : '?action=getStudents';
+    fetchData(query, true);
 }
 
+async function fetchData(queryParam = '', isRefresh = false) {
+    const loadingEl = document.getElementById('loading');
+    const bodyTbody = document.getElementById('tableBody');
 
-// =========================================================
-// 10. FETCH SCHEDULE
-// =========================================================
+    loadingEl.style.display = 'flex';
+    bodyTbody.innerHTML = '';
 
-async function fetchSchedule() {
+    try {
+        const response = await fetch(WEB_APP_URL + queryParam);
+        const result = await response.json();
 
-  const tbody =
-    document.getElementById(
-      "schedule-body"
-    );
+        loadingEl.style.display = 'none';
+        allData = result;
+        filteredData = [...allData];
+        currentPage = 1;
 
+        setupColumnToggles();
+        renderTable();
+        updateStats();
+        renderCharts();
 
-  const totalSubj =
-    document.getElementById(
-      "total-subjects"
-    );
+        if (isRefresh) showToast("ទាញយកទិន្នន័យថ្មីបានជោគជ័យ!");
 
-
-  const daysMap = {
-
-    0: "អាទិត្យ",
-
-    1: "ច័ន្ទ",
-
-    2: "អង្គារ",
-
-    3: "ពុធ",
-
-    4: "ព្រហស្បតិ៍",
-
-    5: "សុក្រ",
-
-    6: "សៅរ៍"
-
-  };
-
-
-  const todayKhmer =
-    daysMap[
-      new Date().getDay()
-    ];
-
-
-  if (tbody) {
-
-    tbody.innerHTML = `
-
-      <tr>
-
-        <td
-          colspan="5"
-          style="
-            text-align:center;
-            color:var(--text-muted);
-            padding:25px;
-          "
-        >
-
-          កំពុងភ្ជាប់ទៅ Google Sheets...
-
-        </td>
-
-      </tr>
-
-    `;
-
-  }
-
-
-  try {
-
-    const data =
-      await googleSheetRequest(
-        "getSchedule"
-      );
-
-
-    if (
-      !Array.isArray(data) ||
-      data.length === 0
-    ) {
-
-      scheduleList = [];
-
-
-      if (tbody) {
-
-        tbody.innerHTML = `
-
-          <tr>
-
-            <td
-              colspan="5"
-              style="
-                text-align:center;
-                padding:25px;
-              "
-            >
-
-              ពុំមានទិន្នន័យកាលវិភាគឡើយ
-
-            </td>
-
-          </tr>
-
-        `;
-
-      }
-
-
-      if (totalSubj) {
-
-        totalSubj.textContent =
-          "0";
-
-      }
-
-
-      return;
-
+    } catch (error) {
+        loadingEl.style.display = 'none';
+        console.error('មានបញ្ហាក្នុងការទាញយកទិន្នន័យ:', error);
+        bodyTbody.innerHTML = `<tr><td colspan="100" style="text-align: center; color: #ef4444; padding: 40px;"><i class="fa-solid fa-triangle-exclamation"></i> មានបញ្ហាក្នុងការភ្ជាប់ Server!</td></tr>`;
+        showToast("មានបញ្ហាក្នុងការភ្ជាប់ Server!", true);
     }
-
-
-    scheduleList =
-      data;
-
-
-    renderSchedule(
-      scheduleList,
-      todayKhmer
-    );
-
-
-  } catch (error) {
-
-    console.error(
-      "Schedule Error:",
-      error
-    );
-
-
-    if (tbody) {
-
-      tbody.innerHTML = `
-
-        <tr>
-
-          <td
-            colspan="5"
-            style="
-              text-align:center;
-              color:#f87171;
-              padding:25px;
-            "
-          >
-
-            ⚠️ មិនអាចភ្ជាប់ Google Sheets បាន
-
-          </td>
-
-        </tr>
-
-      `;
-
-    }
-
-
-    if (totalSubj) {
-
-      totalSubj.textContent =
-        "0";
-
-    }
-
-  }
-
 }
 
-
-// =========================================================
-// 11. RENDER SCHEDULE
-// =========================================================
-
-function renderSchedule(
-  data,
-  todayKhmer
-) {
-
-  const tbody =
-    document.getElementById(
-      "schedule-body"
-    );
-
-
-  const totalSubj =
-    document.getElementById(
-      "total-subjects"
-    );
-
-
-  if (!tbody) {
-    return;
-  }
-
-
-  tbody.innerHTML = "";
-
-
-  data.forEach(
-    item => {
-
-      const tr =
-        document.createElement(
-          "tr"
-        );
-
-
-      const day =
-        safeText(item.day);
-
-
-      const time =
-        safeText(item.time);
-
-
-      const subject =
-        safeText(item.subject);
-
-
-      const room =
-        safeText(item.room);
-
-
-      const instructor =
-        safeText(item.instructor);
-
-
-      if (
-        day.trim() ===
-        todayKhmer
-      ) {
-
-        tr.classList.add(
-          "today-highlight"
-        );
-
-      }
-
-
-      tr.innerHTML = `
-
-        <td>
-          <strong>
-            ${day}
-          </strong>
-        </td>
-
-        <td>
-          ${time}
-        </td>
-
-        <td>
-          ${subject}
-        </td>
-
-        <td>
-
-          <span class="room-badge">
-            ${room}
-          </span>
-
-        </td>
-
-        <td>
-          ${instructor}
-        </td>
-
-      `;
-
-
-      tbody.appendChild(
-        tr
-      );
-
-    }
-  );
-
-
-  if (totalSubj) {
-
-    totalSubj.textContent =
-      data.length;
-
-  }
-
-}
-
-
-// =========================================================
-// 12. FETCH STUDENTS
-// =========================================================
-
-async function fetchStudents() {
-
-  const tbody =
-    document.getElementById(
-      "student-body"
-    );
-
-
-  if (tbody) {
-
-    tbody.innerHTML = `
-
-      <tr>
-
-        <td
-          colspan="6"
-          style="
-            text-align:center;
-            color:var(--text-muted);
-            padding:25px;
-          "
-        >
-
-          កំពុងទាញយកទិន្នន័យសិស្ស...
-
-        </td>
-
-      </tr>
-
-    `;
-
-  }
-
-
-  try {
-
-    const data =
-      await googleSheetRequest(
-        "getStudents"
-      );
-
-
-    if (
-      !Array.isArray(data)
-    ) {
-
-      throw new Error(
-        "Students data is not an array"
-      );
-
-    }
-
-
-    studentList =
-      data;
-
-
-    renderStudents(
-      studentList
-    );
-
-
-    updateStudentCount();
-
-
-  } catch (error) {
-
-    console.error(
-      "Students Error:",
-      error
-    );
-
-
-    if (tbody) {
-
-      tbody.innerHTML = `
-
-        <tr>
-
-          <td
-            colspan="6"
-            style="
-              text-align:center;
-              color:#f87171;
-              padding:25px;
-            "
-          >
-
-            ⚠️ មិនអាចទាញយកទិន្នន័យសិស្សពី Google Sheets បាន
-
-          </td>
-
-        </tr>
-
-      `;
-
-    }
-
-  }
-
-}
-
-
-// =========================================================
-// 13. RENDER STUDENTS
-// =========================================================
-
-function renderStudents(
-  data
-) {
-
-  const tbody =
-    document.getElementById(
-      "student-body"
-    );
-
-
-  if (!tbody) {
-    return;
-  }
-
-
-  tbody.innerHTML = "";
-
-
-  if (
-    !Array.isArray(data) ||
-    data.length === 0
-  ) {
-
-    tbody.innerHTML = `
-
-      <tr>
-
-        <td
-          colspan="6"
-          style="
-            text-align:center;
-            color:var(--text-muted);
-            padding:25px;
-          "
-        >
-
-          🔍 រកមិនឃើញទិន្នន័យសិស្ស
-
-        </td>
-
-      </tr>
-
-    `;
-
-
-    return;
-
-  }
-
-
-  data.forEach(
-    (student, index) => {
-
-      const tr =
-        document.createElement(
-          "tr"
-        );
-
-
-      const gender =
-        safeText(
-          student.gender
-        );
-
-
-      const genderClass =
-        gender === "ស្រី"
-          ? "female"
-          : "male";
-
-
-      tr.innerHTML = `
-
-        <td>
-          ${
-            safeText(
-              student.id ||
-              index + 1
-            )
-          }
-        </td>
-
-        <td>
-
-          <strong
-            style="
-              color:var(--accent-cyan);
-            "
-          >
-
-            ${
-              safeText(
-                student.student_id
-              )
+function setupColumnToggles() {
+    const container = document.getElementById('columnCheckboxes');
+    container.innerHTML = '';
+
+    if (!allData || allData.length === 0) return;
+
+    const keys = Object.keys(allData[0]).filter(k => k !== 'rowIndex');
+    keys.forEach(key => {
+        const label = document.createElement('label');
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.checked = true;
+        checkbox.value = key;
+        checkbox.onchange = (e) => {
+            if (e.target.checked) {
+                hiddenColumns.delete(key);
+            } else {
+                hiddenColumns.add(key);
             }
+            renderTable();
+        };
 
-          </strong>
+        label.appendChild(checkbox);
+        label.appendChild(document.createTextNode(key));
+        container.appendChild(label);
+    });
+}
 
-        </td>
+function renderTable() {
+    const headerTr = document.getElementById('tableHeaders');
+    const bodyTbody = document.getElementById('tableBody');
 
-        <td>
-          ${safeText(student.name_kh)}
-        </td>
+    headerTr.innerHTML = '';
+    bodyTbody.innerHTML = '';
 
-        <td>
-          ${safeText(student.name_en)}
-        </td>
-
-        <td>
-
-          <span
-            class="gender-badge ${genderClass}"
-          >
-
-            ${gender}
-
-          </span>
-
-        </td>
-
-        <td>
-          ${safeText(student.dob)}
-        </td>
-
-      `;
-
-
-      tbody.appendChild(
-        tr
-      );
-
+    if (!filteredData || filteredData.length === 0) {
+        bodyTbody.innerHTML = `<tr><td colspan="100" style="text-align: center; color: var(--text-secondary); padding: 40px;">គ្មានទិន្នន័យបង្ហាញឡើយ</td></tr>`;
+        return;
     }
-  );
 
+    const allKeys = Object.keys(filteredData[0]).filter(k => k !== 'rowIndex');
+    const visibleKeys = allKeys.filter(key => !hiddenColumns.has(key));
+
+    visibleKeys.forEach(key => {
+        const th = document.createElement('th');
+        th.innerHTML = `${key} <i class="fa-solid fa-sort" style="font-size: 11px; opacity: 0.5;"></i>`;
+        th.onclick = () => sortTable(key);
+        headerTr.appendChild(th);
+    });
+
+    const start = (currentPage - 1) * rowsPerPage;
+    const end = start + rowsPerPage;
+    const paginatedData = filteredData.slice(start, end);
+
+    paginatedData.forEach(row => {
+        const tr = document.createElement('tr');
+        tr.onclick = () => showDetails(row);
+        
+        visibleKeys.forEach(key => {
+            const td = document.createElement('td');
+            td.textContent = row[key] !== undefined && row[key] !== null ? row[key] : '';
+            tr.appendChild(td);
+        });
+        bodyTbody.appendChild(tr);
+    });
+
+    updatePagination();
 }
 
-
-// =========================================================
-// 14. UPDATE STUDENT COUNT
-// =========================================================
-
-function updateStudentCount() {
-
-  const totalStudents =
-    document.getElementById(
-      "total-students"
-    );
-
-
-  if (totalStudents) {
-
-    totalStudents.textContent =
-      studentList.length;
-
-  }
-
-}
-
-
-// =========================================================
-// 15. STUDENT SEARCH
-// =========================================================
-
-function setupStudentSearch() {
-
-  const input =
-    document.getElementById(
-      "student-search"
-    );
-
-
-  if (!input) {
-    return;
-  }
-
-
-  input.addEventListener(
-    "input",
-    event => {
-
-      const query =
-        event.target.value
-          .toLowerCase()
-          .trim();
-
-
-      if (!query) {
-
-        renderStudents(
-          studentList
-        );
-
-        return;
-
-      }
-
-
-      const filtered =
-        studentList.filter(
-          student => {
-
-            return (
-
-              String(
-                student.name_kh || ""
-              )
-                .toLowerCase()
-                .includes(query)
-
-              ||
-
-              String(
-                student.name_en || ""
-              )
-                .toLowerCase()
-                .includes(query)
-
-              ||
-
-              String(
-                student.student_id || ""
-              )
-                .toLowerCase()
-                .includes(query)
-
-            );
-
-          }
-        );
-
-
-      renderStudents(
-        filtered
-      );
-
+function updateStats() {
+    document.getElementById('statTotalRows').textContent = allData.length;
+    if (allData.length > 0) {
+        const keys = Object.keys(allData[0]).filter(k => k !== 'rowIndex');
+        document.getElementById('statColumns').textContent = keys.length;
+    } else {
+        document.getElementById('statColumns').textContent = 0;
     }
-  );
-
+    
+    const now = new Date();
+    document.getElementById('statLastUpdate').textContent = now.toLocaleTimeString('km-KH');
 }
 
-
-// =========================================================
-// 16. MATERIALS RENDER
-// =========================================================
-
-function renderMaterials(
-  data
-) {
-
-  const container =
-    document.getElementById(
-      "materials-list"
-    );
-
-
-  if (!container) {
-    return;
-  }
-
-
-  if (
-    !Array.isArray(data) ||
-    data.length === 0
-  ) {
-
-    container.innerHTML = `
-
-      <p
-        style="
-          color:var(--text-muted);
-          grid-column:1/-1;
-          text-align:center;
-          padding:30px;
-        "
-      >
-
-        📚 មិនទាន់មានឯកសារមេរៀនឡើយ
-
-      </p>
-
-    `;
-
-
-    updateMaterialsCount();
-
-    return;
-
-  }
-
-
-  container.innerHTML =
-    data.map(
-      material => {
-
-        const id =
-          Number(
-            material.id
-          );
-
-
-        const title =
-          safeText(
-            material.title
-          );
-
-
-        const subject =
-          safeText(
-            material.subject
-          );
-
-
-        const type =
-          safeText(
-            material.type
-          );
-
-
-        const url =
-          safeAttribute(
-            material.url
-          );
-
-
-        return `
-
-          <div
-            class="material-card"
-          >
-
-            <div
-              class="material-meta"
-            >
-
-              <span
-                class="badge-subject"
-              >
-                ${subject}
-              </span>
-
-              <span
-                class="badge-type"
-              >
-                ${type}
-              </span>
-
-            </div>
-
-
-            <div
-              class="material-title"
-            >
-              ${title}
-            </div>
-
-
-            <div
-              style="
-                display:flex;
-                gap:8px;
-                margin-top:12px;
-              "
-            >
-
-              <a
-                href="${url}"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="btn-download"
-                style="flex:1;"
-              >
-
-                📥 ទាញយកឯកសារ
-
-              </a>
-
-
-              ${
-                currentRole === "admin"
-
-                  ? `
-
-                    <button
-                      type="button"
-                      onclick="deleteMaterial(${id})"
-                      class="btn-delete-mat"
-                      title="លុបមេរៀន"
-                    >
-
-                      🗑️
-
-                    </button>
-
-                  `
-
-                  : ""
-              }
-
-            </div>
-
-          </div>
-
-        `;
-
-      }
-    ).join("");
-
-
-  updateMaterialsCount();
-
-}
-
-
-// =========================================================
-// 17. MATERIAL COUNT
-// =========================================================
-
-function updateMaterialsCount() {
-
-  const elements =
-    document.querySelectorAll(
-      "#total-materials, #material-count, [data-stat='materials']"
-    );
-
-
-  elements.forEach(
-    element => {
-
-      element.textContent =
-        materialsList.length;
-
-    }
-  );
-
-}
-
-
-// =========================================================
-// 18. DELETE MATERIAL
-// =========================================================
-
-function deleteMaterial(
-  id
-) {
-
-  if (
-    currentRole !==
-    "admin"
-  ) {
-
-    showMessage(
-      "មានតែ Admin ប៉ុណ្ណោះអាចលុបមេរៀនបាន!",
-      "error"
-    );
-
-    return;
-
-  }
-
-
-  const confirmed =
-    confirm(
-      "តើអ្នកពិតជាចង់លុបឯកសារមេរៀននេះមែនទេ?"
-    );
-
-
-  if (!confirmed) {
-    return;
-  }
-
-
-  materialsList =
-    materialsList.filter(
-      material =>
-        Number(material.id) !==
-        Number(id)
-    );
-
-
-  saveMaterials();
-
-
-  renderMaterials(
-    materialsList
-  );
-
-
-  showMessage(
-    "បានលុបមេរៀនរួចរាល់ 🗑️",
-    "success"
-  );
-
-}
-
-
-// =========================================================
-// 19. ADD MATERIAL
-// =========================================================
-
-function setupMaterialsForm() {
-
-  const form =
-    document.getElementById(
-      "upload-form"
-    );
-
-
-  if (!form) {
-    return;
-  }
-
-
-  form.addEventListener(
-    "submit",
-    event => {
-
-      event.preventDefault();
-
-
-      if (
-        currentRole !==
-        "admin"
-      ) {
-
-        alert(
-          "មានតែ Admin ប៉ុណ្ណោះដែលអាចបន្ថែមមេរៀនបាន!"
-        );
-
-        return;
-
-      }
-
-
-      const title =
-        document.getElementById(
-          "doc-title"
-        )?.value.trim();
-
-
-      const subject =
-        document.getElementById(
-          "doc-subject"
-        )?.value.trim();
-
-
-      const type =
-        document.getElementById(
-          "doc-type"
-        )?.value.trim();
-
-
-      const url =
-        document.getElementById(
-          "doc-url"
-        )?.value.trim();
-
-
-      if (
-        !title ||
-        !subject ||
-        !type ||
-        !url
-      ) {
-
-        alert(
-          "សូមបំពេញព័ត៌មានទាំងអស់!"
-        );
-
-        return;
-
-      }
-
-
-      const newMaterial = {
-
-        id: Date.now(),
-
-        title,
-
-        subject,
-
-        type,
-
-        url
-
-      };
-
-
-      materialsList.unshift(
-        newMaterial
-      );
-
-
-      saveMaterials();
-
-
-      renderMaterials(
-        materialsList
-      );
-
-
-      form.reset();
-
-
-      showMessage(
-        "បានបន្ថែមមេរៀនថ្មី ✅",
-        "success"
-      );
-
-    }
-  );
-
-}
-
-
-// =========================================================
-// 20. SAVE MATERIALS
-// =========================================================
-
-function saveMaterials() {
-
-  localStorage.setItem(
-    "materialsData",
-    JSON.stringify(
-      materialsList
-    )
-  );
-
-}
-
-
-// =========================================================
-// 21. MATERIAL SEARCH
-// =========================================================
-
-function setupMaterialsSearch() {
-
-  const input =
-    document.getElementById(
-      "material-search"
-    );
-
-
-  if (!input) {
-    return;
-  }
-
-
-  input.addEventListener(
-    "input",
-    event => {
-
-      const query =
-        event.target.value
-          .toLowerCase()
-          .trim();
-
-
-      if (!query) {
-
-        renderMaterials(
-          materialsList
-        );
-
-        return;
-
-      }
-
-
-      const filtered =
-        materialsList.filter(
-          material => {
-
-            return (
-
-              String(
-                material.title || ""
-              )
-                .toLowerCase()
-                .includes(query)
-
-              ||
-
-              String(
-                material.subject || ""
-              )
-                .toLowerCase()
-                .includes(query)
-
-              ||
-
-              String(
-                material.type || ""
-              )
-                .toLowerCase()
-                .includes(query)
-
-            );
-
-          }
-        );
-
-
-      renderMaterials(
-        filtered
-      );
-
-    }
-  );
-
-}
-
-
-// =========================================================
-// 22. GLOBAL SEARCH
-// =========================================================
-
-function setupGlobalSearch() {
-
-  const searchInput =
-    document.querySelector(
-      'input[placeholder*="Search"]'
-    );
-
-
-  if (!searchInput) {
-    return;
-  }
-
-
-  searchInput.addEventListener(
-    "keydown",
-    event => {
-
-      if (
-        event.key !==
-        "Enter"
-      ) {
-
-        return;
-
-      }
-
-
-      const query =
-        searchInput.value
-          .toLowerCase()
-          .trim();
-
-
-      if (!query) {
-        return;
-      }
-
-
-      // Search Students
-
-      const studentResults =
-        studentList.filter(
-          student =>
-
-            String(
-              student.name_kh || ""
-            )
-              .toLowerCase()
-              .includes(query)
-
-            ||
-
-            String(
-              student.name_en || ""
-            )
-              .toLowerCase()
-              .includes(query)
-
-            ||
-
-            String(
-              student.student_id || ""
-            )
-              .toLowerCase()
-              .includes(query)
-
-        );
-
-
-      // Search Materials
-
-      const materialResults =
-        materialsList.filter(
-          material =>
-
-            String(
-              material.title || ""
-            )
-              .toLowerCase()
-              .includes(query)
-
-            ||
-
-            String(
-              material.subject || ""
-            )
-              .toLowerCase()
-              .includes(query)
-
-        );
-
-
-      if (
-        studentResults.length >
-        0
-      ) {
-
-        const studentSearch =
-          document.getElementById(
-            "student-search"
-          );
-
-
-        if (studentSearch) {
-
-          studentSearch.value =
-            query;
-
-
-          renderStudents(
-            studentResults
-          );
-
+function renderCharts() {
+    if (!allData || allData.length === 0) return;
+
+    const keys = Object.keys(allData[0]).filter(k => k !== 'rowIndex');
+    if (keys.length === 0) return;
+
+    const primaryKey = keys[0];
+    const counts = {};
+
+    allData.forEach(row => {
+        const val = row[primaryKey] || 'មិនស្គាល់';
+        counts[val] = (counts[val] || 0) + 1;
+    });
+
+    const labels = Object.keys(counts).slice(0, 6); // Take top 6 items
+    const dataValues = labels.map(l => counts[l]);
+
+    // Pie Chart
+    const pieCtx = document.getElementById('dataPieChart').getContext('2d');
+    if (pieChartInstance) pieChartInstance.destroy();
+
+    pieChartInstance = new Chart(pieCtx, {
+        type: 'doughnut',
+        data: {
+            labels: labels,
+            datasets: [{
+                data: dataValues,
+                backgroundColor: ['#6366f1', '#22c55e', '#f59e0b', '#ef4444', '#3b82f6', '#8b5cf6']
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, font: { family: 'Kantumruy Pro' } } } }
         }
+    });
 
+    // Bar Chart
+    const barCtx = document.getElementById('dataBarChart').getContext('2d');
+    if (barChartInstance) barChartInstance.destroy();
 
-        activateSection(
-          "section-students"
-        );
-
-
-        return;
-
-      }
-
-
-      if (
-        materialResults.length >
-        0
-      ) {
-
-        const materialSearch =
-          document.getElementById(
-            "material-search"
-          );
-
-
-        if (materialSearch) {
-
-          materialSearch.value =
-            query;
-
-          renderMaterials(
-            materialResults
-          );
-
+    barChartInstance = new Chart(barCtx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'ចំនួន',
+                data: dataValues,
+                backgroundColor: '#6366f1',
+                borderRadius: 6
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+                x: { ticks: { font: { family: 'Kantumruy Pro' } } },
+                y: { beginAtZero: true, ticks: { precision: 0 } }
+            }
         }
+    });
+}
 
+function filterTable() {
+    const input = document.getElementById('searchInput').value.toLowerCase();
+    if (!allData || allData.length === 0) return;
 
-        activateSection(
-          "section-materials"
+    filteredData = allData.filter(row => {
+        return Object.entries(row).some(([k, val]) => 
+            k !== 'rowIndex' && String(val).toLowerCase().includes(input)
         );
+    });
 
+    currentPage = 1;
+    renderTable();
+}
 
-        return;
+function changeRowsLimit() {
+    rowsPerPage = parseInt(document.getElementById('rowsLimit').value);
+    currentPage = 1;
+    renderTable();
+}
 
-      }
+function changePage(direction) {
+    currentPage += direction;
+    renderTable();
+}
 
+function updatePagination() {
+    const totalPages = Math.ceil(filteredData.length / rowsPerPage) || 1;
+    document.getElementById('pageInfo').textContent = `ទំព័រ ${currentPage} នៃ ${totalPages}`;
+    document.getElementById('prevBtn').disabled = currentPage === 1;
+    document.getElementById('nextBtn').disabled = currentPage >= totalPages;
+}
 
-      showMessage(
-        `រកមិនឃើញ "${query}" ឡើយ`,
-        "error"
-      );
+function sortTable(key) {
+    sortDirection = !sortDirection;
+    filteredData.sort((a, b) => {
+        let valA = a[key] !== undefined ? String(a[key]).toLowerCase() : '';
+        let valB = b[key] !== undefined ? String(b[key]).toLowerCase() : '';
+        if (valA < valB) return sortDirection ? 1 : -1;
+        if (valA > valB) return sortDirection ? -1 : 1;
+        return 0;
+    });
+    renderTable();
+}
 
+function showDetails(row) {
+    const modalBody = document.getElementById('modalBody');
+    const modalFooterActions = document.getElementById('modalFooterActions');
+    modalBody.innerHTML = '';
+    modalFooterActions.innerHTML = '';
+
+    for (let [key, value] of Object.entries(row)) {
+        if (key === 'rowIndex') continue;
+        const p = document.createElement('p');
+        p.innerHTML = `<strong>${key}:</strong> ${value !== undefined && value !== null ? value : ''}`;
+        modalBody.appendChild(p);
     }
-  );
 
+    const editBtn = document.createElement('button');
+    editBtn.className = 'action-btn primary-action';
+    editBtn.innerHTML = `<i class="fa-solid fa-pen-to-square"></i> កែប្រែ`;
+    editBtn.onclick = () => openEditModal(row);
+
+    const deleteBtn = document.createElement('button');
+    deleteBtn.className = 'action-btn danger-action';
+    deleteBtn.innerHTML = `<i class="fa-solid fa-trash"></i> លុប`;
+    deleteBtn.onclick = () => deleteRecord(row);
+
+    modalFooterActions.appendChild(deleteBtn);
+    modalFooterActions.appendChild(editBtn);
+
+    document.getElementById('detailModal').style.display = 'flex';
 }
 
-
-// =========================================================
-// 23. ACTIVATE SECTION
-// =========================================================
-
-function activateSection(
-  sectionId
-) {
-
-  const section =
-    document.getElementById(
-      sectionId
-    );
-
-
-  if (!section) {
-    return;
-  }
-
-
-  document
-    .querySelectorAll(
-      ".page-content"
-    )
-    .forEach(
-      page =>
-        page.classList.remove(
-          "active"
-        )
-    );
-
-
-  section.classList.add(
-    "active"
-  );
-
-
-  const menuId =
-    sectionId.replace(
-      "section-",
-      "menu-"
-    );
-
-
-  document
-    .querySelectorAll(
-      ".nav-link"
-    )
-    .forEach(
-      link => {
-
-        link.classList.toggle(
-          "active",
-          link.id === menuId
-        );
-
-      }
-    );
-
+function closeModal() {
+    document.getElementById('detailModal').style.display = 'none';
 }
 
+function openAddModal() {
+    if (!allData || allData.length === 0) {
+        showToast("មិនទាន់មានโครงสร้าง Columns ទេ។", true);
+        return;
+    }
 
-// =========================================================
-// 24. DASHBOARD STATISTICS
-// =========================================================
+    currentEditingRowIndex = null;
+    document.getElementById('modalTitle').innerHTML = `<i class="fa-solid fa-plus-circle"></i> បន្ថែមទិន្នន័យថ្មី`;
+    document.getElementById('saveBtn').textContent = "រក្សាទុក";
 
-function updateDashboardStats() {
+    const container = document.getElementById('recordFormFields');
+    container.innerHTML = '';
 
-  updateMaterialsCount();
+    const keys = Object.keys(allData[0]).filter(k => k !== 'rowIndex');
+    keys.forEach(key => {
+        const div = document.createElement('div');
+        div.className = 'form-group';
 
-  updateStudentCount();
+        const label = document.createElement('label');
+        label.textContent = key;
 
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.name = key;
+        input.placeholder = `បញ្ចូល ${key}...`;
+        
+        // Form Validation Listener
+        input.oninput = (e) => {
+            if (e.target.value.trim() !== '') {
+                e.target.classList.remove('error-input');
+                const errSpan = div.querySelector('.error-msg');
+                if (errSpan) errSpan.remove();
+            }
+        };
 
-  const scheduleCount =
-    document.getElementById(
-      "total-subjects"
-    );
+        div.appendChild(label);
+        div.appendChild(input);
+        container.appendChild(div);
+    });
 
-
-  if (
-    scheduleCount &&
-    scheduleList.length
-  ) {
-
-    scheduleCount.textContent =
-      scheduleList.length;
-
-  }
-
+    document.getElementById('recordModal').style.display = 'flex';
 }
 
+function openEditModal(row) {
+    closeModal();
+    currentEditingRowIndex = row.rowIndex;
 
-// =========================================================
-// 25. SAFE TEXT
-// =========================================================
+    document.getElementById('modalTitle').innerHTML = `<i class="fa-solid fa-pen-to-square"></i> កែប្រែទិន្នន័យ`;
+    document.getElementById('saveBtn').textContent = "អាប់ដេត";
 
-function safeText(
-  value
-) {
+    const container = document.getElementById('recordFormFields');
+    container.innerHTML = '';
 
-  if (
-    value === null ||
-    value === undefined
-  ) {
+    const keys = Object.keys(allData[0]).filter(k => k !== 'rowIndex');
+    keys.forEach(key => {
+        const div = document.createElement('div');
+        div.className = 'form-group';
 
-    return "";
+        const label = document.createElement('label');
+        label.textContent = key;
 
-  }
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.name = key;
+        input.value = row[key] !== undefined && row[key] !== null ? row[key] : '';
+        
+        input.oninput = (e) => {
+            if (e.target.value.trim() !== '') {
+                e.target.classList.remove('error-input');
+                const errSpan = div.querySelector('.error-msg');
+                if (errSpan) errSpan.remove();
+            }
+        };
 
+        div.appendChild(label);
+        div.appendChild(input);
+        container.appendChild(div);
+    });
 
-  return String(value)
-    .replace(
-      /&/g,
-      "&amp;"
-    )
-    .replace(
-      /</g,
-      "&lt;"
-    )
-    .replace(
-      />/g,
-      "&gt;"
-    )
-    .replace(
-      /"/g,
-      "&quot;"
-    )
-    .replace(
-      /'/g,
-      "&#039;"
-    );
-
+    document.getElementById('recordModal').style.display = 'flex';
 }
 
-
-// =========================================================
-// 26. SAFE URL
-// =========================================================
-
-function safeAttribute(
-  value
-) {
-
-  if (
-    !value
-  ) {
-
-    return "#";
-
-  }
-
-
-  const url =
-    String(value).trim();
-
-
-  // Allow common web links
-
-  if (
-    url.startsWith(
-      "https://"
-    ) ||
-    url.startsWith(
-      "http://"
-    )
-  ) {
-
-    return safeText(
-      url
-    );
-
-  }
-
-
-  return "#";
-
+function closeRecordModal() {
+    document.getElementById('recordModal').style.display = 'none';
 }
 
+async function submitRecord(event) {
+    event.preventDefault();
+    const form = document.getElementById('recordForm');
+    const inputs = form.querySelectorAll('input');
+    let isValid = true;
 
-// =========================================================
-// 27. MESSAGE
-// =========================================================
+    // Strict Form Validation Check
+    inputs.forEach(input => {
+        const div = input.closest('.form-group');
+        let errSpan = div.querySelector('.error-msg');
+        
+        if (!input.value.trim()) {
+            isValid = false;
+            input.classList.add('error-input');
+            if (!errSpan) {
+                errSpan = document.createElement('span');
+                errSpan.className = 'error-msg';
+                errSpan.textContent = "សូមបំពេញព័ត៌មាននេះ!";
+                div.appendChild(errSpan);
+            }
+        } else {
+            input.classList.remove('error-input');
+            if (errSpan) errSpan.remove();
+        }
+    });
 
-function showMessage(
-  message,
-  type = "success"
-) {
+    if (!isValid) {
+        showToast("សូមបំពេញប្រអប់ទិន្នន័យដែលខ្វះខាត!", true);
+        return;
+    }
 
-  let messageBox =
-    document.getElementById(
-      "app-message"
-    );
+    const formData = new FormData(form);
+    const dataObj = {};
+    formData.forEach((value, key) => { dataObj[key] = value; });
 
+    const saveBtn = document.getElementById('saveBtn');
+    saveBtn.disabled = true;
+    saveBtn.textContent = "កំពុងដំណើរការ...";
 
-  if (!messageBox) {
+    const isEdit = currentEditingRowIndex !== null;
+    const actionType = isEdit ? 'update' : 'add';
+    if (isEdit) dataObj.rowIndex = currentEditingRowIndex;
 
-    messageBox =
-      document.createElement(
-        "div"
-      );
+    try {
+        const response = await fetch(WEB_APP_URL, {
+            method: 'POST',
+            body: JSON.stringify({
+                method: actionType,
+                tabType: currentTabType,
+                record: dataObj
+            })
+        });
+        
+        const result = await response.json();
+        saveBtn.disabled = false;
+        saveBtn.textContent = "រក្សាទុក";
 
-
-    messageBox.id =
-      "app-message";
-
-
-    messageBox.style.position =
-      "fixed";
-
-    messageBox.style.top =
-      "20px";
-
-    messageBox.style.right =
-      "20px";
-
-    messageBox.style.zIndex =
-      "99999";
-
-    messageBox.style.padding =
-      "14px 20px";
-
-    messageBox.style.borderRadius =
-      "12px";
-
-    messageBox.style.fontWeight =
-      "600";
-
-    messageBox.style.boxShadow =
-      "0 10px 30px rgba(0,0,0,.35)";
-
-
-    document.body.appendChild(
-      messageBox
-    );
-
-  }
-
-
-  messageBox.textContent =
-    message;
-
-
-  if (
-    type ===
-    "error"
-  ) {
-
-    messageBox.style.background =
-      "#7f1d1d";
-
-    messageBox.style.color =
-      "#fecaca";
-
-  } else {
-
-    messageBox.style.background =
-      "#064e3b";
-
-    messageBox.style.color =
-      "#a7f3d0";
-
-  }
-
-
-  messageBox.style.display =
-    "block";
-
-
-  clearTimeout(
-    messageBox._timer
-  );
-
-
-  messageBox._timer =
-    setTimeout(
-      () => {
-
-        messageBox.style.display =
-          "none";
-
-      },
-      3000
-    );
-
+        if (result.status === 'success' || result.success) {
+            closeRecordModal();
+            showToast(isEdit ? "បានកែប្រែទិន្នន័យជោគជ័យ!" : "បានបន្ថែមទិន្នន័យជោគជ័យ!");
+            refreshData();
+        } else {
+            showToast("មានបញ្ហា៖ " + (result.message || 'មិនអាចបញ្ជូនទិន្នន័យបាន'), true);
+        }
+    } catch (error) {
+        console.error('Error submitting record:', error);
+        saveBtn.disabled = false;
+        saveBtn.textContent = "រក្សាទុក";
+        closeRecordModal();
+        showToast("បានបញ្ជូនសំណើទៅកាន់ Server រួចរាល់!");
+        refreshData();
+    }
 }
 
+async function deleteRecord(row) {
+    if (!confirm("តើអ្នកពិតជាចង់លុបទិន្នន័យនេះមែនទេ?")) return;
 
-// =========================================================
-// 28. MAKE FUNCTIONS AVAILABLE TO HTML
-// =========================================================
+    closeModal();
+    showToast("កំពុងលុបទិន្នន័យ...");
 
-window.deleteMaterial =
-  deleteMaterial;
+    try {
+        const response = await fetch(WEB_APP_URL, {
+            method: 'POST',
+            body: JSON.stringify({
+                method: 'delete',
+                tabType: currentTabType,
+                rowIndex: row.rowIndex
+            })
+        });
 
+        const result = await response.json();
+        if (result.status === 'success' || result.success) {
+            showToast("បានលុបទិន្នន័យជោគជ័យ!");
+            refreshData();
+        } else {
+            showToast("មានបញ្ហា៖ " + (result.message || 'មិនអាចលុបបាន'), true);
+        }
+    } catch (error) {
+        console.error('Error deleting record:', error);
+        showToast("បានបញ្ជូនសំណើលុបរួចរាល់!");
+        refreshData();
+    }
+}
 
-window.fetchSchedule =
-  fetchSchedule;
+function toggleDarkMode() {
+    const html = document.documentElement;
+    const themeIcon = document.getElementById('themeIcon');
+    
+    if (html.getAttribute('data-theme') === 'light') {
+        html.setAttribute('data-theme', 'dark');
+        themeIcon.className = "fa-solid fa-sun";
+    } else {
+        html.setAttribute('data-theme', 'light');
+        themeIcon.className = "fa-solid fa-moon";
+    }
+}
 
+function exportToCSV() {
+    if (!filteredData || filteredData.length === 0) {
+        showToast("គ្មានទិន្នន័យសម្រាប់ Export ទេ។", true);
+        return;
+    }
 
-window.fetchStudents =
-  fetchStudents;
+    const keys = Object.keys(filteredData[0]).filter(k => k !== 'rowIndex');
+    let csvContent = "\uFEFF" + keys.join(",") + "\n";
 
+    filteredData.forEach(row => {
+        let values = keys.map(key => {
+            let val = row[key] !== undefined && row[key] !== null ? String(row[key]) : '';
+            return `"${val.replace(/"/g, '""')}"`;
+        });
+        csvContent += values.join(",") + "\n";
+    });
 
-window.renderMaterials =
-  renderMaterials;
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${currentTabType}_data_${new Date().toISOString().slice(0,10)}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    
+    showToast("ទាញយកឯកសារ CSV បានជោគជ័យ!");
+}
 
+function showToast(message, isError = false) {
+    const toast = document.getElementById('toast');
+    toast.textContent = message;
+    toast.style.background = isError ? '#ef4444' : 'var(--primary)';
+    toast.classList.add('show');
+    setTimeout(() => { toast.classList.remove('show'); }, 3000);
+}
 
-window.renderStudents =
-  renderStudents;
+window.onload = () => {
+    fetchData('');
+};
