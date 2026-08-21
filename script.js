@@ -145,7 +145,6 @@ function renderTable() {
         
         if (currentTab === 'materials') {
             let rawLink = item.link || '#';
-            // แปลง Google Drive Link ให้อยู่ในรูป format ที่สามารถ Embed មើលក្នុង iframe បាន
             let embedLink = rawLink;
             if (rawLink.includes('drive.google.com')) {
                 embedLink = rawLink.replace('/view?usp=sharing', '/preview').replace('/edit?usp=sharing', '/preview');
@@ -215,9 +214,9 @@ function openAddModal() {
     } else if (currentTab === 'materials') {
         formHtml = `
             <div class="form-group"><label>TITLE</label><input type="text" id="f_title" placeholder="ឈ្មោះមេរៀន..."></div>
-            <div class="form-group"><label>TYPE</label><input type="text" id="f_type" placeholder="PDF, ZIP, DOCX..."></div>
+            <div class="form-group"><label>TYPE</label><input type="text" id="f_type" placeholder="PDF, PPTX, etc..."></div>
             <div class="form-group"><label>SIZE</label><input type="text" id="f_size" placeholder="15 MB..."></div>
-            <div class="form-group"><label>DOWNLOAD LINK</label><input type="text" id="f_link" placeholder="Google Drive Share Link..."></div>
+            <div class="form-group"><label>SELECT FILE FROM COMPUTER</label><input type="file" id="f_file" style="color: var(--text-main);"></div>
         `;
     } else {
         formHtml = `
@@ -234,11 +233,56 @@ function closeDataModal() {
     document.getElementById('dataModal').classList.remove('active');
 }
 
-function saveRecord() {
-    showToast("STATUS: RECORD SAVED SUCCESSFULLY");
-    closeDataModal();
-    loadDataFromSheet();
+async function saveRecord() {
+    showToast("STATUS: UPLOADING & SAVING...");
+    
+    let payload = { tab: currentTab };
+
+    if (currentTab === 'materials') {
+        payload.title = document.getElementById('f_title').value;
+        payload.type = document.getElementById('f_type').value;
+        payload.size = document.getElementById('f_size').value;
+        
+        const fileInput = document.getElementById('f_file');
+        if (fileInput.files.length > 0) {
+            const file = fileInput.files[0];
+            payload.fileName = file.name;
+            payload.mimeType = file.type;
+            
+            const base64Data = await toBase64(file);
+            payload.fileData = base64Data.split(',')[1];
+        }
+    } else if (currentTab === 'students') {
+        payload.student_id = document.getElementById('f_student_id').value;
+        payload.name_kh = document.getElementById('f_name_kh').value;
+        payload.name_en = document.getElementById('f_name_en').value;
+    } else {
+        payload.day = document.getElementById('f_day').value;
+        payload.time = document.getElementById('f_time').value;
+        payload.subject = document.getElementById('f_subject').value;
+    }
+
+    try {
+        await fetch(API_URL, {
+            method: 'POST',
+            body: JSON.stringify(payload)
+        });
+        
+        showToast("STATUS: SUCCESS!");
+        closeDataModal();
+        loadDataFromSheet();
+    } catch (error) {
+        console.error(error);
+        showToast("ERROR: FAILED TO SAVE");
+    }
 }
+
+const toBase64 = file => new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = error => reject(error);
+});
 
 function deleteRecord(id) {
     if (!isAdmin) return;
