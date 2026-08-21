@@ -1,4 +1,5 @@
-const GOOGLE_SHEET_API_URL = "https://script.google.com/macros/s/AKfycbz2f3cZh5hqwqvIt3QcYtE9CycoBpC9AiBv3h3CfHPkZm3UhLGfrwIbEecDW5axluGu/exec";
+// Google Sheets Web App Endpoint ថ្មី
+const GOOGLE_SHEET_API_URL = "https://script.google.com/macros/s/AKfycbwzKJ8fwImxRdKwSz8QJAgnD5ek-CgeV2is10aZY2l7KeI2ChydmwXA4NkupSQrj0mj/exec";
 
 // អថេរសម្រាប់រក្សាទុកទិន្នន័យសិស្សដែល Fetch បានពី Google Sheets សម្រាប់ប្រើប្រាស់ពេល Search
 let studentList = [];
@@ -38,6 +39,9 @@ function setupNavigation() {
   });
 }
 
+/* =========================================================
+   Fetch Schedule Data from Google Sheets
+   ========================================================= */
 function fetchSchedule() {
   const tbody = document.getElementById("schedule-body");
   const totalSubj = document.getElementById("total-subjects");
@@ -51,9 +55,9 @@ function fetchSchedule() {
     .then(res => res.json())
     .then(data => {
       tbody.innerHTML = "";
-      if (!data || data.length === 0) {
+      if (!data || data.length === 0 || data.error) {
         tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;">ពុំមានទិន្នន័យកាលវិភាគឡើយ</td></tr>`;
-        totalSubj.textContent = "0";
+        if (totalSubj) totalSubj.textContent = "0";
         return;
       }
 
@@ -73,7 +77,7 @@ function fetchSchedule() {
         tbody.appendChild(tr);
       });
 
-      totalSubj.textContent = data.length;
+      if (totalSubj) totalSubj.textContent = data.length;
     })
     .catch(err => {
       console.error(err);
@@ -82,7 +86,7 @@ function fetchSchedule() {
 }
 
 /* =========================================================
-   NEW: Fetch Students from Google Sheets
+   Fetch Students Data from Google Sheets
    ========================================================= */
 function fetchStudents() {
   const tbody = document.getElementById("student-body");
@@ -93,6 +97,11 @@ function fetchStudents() {
   fetch(`${GOOGLE_SHEET_API_URL}?action=getStudents`, { redirect: "follow" })
     .then(res => res.json())
     .then(data => {
+      if (data.error) {
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:#f87171;">មិនមាន Tab ឈ្មោះ "Students" ក្នុង Google Sheet ឡើយ!</td></tr>`;
+        return;
+      }
+
       studentList = data; // រក្សាទុកក្នុងអថេរសម្រាប់ Search
       renderStudents(studentList);
       
@@ -137,9 +146,9 @@ function setupSearch() {
   input.addEventListener("input", (e) => {
     const query = e.target.value.toLowerCase().trim();
     const filtered = studentList.filter(s =>
-      (s.name_kh && s.name_kh.toLowerCase().includes(query)) ||
-      (s.name_en && s.name_en.toLowerCase().includes(query)) ||
-      (s.student_id && s.student_id.toLowerCase().includes(query))
+      (s.name_kh && String(s.name_kh).toLowerCase().includes(query)) ||
+      (s.name_en && String(s.name_en).toLowerCase().includes(query)) ||
+      (s.student_id && String(s.student_id).toLowerCase().includes(query))
     );
     renderStudents(filtered);
   });
