@@ -41,10 +41,9 @@ body {
   display: flex;
   align-items: center;
   gap: 12px;
-  margin-bottom: 40px;
+  margin-bottom: 24px;
 }
 
-/* កែសម្រួល Logo ឱ្យថ្លា Transparent គ្មានប្រអប់ខ្មៅ */
 .brand-logo {
   width: 44px;
   height: 44px;
@@ -72,6 +71,41 @@ body {
   color: var(--accent-cyan);
   letter-spacing: 1px;
   text-transform: uppercase;
+}
+
+/* Auth Status Panel in Sidebar */
+.auth-status-card {
+  padding: 10px 14px;
+  margin-bottom: 24px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.user-badge {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 6px;
+  letter-spacing: 0.5px;
+}
+
+.btn-auth-toggle {
+  background: transparent;
+  border: none;
+  color: var(--accent-cyan);
+  font-size: 12px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: opacity 0.2s ease;
+}
+
+.btn-auth-toggle:hover {
+  opacity: 0.8;
+  text-decoration: underline;
 }
 
 .nav-menu {
@@ -352,10 +386,7 @@ tr.today-highlight {
   margin-bottom: 12px;
 }
 
-/* =========================================================
-   NEW: Materials Section (Upload Form & Grid Cards)
-   ========================================================= */
-
+/* Materials Section */
 .upload-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -486,6 +517,91 @@ tr.today-highlight {
   border-color: var(--accent-cyan);
 }
 
+/* Delete Button on Material Card (Admin Only) */
+.btn-delete-mat {
+  background: rgba(239, 68, 68, 0.15);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #ef4444;
+  padding: 8px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.btn-delete-mat:hover {
+  background: rgba(239, 68, 68, 0.35);
+}
+
+/* Modal UI Layout */
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-box {
+  background: #0f172a;
+  border: 1px solid var(--border-color);
+  padding: 28px;
+  border-radius: 14px;
+  width: 90%;
+  max-width: 400px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.6);
+}
+
+.modal-box h3 {
+  color: #f8fafc;
+  font-size: 18px;
+  margin-bottom: 4px;
+}
+
+.modal-sub {
+  color: var(--text-muted);
+  font-size: 13px;
+  margin-bottom: 20px;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  margin-top: 20px;
+}
+
+.btn-cancel {
+  background: transparent;
+  border: 1px solid var(--border-color);
+  color: var(--text-muted);
+  padding: 9px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.btn-cancel:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: #fff;
+}
+
+.btn-primary {
+  background: linear-gradient(90deg, var(--accent-cyan), var(--accent-blue));
+  color: #0b0f19;
+  font-weight: 700;
+  border: none;
+  padding: 9px 18px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 13px;
+}
+
 /* Responsive Support */
 @media (max-width: 768px) {
   body {
@@ -500,7 +616,7 @@ tr.today-highlight {
   }
 
   .brand {
-    margin-bottom: 20px;
+    margin-bottom: 16px;
   }
 
   .main-container {
