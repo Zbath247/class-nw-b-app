@@ -1,130 +1,83 @@
 <!DOCTYPE html>
-<html lang="km" data-theme="light">
+<html lang="km" data-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ប្រព័ន្ធគ្រប់គ្រងសាលារៀន - Enterprise Portal Ultimate v8</title>
-    <link rel="stylesheet" href="style.css">
+    <title>CLASS G1-NW-B | Next-Gen Enterprise Portal</title>
+    <!-- Google Fonts & FontAwesome 6 -->
     <link href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Chart.js CDN -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="dashboard-wrapper">
-        <!-- Top Header -->
-        <header class="top-header">
-            <div class="brand">
-                <div class="brand-icon"><i class="fa-solid fa-graduation-cap"></i></div>
+    <div class="ambient-glow"></div>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="brand-section">
+                <div class="logo-icon"><i class="fa-solid fa-network-wired"></i></div>
                 <div>
-                    <h1>School Workspace Ultimate</h1>
-                    <p>Cloud Analytics & CRUD Portal</p>
+                    <h1>CLASS G1-NW-B</h1>
+                    <p>NETWORK ENGINEERING PORTAL</p>
                 </div>
             </div>
             <div class="header-actions">
-                <button class="action-btn primary-action" onclick="openAddModal()" title="បន្ថែមទិន្នន័យថ្មី">
-                    <i class="fa-solid fa-plus"></i> <span>បន្ថែមថ្មី</span>
-                </button>
-                <button class="action-btn" onclick="toggleDarkMode()" title="ប្តូរពណ៌អេក្រង់">
-                    <i class="fa-solid fa-moon" id="themeIcon"></i>
-                </button>
-                <button class="action-btn" onclick="window.print()" title="បោះពុម្ពតារាង">
-                    <i class="fa-solid fa-print"></i> <span>បោះពុម្ព</span>
-                </button>
-                <button class="action-btn export-btn" onclick="exportToCSV()" title="ទាញយកជា CSV">
-                    <i class="fa-solid fa-file-arrow-down"></i> <span>Export CSV</span>
-                </button>
-                <button class="action-btn" onclick="refreshData()" title="ទាញយកទិន្នន័យថ្មី">
-                    <i class="fa-solid fa-rotate"></i> <span>ផ្ទុកឡើងវិញ</span>
-                </button>
+                <button class="icon-btn" onclick="toggleDarkMode()" title="ប្តូរទម្រង់ពណ៌"><i id="themeIcon" class="fa-solid fa-sun"></i></button>
+                <a href="#admin" class="admin-login-btn"><i class="fa-solid fa-shield-halved"><span>Admin</span></i></a>
             </div>
         </header>
 
-        <!-- Stats Cards Section -->
+        <!-- Navigation Tabs -->
+        <nav class="nav-tabs">
+            <button id="btnSchedule" class="tab-btn active" onclick="switchTab('schedule')">
+                <i class="fa-solid fa-calendar-days"></i> កាលវិភាគ (Schedule)
+            </button>
+            <button id="btnStudents" class="tab-btn" onclick="switchTab('students')">
+                <i class="fa-solid fa-user-group"></i> បញ្ជីឈ្មោះ (Students)
+            </button>
+        </nav>
+
+        <!-- Dynamic Stats Grid -->
         <div class="stats-grid">
             <div class="stat-card">
-                <div class="stat-icon" style="background: #e0e7ff; color: #6366f1;"><i class="fa-solid fa-database"></i></div>
-                <div>
-                    <h3 id="statTotalRows">0</h3>
-                    <p>ទិន្នន័យសរុប</p>
+                <div class="stat-info">
+                    <span class="stat-label">មុខវិជ្ជាសរុប</span>
+                    <h2 id="statColumns">5</h2>
                 </div>
+                <div class="stat-icon-box"><i class="fa-solid fa-book-bookmark"></i></div>
             </div>
-            <div class="stat-card">
-                <div class="stat-icon" style="background: #dcfce7; color: #22c55e;"><i class="fa-solid fa-table-cells"></i></div>
-                <div>
-                    <h3 id="statColumns">0</h3>
-                    <p>ជួរឈរ (Columns)</p>
+            <div class="stat-card highlight-card">
+                <div class="stat-info">
+                    <span class="stat-label">ស្ថានភាពប្រព័ន្ធ</span>
+                    <h2 class="active-status">Active</h2>
                 </div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon" style="background: #fef3c7; color: #f59e0b;"><i class="fa-solid fa-clock"></i></div>
-                <div>
-                    <h3 id="statLastUpdate">ទើបតែឥឡូវ</h3>
-                    <p>អាប់ដេតចុងក្រោយ</p>
-                </div>
+                <div class="stat-icon-box pulse"><i class="fa-solid fa-bolt-lightning"></i></div>
             </div>
         </div>
 
-        <!-- Analytics Dashboard Section (New) -->
-        <div class="analytics-grid" id="analyticsSection">
-            <div class="analytics-card">
-                <h3><i class="fa-solid fa-chart-pie"></i> ការចាត់ថ្នាក់ទិន្នន័យតាមជួរឈរទី១</h3>
-                <div class="chart-container">
-                    <canvas id="dataPieChart"></canvas>
-                </div>
+        <!-- Main Workspace -->
+        <main class="main-content">
+            <div class="section-header">
+                <h2>តារាងកាលវិភាគសិក្សាថ្នាក់រៀន</h2>
+                <p>ប្រព័ន្ធគ្រប់គ្រងទិន្នន័យស្វ័យប្រវត្តិតភ្ជាប់ជាមួយ Google Sheets API</p>
             </div>
-            <div class="analytics-card">
-                <h3><i class="fa-solid fa-chart-column"></i> ស្ថិតិកម្រិតបរិមាណទិន្នន័យ</h3>
-                <div class="chart-container">
-                    <canvas id="dataBarChart"></canvas>
-                </div>
-            </div>
-        </div>
 
-        <!-- Main Content Card -->
-        <main class="main-card">
-            <div class="controls-section">
-                <div class="tabs-group">
-                    <button id="btnSchedule" class="tab-pill active" onclick="switchTab('schedule')">
-                        <i class="fa-regular fa-calendar-days"></i> កាលវិភាគ (NW_B_Schedule)
-                    </button>
-                    <button id="btnStudents" class="tab-pill" onclick="switchTab('students')">
-                        <i class="fa-solid fa-user-graduate"></i> បញ្ជីសិស្ស (Students)
-                    </button>
+            <!-- Controls Bar -->
+            <div class="controls-bar">
+                <div class="search-box">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" id="searchInput" onkeyup="filterTable()" placeholder="ស្វែងរកទិន្នន័យក្នុងប្រព័ន្ធ...">
                 </div>
-
-                <div class="search-wrapper">
-                    <i class="fa-solid fa-magnifying-glass search-icon"></i>
-                    <input type="text" id="searchInput" placeholder="ស្វែងរកគ្រប់ទិន្នន័យ..." onkeyup="filterTable()">
+                <div class="action-buttons">
+                    <button class="btn-primary" onclick="openAddModal()"><i class="fa-solid fa-plus"></i> បន្ថែម</button>
+                    <button class="btn-secondary" onclick="refreshData()" title="ទាញយកទិន្នន័យថ្មី"><i class="fa-solid fa-rotate"></i></button>
+                    <button class="btn-secondary" onclick="exportToCSV()" title="ទាញយក CSV"><i class="fa-solid fa-file-arrow-down"></i></button>
                 </div>
             </div>
 
-            <!-- Column Visibility Toggle Panel -->
-            <div class="column-toggle-section">
-                <span>បង្ហាញ/លាក់ ជួរឈរ៖</span>
-                <div id="columnCheckboxes" class="checkbox-group"></div>
-            </div>
-
-            <!-- Table Info Bar -->
-            <div class="info-bar">
-                <div class="rows-per-page">
-                    <label for="rowsLimit">បង្ហាញ:</label>
-                    <select id="rowsLimit" onchange="changeRowsLimit()">
-                        <option value="10">១០</option>
-                        <option value="25" selected>២៥</option>
-                        <option value="50">៥០</option>
-                        <option value="100">១០០</option>
-                    </select>
-                    <span>ជួរ / ទំព័រ</span>
-                </div>
-                <div id="loading" class="loading-indicator" style="display: none;">
-                    <i class="fa-solid fa-spinner fa-spin"></i> កំពុងទាញយកទិន្នន័យ...
-                </div>
-            </div>
-
-            <!-- Table View Container -->
+            <!-- Modern Table View -->
             <div class="table-container">
-                <table id="dataTable">
+                <table>
                     <thead>
                         <tr id="tableHeaders"></tr>
                     </thead>
@@ -132,44 +85,15 @@
                 </table>
             </div>
 
-            <!-- Pagination Footer -->
-            <div class="pagination-footer">
-                <span id="pageInfo" class="page-info">ទំព័រ 0 នៃ 0</span>
-                <div class="pagination-buttons">
-                    <button id="prevBtn" onclick="changePage(-1)" disabled><i class="fa-solid fa-chevron-left"></i> មុន</button>
-                    <button id="nextBtn" onclick="changePage(1)" disabled>បន្ទាប់ <i class="fa-solid fa-chevron-right"></i></button>
+            <!-- Pagination Bar -->
+            <div class="pagination-bar">
+                <span id="pageInfo">ទំព័រ 1 នៃ 1</span>
+                <div class="pagination-btns">
+                    <button id="prevBtn" onclick="changePage(-1)" disabled><i class="fa-solid fa-chevron-left"></i></button>
+                    <button id="nextBtn" onclick="changePage(1)" disabled><i class="fa-solid fa-chevron-right"></i></button>
                 </div>
             </div>
         </main>
-    </div>
-
-    <!-- Details Modal with Edit/Delete Actions -->
-    <div id="detailModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3><i class="fa-solid fa-circle-info"></i> ព័ត៌មានលម្អិត</h3>
-                <button class="close-btn" onclick="closeModal()">&times;</button>
-            </div>
-            <div class="modal-body" id="modalBody"></div>
-            <div class="modal-footer" id="modalFooterActions"></div>
-        </div>
-    </div>
-
-    <!-- Add/Edit Record Modal with Validation Feedback -->
-    <div id="recordModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 id="modalTitle"><i class="fa-solid fa-plus-circle"></i> បន្ថែមទិន្នន័យថ្មី</h3>
-                <button class="close-btn" onclick="closeRecordModal()">&times;</button>
-            </div>
-            <form id="recordForm" onsubmit="submitRecord(event)" novalidate>
-                <div class="modal-body" id="recordFormFields"></div>
-                <div class="modal-footer">
-                    <button type="button" class="action-btn" onclick="closeRecordModal()">បោះបង់</button>
-                    <button type="submit" class="action-btn primary-action" id="saveBtn">រក្សាទុក</button>
-                </div>
-            </form>
-        </div>
     </div>
 
     <!-- Toast Notification -->
