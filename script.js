@@ -1,5 +1,5 @@
-// បញ្ចូល Google Apps Script Web App URL របស់អ្នកនៅទីនេះ
-const API_URL = "YOUR_GOOGLE_APPS_SCRIPT_WEB_URL_HERE";
+// Google Apps Script Web App URL របស់អ្នក
+const API_URL = "https://script.google.com/macros/s/AKfycbzONK-u99A7CeM920d_tSOMo2k_0wNhzjQdehh_ORAvPnfdcbpibUn7pGyUIiX5Kxkl/exec";
 
 let currentTab = 'schedule';
 let tableData = [];
@@ -93,7 +93,6 @@ async function loadDataFromSheet() {
         } else if (currentTab === 'schedule') {
             endpoint += "?action=getSchedule";
         } else {
-            // បើគ្មាន Tab ឯកសារ បង្ហាញទិន្នន័យទទេ ឬ Mock ទុកសិន
             tableData = [];
             filteredData = tableData;
             document.getElementById('statColumns').innerText = '00';
