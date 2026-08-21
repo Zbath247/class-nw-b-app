@@ -3,97 +3,145 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CLASS G1-NW-B | Next-Gen Enterprise Portal</title>
+    <title>CLASS G1-NW-B | Digital Enterprise Portal</title>
     <!-- Google Fonts & FontAwesome 6 -->
-    <link href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <div class="cyber-grid-bg"></div>
     <div class="ambient-glow"></div>
+    
     <div class="app-container">
-        <!-- Header -->
+        <!-- Digital Header -->
         <header class="app-header">
             <div class="brand-section">
-                <div class="logo-icon"><i class="fa-solid fa-network-wired"></i></div>
+                <div class="logo-container">
+                    <img src="logo.png" alt="DIGITAL UNIVERSITY OF CAMBODIA Logo" class="university-logo">
+                </div>
                 <div>
+                    <div class="digital-badge">DIGITAL UNIVERSITY OF CAMBODIA</div>
                     <h1>CLASS G1-NW-B</h1>
-                    <p>NETWORK ENGINEERING PORTAL</p>
                 </div>
             </div>
             <div class="header-actions">
-                <button class="icon-btn" onclick="toggleDarkMode()" title="ប្តូរទម្រង់ពណ៌"><i id="themeIcon" class="fa-solid fa-sun"></i></button>
-                <a href="#admin" class="admin-login-btn"><i class="fa-solid fa-shield-halved"><span>Admin</span></i></a>
+                <div class="digital-clock" id="digitalClock">00:00:00</div>
+                <button class="icon-btn" onclick="toggleDarkMode()" title="ប្តូរទម្រង់ពណ៌"><i id="themeIcon" class="fa-solid fa-moon"></i></button>
+                <button id="authBtn" class="admin-login-btn" onclick="handleAuthClick()"><i class="fa-solid fa-fingerprint"></i> <span id="authText">Admin Auth</span></button>
             </div>
         </header>
 
-        <!-- Navigation Tabs -->
+        <!-- Digital Navigation Tabs -->
         <nav class="nav-tabs">
             <button id="btnSchedule" class="tab-btn active" onclick="switchTab('schedule')">
-                <i class="fa-solid fa-calendar-days"></i> កាលវិភាគ (Schedule)
+                <i class="fa-solid fa-calendar-week"></i> <span>SCHEDULE.exe</span>
             </button>
             <button id="btnStudents" class="tab-btn" onclick="switchTab('students')">
-                <i class="fa-solid fa-user-group"></i> បញ្ជីឈ្មោះ (Students)
+                <i class="fa-solid fa-users-viewfinder"></i> <span>STUDENTS.db</span>
+            </button>
+            <button id="btnMaterials" class="tab-btn" onclick="switchTab('materials')">
+                <i class="fa-solid fa-folder-open"></i> <span>LIBRARY.lib</span>
             </button>
         </nav>
 
-        <!-- Dynamic Stats Grid -->
+        <!-- Digital Stats Grid -->
         <div class="stats-grid">
             <div class="stat-card">
                 <div class="stat-info">
-                    <span class="stat-label">មុខវិជ្ជាសរុប</span>
-                    <h2 id="statColumns">5</h2>
+                    <span class="stat-label">MODULES COUNT</span>
+                    <h2 id="statColumns">05</h2>
                 </div>
-                <div class="stat-icon-box"><i class="fa-solid fa-book-bookmark"></i></div>
+                <div class="stat-icon-box"><i class="fa-solid fa-cube"></i></div>
             </div>
             <div class="stat-card highlight-card">
                 <div class="stat-info">
-                    <span class="stat-label">ស្ថានភាពប្រព័ន្ធ</span>
-                    <h2 class="active-status">Active</h2>
+                    <span class="stat-label">SECURITY PROTOCOL</span>
+                    <h2 class="active-status">SECURE</h2>
                 </div>
-                <div class="stat-icon-box pulse"><i class="fa-solid fa-bolt-lightning"></i></div>
+                <div class="stat-icon-box pulse"><i class="fa-solid fa-shield-halved"></i></div>
             </div>
         </div>
 
         <!-- Main Workspace -->
         <main class="main-content">
             <div class="section-header">
-                <h2>តារាងកាលវិភាគសិក្សាថ្នាក់រៀន</h2>
-                <p>ប្រព័ន្ធគ្រប់គ្រងទិន្នន័យស្វ័យប្រវត្តិតភ្ជាប់ជាមួយ Google Sheets API</p>
+                <h2 id="sectionTitle"><i class="fa-solid fa-terminal" style="color: var(--primary-cyan);"></i> កាលវិភាគសិក្សាថ្នាក់រៀន</h2>
+                <p id="sectionSubtitle">Digital Enterprise Portal - Connected via Google Sheets API</p>
             </div>
 
             <!-- Controls Bar -->
             <div class="controls-bar">
                 <div class="search-box">
-                    <i class="fa-solid fa-magnifying-glass"></i>
-                    <input type="text" id="searchInput" onkeyup="filterTable()" placeholder="ស្វែងរកទិន្នន័យក្នុងប្រព័ន្ធ...">
+                    <i class="fa-solid fa-terminal"></i>
+                    <input type="text" id="searchInput" onkeyup="filterTable()" placeholder="ស្វែងរកទិន្នន័យតាមប្រព័ន្ធ CLI...">
                 </div>
                 <div class="action-buttons">
-                    <button class="btn-primary" onclick="openAddModal()"><i class="fa-solid fa-plus"></i> បន្ថែម</button>
-                    <button class="btn-secondary" onclick="refreshData()" title="ទាញយកទិន្នន័យថ្មី"><i class="fa-solid fa-rotate"></i></button>
-                    <button class="btn-secondary" onclick="exportToCSV()" title="ទាញយក CSV"><i class="fa-solid fa-file-arrow-down"></i></button>
+                    <button class="btn-primary" id="addBtn" onclick="openAddModal()" style="display: none;"><i class="fa-solid fa-plus"></i> បន្ថែម</button>
+                    <button class="btn-secondary" onclick="refreshData()" title="Sync Data"><i class="fa-solid fa-rotate"></i></button>
+                    <button class="btn-secondary" onclick="exportToCSV()" title="Export CSV"><i class="fa-solid fa-download"></i></button>
                 </div>
             </div>
 
-            <!-- Modern Table View -->
-            <div class="table-container">
-                <table>
-                    <thead>
-                        <tr id="tableHeaders"></tr>
-                    </thead>
-                    <tbody id="tableBody"></tbody>
-                </table>
+            <!-- Dynamic View Container (Table or Grid) -->
+            <div id="dynamicViewContainer">
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr id="tableHeaders"></tr>
+                        </thead>
+                        <tbody id="tableBody"></tbody>
+                    </table>
+                </div>
             </div>
 
             <!-- Pagination Bar -->
-            <div class="pagination-bar">
-                <span id="pageInfo">ទំព័រ 1 នៃ 1</span>
+            <div class="pagination-bar" id="paginationBar">
+                <span id="pageInfo">PAGE 1 OF 1</span>
                 <div class="pagination-btns">
                     <button id="prevBtn" onclick="changePage(-1)" disabled><i class="fa-solid fa-chevron-left"></i></button>
                     <button id="nextBtn" onclick="changePage(1)" disabled><i class="fa-solid fa-chevron-right"></i></button>
                 </div>
             </div>
         </main>
+    </div>
+
+    <!-- Admin Login Modal -->
+    <div id="loginModal" class="modal-overlay">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-terminal"></i> SECURE_LOGIN</h3>
+                <button class="close-btn" onclick="closeLoginModal()"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="modal-body">
+                <p>បញ្ចូល Admin Security Key ដើម្បីផ្ទៀងផ្ទាត់សិទ្ធិ៖</p>
+                <div class="search-box" style="margin-top: 15px;">
+                    <i class="fa-solid fa-key"></i>
+                    <input type="password" id="adminPassword" placeholder="Enter key..." style="width: 100%;">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" onclick="closeLoginModal()">CANCEL</button>
+                <button class="btn-primary" onclick="verifyAdmin()">AUTHENTICATE</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add/Edit Modal -->
+    <div id="dataModal" class="modal-overlay">
+        <div class="modal-card" style="max-width: 450px;">
+            <div class="modal-header">
+                <h3 id="modalTitle"><i class="fa-solid fa-terminal"></i> ADD_RECORD</h3>
+                <button class="close-btn" onclick="closeDataModal()"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="modal-body" id="modalFormContainer" style="max-height: 350px; overflow-y: auto; padding-right: 5px;">
+                <!-- Form fields injected dynamically -->
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" onclick="closeDataModal()">CANCEL</button>
+                <button class="btn-primary" onclick="saveRecord()">EXECUTE_SAVE</button>
+            </div>
+        </div>
     </div>
 
     <!-- Toast Notification -->
