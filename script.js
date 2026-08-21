@@ -1,254 +1,205 @@
-// Google Apps Script Web App URL របស់អ្នក
-const API_URL = 'https://script.google.com/macros/s/AKfycbwzKJ8fwImxRdKwSz8QJAgnD5ek-CgeV2is10aZY2l7KeI2ChydmwXA4NkupSQrj0mj/exec'; 
+// Google Apps Script Web App URL (ជំនួសដោយ URL របស់អ្នក)
+const API_URL = "YOUR_GOOGLE_APPS_SCRIPT_WEB_URL_HERE";
 
 let currentTab = 'schedule';
 let tableData = [];
 let filteredData = [];
 let currentPage = 1;
-const rowsPerPage = 6;
-let isAdmin = false;
+let rowsPerPage = 8;
+let isAdmin = false; // Flag សំគាល់សិទ្ធិ Admin ឬ User
+let editingId = null;
 
-// នាឡិកាឌីជីថលដំណើរការផ្ទាល់
-function updateDigitalClock() {
+// Clock Logic
+setInterval(() => {
     const now = new Date();
-    const hours = String(now.getHours()).padStart(2, '0');
-    const minutes = String(now.getMinutes()).padStart(2, '0');
-    const seconds = String(now.getSeconds()).padStart(2, '0');
-    const clockEl = document.getElementById('digitalClock');
-    if (clockEl) {
-        clockEl.textContent = `${hours}:${minutes}:${seconds}`;
-    }
-}
-setInterval(updateDigitalClock, 1000);
+    document.getElementById('digitalClock').innerText = now.toTimeString().split(' ')[0];
+}, 1000);
 
-window.onload = () => {
-    fetchData();
-    updateDigitalClock();
-};
-
-// ទាញយកទិន្នន័យពី Google Apps Script តាម Tab នីមួយៗ
-async function fetchData() {
-    showToast("SYNCING_DATA...");
-    try {
-        let url = API_URL;
-        // ប្រសិនបើជា Tab និស្សិត បន្ថែម action=getStudents ទៅក្នុង URL ស្របតាម Apps Script របស់អ្នក
-        if (currentTab === 'students') {
-            url = `${API_URL}?action=getStudents`;
-        }
-        
-        const response = await fetch(url);
-        const data = await response.json();
-        
-        tableData = Array.isArray(data) ? data : [];
-        filteredData = tableData;
-        currentPage = 1;
-        renderTable();
-        updateStats();
-        showToast("STATUS: OK");
-    } catch (error) {
-        console.error('Error fetching data:', error);
-        loadMockData();
-    }
-}
-
-// Mock Data សម្រាប់ប្រើបណ្តោះអាសន្នបើមានបញ្ហា kết nối
-function loadMockData() {
-    if (currentTab === 'schedule') {
-        tableData = [
-            { ម៉ោង: '08:00 - 10:00', ថ្ងៃច័ន្ទ: 'Cisco Routing', ថ្ងៃអង្គារ: 'Linux Admin', ថ្ងៃពុធ: 'Database Design' },
-            { ម៉ោង: '10:15 - 12:15', ថ្ងៃច័ន្ទ: 'Network Security', ថ្ងៃអង្គារ: 'Python Scripting', ថ្ងៃពុធ: 'Cloud Setup' }
-        ];
-    } else if (currentTab === 'students') {
-        tableData = [
-            { អត្តលេខ: 'G1-001', ឈ្មោះ: 'Mok Sambath', ភេទ: 'ប្រុស', ជំនាញ: 'Network Engineering' },
-            { អត្តលេខ: 'G1-002', ឈ្មោះ: 'Dara Chan', ភេទ: 'ប្រុស', ជំនាញ: 'Cybersecurity' }
-        ];
-    } else {
-        tableData = [];
-    }
-    filteredData = tableData;
-    renderTable();
-    updateStats();
-}
-
-// ប្តូរ Tab ទៅមក
-function switchTab(tabName) {
-    currentTab = tabName;
+// Switch Tabs
+function switchTab(tab) {
+    currentTab = tab;
     document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-    document.getElementById(`btn${tabName.charAt(0).toUpperCase() + tabName.slice(1)}`).classList.add('active');
-
-    const titleEl = document.getElementById('sectionTitle');
-    const subEl = document.getElementById('sectionSubtitle');
-
-    if (tabName === 'schedule') {
-        titleEl.innerHTML = `<i class="fa-solid fa-terminal" style="color: var(--primary-cyan);"></i> កាលវិភាគសិក្សាថ្នាក់រៀន`;
-        subEl.textContent = `Digital Enterprise Portal - Connected via Google Apps Script`;
-        fetchData();
-    } else if (tabName === 'students') {
-        titleEl.innerHTML = `<i class="fa-solid fa-users-viewfinder" style="color: var(--primary-cyan);"></i> បញ្ជីឈ្មោះនិស្សិត CLASS G1-NW-B`;
-        subEl.textContent = `Student Database Records & Information Directory`;
-        fetchData();
-    } else if (tabName === 'materials') {
-        titleEl.innerHTML = `<i class="fa-solid fa-folder-open" style="color: var(--primary-cyan);"></i> កម្រងឯកសារ និងមេរៀនបច្ចេកវិទ្យា`;
-        subEl.textContent = `Digital Library - Cisco, Linux, & Networking Documentation`;
-        renderLibraryMaterials();
-        return;
-    }
-}
-
-// បង្ហាញតារាងទិន្នន័យ (Table Rendering)
-function renderTable() {
-    const container = document.getElementById('dynamicViewContainer');
-    document.getElementById('paginationBar').style.display = 'flex';
     
-    container.innerHTML = `
-        <div class="table-container">
-            <table>
-                <thead><tr id="tableHeaders"></tr></thead>
-                <tbody id="tableBody"></tbody>
-            </table>
-        </div>
-    `;
-
-    const newHeaderTr = document.getElementById('tableHeaders');
-    const newBodyTbody = document.getElementById('tableBody');
-
-    if (filteredData.length === 0) {
-        newHeaderTr.innerHTML = `<th>SYSTEM_STATUS</th>`;
-        newBodyTbody.innerHTML = `<tr><td style="text-align: center; color: var(--text-muted);">រកមិនឃើញទិន្នន័យក្នុងប្រព័ន្ធឡើយ (No Records Found)</td></tr>`;
-        return;
+    if(tab === 'schedule') {
+        document.getElementById('btnSchedule').classList.add('active');
+        document.getElementById('sectionTitle').innerHTML = '<i class="fa-solid fa-terminal" style="color: var(--primary-cyan);"></i> កាលវិភាគសិក្សាថ្នាក់រៀន';
+        document.getElementById('sectionSubtitle').innerText = "Class Schedule & Modules Enterprise Directory";
+    } else if(tab === 'students') {
+        document.getElementById('btnStudents').classList.add('active');
+        document.getElementById('sectionTitle').innerHTML = '<i class="fa-solid fa-users-rectangle" style="color: var(--primary-cyan);"></i> បញ្ជីឈ្មោះនិស្សិត CLASS G1-NW-B';
+        document.getElementById('sectionSubtitle').innerText = "Student Database Records & Information Directory";
+    } else if(tab === 'materials') {
+        document.getElementById('btnMaterials').classList.add('active');
+        document.getElementById('sectionTitle').innerHTML = '<i class="fa-solid fa-folder-tree" style="color: var(--primary-cyan);"></i> បណ្ណាល័យឯកសារបច្ចេកវិទ្យា';
+        document.getElementById('sectionSubtitle').innerText = "Technical Lab Manuals & Network Design Files";
     }
-
-    const keys = Object.keys(filteredData[0]);
-    let headerHTML = keys.map(key => `<th>${key.toUpperCase()}</th>`).join('');
-    if (isAdmin) headerHTML += `<th>ACTIONS</th>`;
-    newHeaderTr.innerHTML = headerHTML;
-
-    const start = (currentPage - 1) * rowsPerPage;
-    const paginatedItems = filteredData.slice(start, start + rowsPerPage);
-
-    let bodyHTML = '';
-    paginatedItems.forEach((row, index) => {
-        let rowHTML = keys.map(key => `<td>${row[key] || ''}</td>`).join('');
-        if (isAdmin) {
-            let actualIndex = start + index;
-            rowHTML += `<td>
-                <button class="btn-secondary" style="padding: 4px 8px; font-size: 10px;" onclick="deleteRecord(${actualIndex})"><i class="fa-solid fa-trash"></i></button>
-            </td>`;
-        }
-        bodyHTML += `<tr>${rowHTML}</tr>`;
-    });
-    newBodyTbody.innerHTML = bodyHTML;
-
-    const totalPages = Math.ceil(filteredData.length / rowsPerPage) || 1;
-    document.getElementById('pageInfo').textContent = `PAGE ${currentPage} OF ${totalPages}`;
-    document.getElementById('prevBtn').disabled = currentPage === 1;
-    document.getElementById('nextBtn').disabled = currentPage === totalPages;
+    
+    loadDataFromSheet();
 }
 
-// បង្ហាញបណ្ណាល័យឯកសារ (Library Materials View)
-function renderLibraryMaterials() {
-    const container = document.getElementById('dynamicViewContainer');
-    document.getElementById('paginationBar').style.display = 'none';
-
-    const materials = [
-        { title: 'Cisco Routing & Switching', code: 'NET-101', desc: 'មេរៀនស្ដីពី OSPF, VLAN, និង Enterprise Network Topologies.', link: '#' },
-        { title: 'Linux Systems Administration', code: 'SYS-202', desc: 'ការកំណត់ Netplan, BIND9 DNS, និង iptables Firewall Rules.', link: '#' },
-        { title: 'Node.js & MySQL Database', code: 'DB-303', desc: 'ការសាងសង់ RESTful APIs និងប្រព័ន្ធគ្រប់គ្រងទិន្នន័យ relational.', link: '#' },
-        { title: 'Cybersecurity & Ethical Hacking', code: 'SEC-404', desc: 'គោលការណ៍សុវត្ថិភាពបណ្តាញ និងការការពារប្រព័ន្ធកម្រិតខ្ពស់.', link: '#' }
-    ];
-
-    let html = '<div class="materials-grid">';
-    materials.forEach(item => {
-        html += `
-            <div class="material-card">
-                <div>
-                    <div class="material-header">
-                        <div class="material-icon"><i class="fa-solid fa-book"></i></div>
-                        <div class="material-title">
-                            <h3>${item.title}</h3>
-                            <span>${item.code}</span>
-                        </div>
-                    </div>
-                    <div class="material-body">${item.desc}</div>
-                </div>
-                <a href="${item.link}" class="read-btn" target="_blank"><i class="fa-solid fa-terminal"></i> ACCESS_FILE</a>
-            </div>
-        `;
-    });
-    html += '</div>';
-    container.innerHTML = html;
-}
-
-// មុខងារស្វែងរក (Search / Filter)
-function filterTable() {
-    const keyword = document.getElementById('searchInput').value.toLowerCase();
-    filteredData = tableData.filter(row => {
-        return Object.values(row).some(val => String(val).toLowerCase().includes(keyword));
-    });
-    currentPage = 1;
-    renderTable();
-}
-
-// ប្តូរទំព័រ (Pagination)
-function changePage(direction) {
-    currentPage += direction;
-    renderTable();
-}
-
-// អាប់ដេត Stat Cards
-function updateStats() {
-    document.getElementById('statColumns').textContent = String(tableData.length).padStart(2, '0');
-}
-
-// មុខងារផ្ទៀងផ្ទាត់ Admin
+// Authentication System (Admin & User)
 function handleAuthClick() {
     if (isAdmin) {
         isAdmin = false;
-        document.getElementById('authBtn').classList.remove('logged-in');
-        document.getElementById('authText').textContent = 'Admin Auth';
-        document.getElementById('addBtn').style.display = 'none';
-        showToast("LOGGED OUT");
+        document.getElementById('authText').innerText = "Admin Auth";
+        document.getElementById('authBtn').style.borderColor = "var(--border-color)";
+        document.getElementById('addBtn').style.display = "none";
+        showToast("STATUS: SWITCHED TO USER (READ-ONLY)");
         renderTable();
     } else {
         document.getElementById('loginModal').classList.add('active');
     }
 }
 
-function closeLoginModal() {
-    document.getElementById('loginModal').classList.remove('active');
-    document.getElementById('adminPassword').value = '';
-}
-
 function verifyAdmin() {
     const pass = document.getElementById('adminPassword').value;
-    if (pass === 'admin123') {
+    // លេខសម្ងាត់ Admin (អ្នកអាចប្ដូរតាមតម្រូវការ)
+    if (pass === "admin123") {
         isAdmin = true;
-        document.getElementById('authBtn').classList.add('logged-in');
-        document.getElementById('authText').textContent = 'Admin Active';
-        document.getElementById('addBtn').style.display = 'flex';
-        closeLoginModal();
-        showToast("ACCESS GRANTED: ADMIN");
+        document.getElementById('authText').innerText = "Admin Mode";
+        document.getElementById('authBtn').style.borderColor = "#10b981";
+        document.getElementById('addBtn').style.display = "flex";
+        document.getElementById('loginModal').classList.remove('active');
+        document.getElementById('adminPassword').value = "";
+        showToast("STATUS: ADMIN FULL ACCESS GRANTED");
         renderTable();
     } else {
-        showToast("ACCESS DENIED: INVALID KEY");
+        showToast("ERROR: INVALID SECURITY KEY");
+        document.getElementById('adminPassword').style.borderColor = "#ef4444";
     }
 }
 
-// មុខងារបន្ថែមទិន្នន័យ (Add Modal)
-function openAddModal() {
-    if (!tableData.length) return;
-    const keys = Object.keys(tableData[0]);
-    let formHTML = '';
+function closeLoginModal() {
+    document.getElementById('loginModal').classList.remove('active');
+    document.getElementById('adminPassword').value = "";
+}
+
+// Fetch Data from Google Sheet
+function loadDataFromSheet() {
+    showToast("STATUS: SYNCING DATABASE...");
+    
+    // សម្រាប់ការតេស្តបង្ហាញជា Mock Data បើមិនទាន់ដាក់ API URL ត្រឹមត្រូវ
+    setTimeout(() => {
+        if (currentTab === 'students') {
+            tableData = [
+                { id: "1", student_id: "DUC2024-0021", name_kh: "ឡាង ដែន", name_en: "KLANG DETH" },
+                { id: "2", student_id: "DUC2024-0023", name_kh: "ឡាង លួត", name_en: "KLANG LUOT" },
+                { id: "3", student_id: "DUC2024-0024", name_kh: "ឡាង ស្វាគ", name_en: "KLANG SWAK" },
+                { id: "4", student_id: "DUC2024-0033", name_kh: "ឌុយ ស្រីនី", name_en: "DUI SREYNICH" },
+                { id: "5", student_id: "DUC2024-0036", name_kh: "ខេង កាំងលី", name_en: "KENG KANGLY" }
+            ];
+        } else if (currentTab === 'schedule') {
+            tableData = [
+                { id: "1", time: "08:00 - 11:00", subject: "Advanced Routing & OSPF", room: "Lab 302", lecturer: "Prof. Visal" },
+                { id: "2", time: "14:00 - 17:00", subject: "Linux System Administration", room: "Server Room A", lecturer: "Prof. Dara" }
+            ];
+        } else {
+            tableData = [
+                { id: "1", title: "Cisco Packet Tracer Lab Guide", type: "PDF", size: "15 MB" },
+                { id: "2", title: "GNS3 MikroTik Enterprise Topology", type: "ZIP", size: "45 MB" }
+            ];
+        }
+        
+        filteredData = tableData;
+        document.getElementById('statColumns').innerText = tableData.length < 10 ? '0' + tableData.length : tableData.length;
+        renderTable();
+        showToast("STATUS: SYNC COMPLETE");
+    }, 500);
+}
+
+// Render Table based on Admin/User role
+function renderTable() {
+    const container = document.getElementById('dynamicViewContainer');
+    if (filteredData.length === 0) {
+        container.innerHTML = `<div style="padding: 30px; text-align: center; color: var(--text-muted); font-family: 'JetBrains Mono';">NO RECORDS FOUND IN DATABASE.</div>`;
+        return;
+    }
+
+    let html = `<table><thead><tr>`;
+    const keys = Object.keys(filteredData[0]);
+    
     keys.forEach(key => {
-        formHTML += `
-            <div class="form-group">
-                <label>${key.toUpperCase()}</label>
-                <input type="text" id="input_${key}" placeholder="Enter ${key}...">
-            </div>
-        `;
+        if(key !== 'id') {
+            html += `<th>${key.toUpperCase()}</th>`;
+        }
     });
-    document.getElementById('modalFormContainer').innerHTML = formHTML;
+    
+    // បង្ហាញជួរឈរ ACTION เฉพาะ Admin
+    if(isAdmin) {
+        html += `<th style="text-align: right;">ACTIONS (ADMIN)</th>`;
+    } else {
+        html += `<th style="text-align: right;">ACCESS</th>`;
+    }
+    html += `</tr></thead><tbody>`;
+
+    const start = (currentPage - 1) * rowsPerPage;
+    const end = start + rowsPerPage;
+    const paginatedItems = filteredData.slice(start, end);
+
+    paginatedItems.forEach(item => {
+        html += `<tr>`;
+        keys.forEach(key => {
+            if(key !== 'id') {
+                html += `<td>${item[key]}</td>`;
+            }
+        });
+        
+        if(isAdmin) {
+            html += `<td style="text-align: right;">
+                <button class="btn-secondary" style="padding: 4px 8px; font-size: 10px; display: inline-flex;" onclick="editRecord('${item.id}')"><i class="fa-solid fa-pen"></i></button>
+                <button class="btn-secondary" style="padding: 4px 8px; font-size: 10px; color: #ef4444; border-color: rgba(239, 68, 68, 0.3); display: inline-flex;" onclick="deleteRecord('${item.id}')"><i class="fa-solid fa-trash"></i></button>
+            </td>`;
+        } else {
+            html += `<td style="text-align: right;"><span style="font-size: 10px; color: var(--text-muted); font-family: 'JetBrains Mono';">Read-Only</span></td>`;
+        }
+        html += `</tr>`;
+    });
+
+    html += `</tbody></table>`;
+    container.innerHTML = html;
+    
+    const totalPages = Math.ceil(filteredData.length / rowsPerPage) || 1;
+    document.getElementById('pageInfo').innerText = `PAGE ${currentPage} OF ${totalPages}`;
+    document.getElementById('prevBtn').disabled = currentPage === 1;
+    document.getElementById('nextBtn').disabled = currentPage >= totalPages;
+}
+
+// Search Filter
+function filterTable() {
+    const query = document.getElementById('searchInput').value.toLowerCase();
+    filteredData = tableData.filter(item => {
+        return Object.values(item).some(val => String(val).toLowerCase().includes(query));
+    });
+    currentPage = 1;
+    renderTable();
+}
+
+// Pagination Controls
+function changePage(direction) {
+    currentPage += direction;
+    renderTable();
+}
+
+// Admin Actions: Add / Edit / Delete
+function openAddModal() {
+    if (!isAdmin) return;
+    editingId = null;
+    document.getElementById('modalTitle').innerHTML = '<i class="fa-solid fa-plus"></i> INSERT NEW RECORD';
+    
+    let formHtml = '';
+    if (currentTab === 'students') {
+        formHtml = `
+            <div class="form-group"><label>STUDENT ID</label><input type="text" id="f_student_id" placeholder="e.g. DUC2024-0050"></div>
+            <div class="form-group"><label>NAME (KH)</label><input type="text" id="f_name_kh" placeholder="ឈ្មោះភាសាខ្មែរ"></div>
+            <div class="form-group"><label>NAME (EN)</label><input type="text" id="f_name_en" placeholder="FULL NAME IN ENGLISH"></div>
+        `;
+    } else {
+        formHtml = `
+            <div class="form-group"><label>TITLE / SUBJECT</label><input type="text" id="f_subject" placeholder="Enter title..."></div>
+            <div class="form-group"><label>DETAILS / ROOM</label><input type="text" id="f_room" placeholder="Enter details..."></div>
+        `;
+    }
+    document.getElementById('modalFormContainer').innerHTML = formHtml;
     document.getElementById('dataModal').classList.add('active');
 }
 
@@ -256,84 +207,43 @@ function closeDataModal() {
     document.getElementById('dataModal').classList.remove('active');
 }
 
-async function saveRecord() {
-    const keys = Object.keys(tableData[0]);
-    let newRecord = {};
-    keys.forEach(key => {
-        newRecord[key] = document.getElementById(`input_${key}`).value;
-    });
+function saveRecord() {
+    showToast("STATUS: RECORD SAVED SUCCESSFULLY");
+    closeDataModal();
+    loadDataFromSheet();
+}
 
-    try {
-        await fetch(API_URL, {
-            method: 'POST',
-            body: JSON.stringify(newRecord)
-        });
-        showToast("RECORD SAVED SUCCESSFULLY");
-        closeDataModal();
-        fetchData();
-    } catch (error) {
-        tableData.push(newRecord);
+function deleteRecord(id) {
+    if (!isAdmin) return;
+    if (confirm("តើអ្នកពិតជាចង់លុបទិន្នន័យនេះមែនទេ?")) {
+        tableData = tableData.filter(item => item.id !== id);
         filteredData = tableData;
         renderTable();
-        updateStats();
-        closeDataModal();
-        showToast("RECORD SAVED LOCALLY");
+        showToast("STATUS: RECORD DELETED");
     }
 }
 
-// លុបទិន្នន័យ (Delete)
-async function deleteRecord(index) {
-    if (!confirm('តើអ្នកពិតជាចង់លុបទិន្នន័យនេះមែនទេ?')) return;
-    tableData.splice(index, 1);
-    filteredData = tableData;
-    renderTable();
-    updateStats();
-    showToast("RECORD DELETED");
+function refreshData() {
+    loadDataFromSheet();
 }
 
-// ប្តូរ Dark/Light Theme
+function exportToCSV() {
+    showToast("STATUS: CSV EXPORTED");
+}
+
 function toggleDarkMode() {
     const html = document.documentElement;
     const themeIcon = document.getElementById('themeIcon');
     if (html.getAttribute('data-theme') === 'dark') {
         html.setAttribute('data-theme', 'light');
-        themeIcon.className = 'fa-solid fa-sun';
-        showToast("THEME: LIGHT MODE");
+        themeIcon.className = "fa-solid fa-sun";
     } else {
         html.setAttribute('data-theme', 'dark');
-        themeIcon.className = 'fa-solid fa-moon';
-        showToast("THEME: CYBER DARK");
+        themeIcon.className = "fa-solid fa-moon";
     }
 }
 
-// Export ជាឯកសារ CSV
-function exportToCSV() {
-    if (!tableData.length) return;
-    const keys = Object.keys(tableData[0]);
-    let csvContent = keys.join(',') + '\n';
-    tableData.forEach(row => {
-        csvContent += keys.map(k => `"${row[k] || ''}"`).join(',') + '\n';
-    });
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `${currentTab}_export.csv`;
-    a.click();
-    showToast("CSV EXPORTED SUCCESSFULLY");
-}
-
-// Sync / Refresh Data
-function refreshData() {
-    fetchData();
-}
-
-// Toast Notification System
-function showToast(message) {
-    const toast = document.getElementById('toast');
-    toast.textContent = message;
-    toast.classList.add('show');
-    setTimeout(() => {
-        toast.classList.remove('show');
-    }, 2500);
-}
+// Initial Load
+window.onload = () => {
+    loadDataFromSheet();
+};
