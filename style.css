@@ -661,3 +661,530 @@ tbody tr:hover {
     max-width: 100%;
   }
 }
+
+/* =========================================================
+   🚀 ADVANCED UI UPGRADE
+   ========================================================= */
+
+/* ---------- 1. Better Layout ---------- */
+
+.main-container {
+    max-width: 1800px;
+    width: 100%;
+    margin: 0 auto;
+}
+
+/* ---------- 2. Animated Background ---------- */
+
+body::after {
+    content: "";
+    position: fixed;
+    width: 500px;
+    height: 500px;
+    right: -200px;
+    top: 10%;
+    border-radius: 50%;
+    background: rgba(56, 189, 248, 0.06);
+    filter: blur(80px);
+    pointer-events: none;
+    animation: floatingGlow 8s ease-in-out infinite alternate;
+    z-index: -1;
+}
+
+@keyframes floatingGlow {
+    from {
+        transform: translateY(0) scale(1);
+    }
+
+    to {
+        transform: translateY(100px) scale(1.2);
+    }
+}
+
+
+/* ---------- 3. Sidebar Upgrade ---------- */
+
+.sidebar {
+    transition: width 0.3s ease;
+}
+
+.nav-link {
+    position: relative;
+    overflow: hidden;
+}
+
+.nav-link::before {
+    content: "";
+
+    position: absolute;
+
+    left: 0;
+    top: 0;
+
+    width: 3px;
+    height: 100%;
+
+    background: var(--accent-cyan);
+
+    transform: scaleY(0);
+
+    transition: 0.25s;
+}
+
+.nav-link:hover::before {
+    transform: scaleY(1);
+}
+
+.nav-link:hover {
+    padding-left: 20px;
+}
+
+
+/* ---------- 4. Dashboard Header ---------- */
+
+.top-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 20px;
+}
+
+.top-header h1 {
+    position: relative;
+}
+
+.top-header h1::after {
+    content: "";
+
+    display: block;
+
+    width: 50px;
+    height: 3px;
+
+    margin-top: 10px;
+
+    border-radius: 10px;
+
+    background: var(--accent-gradient);
+}
+
+
+/* ---------- 5. Metric Card Premium ---------- */
+
+.metric-card {
+    isolation: isolate;
+}
+
+.metric-card::after {
+    content: "";
+
+    position: absolute;
+
+    width: 150px;
+    height: 150px;
+
+    right: -60px;
+    bottom: -60px;
+
+    border-radius: 50%;
+
+    background:
+        radial-gradient(
+            circle,
+            rgba(56,189,248,0.15),
+            transparent 70%
+        );
+
+    transition: 0.4s;
+
+    z-index: -1;
+}
+
+.metric-card:hover::after {
+    transform: scale(1.5);
+}
+
+.metric-card:hover {
+    transform:
+        translateY(-6px)
+        scale(1.01);
+}
+
+
+/* ---------- 6. Metric Value Animation ---------- */
+
+.metric-value {
+    font-variant-numeric: tabular-nums;
+}
+
+
+/* ---------- 7. Modern Table ---------- */
+
+.table-wrapper {
+    border-radius: 16px;
+    border: 1px solid var(--border-color);
+}
+
+table {
+    overflow: hidden;
+}
+
+thead th {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    backdrop-filter: blur(10px);
+}
+
+tbody tr {
+    transition:
+        background 0.2s ease,
+        transform 0.2s ease;
+}
+
+tbody tr:hover {
+    background:
+        linear-gradient(
+            90deg,
+            rgba(56,189,248,0.08),
+            transparent
+        );
+
+    transform: translateX(4px);
+}
+
+tbody tr:last-child td {
+    border-bottom: none;
+}
+
+
+/* ---------- 8. Better Buttons ---------- */
+
+.btn-upload,
+.btn-primary,
+.btn-download,
+.btn-cancel {
+    min-height: 42px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-upload:active,
+.btn-primary:active,
+.btn-download:active {
+    transform: scale(0.97);
+}
+
+
+/* ---------- 9. Search Upgrade ---------- */
+
+.search-box {
+    transition: 0.25s ease;
+}
+
+.search-box:focus-within {
+    transform: translateY(-2px);
+}
+
+.search-box:focus-within .search-icon {
+    color: var(--accent-cyan);
+    opacity: 1;
+}
+
+
+/* ---------- 10. Card Stagger Animation ---------- */
+
+.metrics-grid .metric-card {
+    animation: cardEnter 0.5s ease backwards;
+}
+
+.metrics-grid .metric-card:nth-child(1) {
+    animation-delay: 0.05s;
+}
+
+.metrics-grid .metric-card:nth-child(2) {
+    animation-delay: 0.1s;
+}
+
+.metrics-grid .metric-card:nth-child(3) {
+    animation-delay: 0.15s;
+}
+
+.metrics-grid .metric-card:nth-child(4) {
+    animation-delay: 0.2s;
+}
+
+@keyframes cardEnter {
+
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+}
+
+
+/* ---------- 11. Loading Skeleton ---------- */
+
+.skeleton {
+    position: relative;
+    overflow: hidden;
+
+    background:
+        rgba(255,255,255,0.04);
+
+    border-radius: 12px;
+}
+
+.skeleton::after {
+    content: "";
+
+    position: absolute;
+
+    inset: 0;
+
+    transform:
+        translateX(-100%);
+
+    background:
+        linear-gradient(
+            90deg,
+            transparent,
+            rgba(255,255,255,0.06),
+            transparent
+        );
+
+    animation:
+        skeletonLoading 1.5s infinite;
+}
+
+@keyframes skeletonLoading {
+
+    100% {
+        transform: translateX(100%);
+    }
+
+}
+
+
+/* ---------- 12. Notification Badge ---------- */
+
+.notification-badge {
+    position: absolute;
+
+    top: -5px;
+    right: -5px;
+
+    width: 18px;
+    height: 18px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    font-size: 9px;
+
+    background: #ef4444;
+
+    color: white;
+
+    border: 2px solid var(--bg-dark);
+
+    animation: badgePulse 2s infinite;
+}
+
+@keyframes badgePulse {
+
+    0% {
+        box-shadow:
+            0 0 0 0
+            rgba(239,68,68,0.6);
+    }
+
+    70% {
+        box-shadow:
+            0 0 0 8px
+            rgba(239,68,68,0);
+    }
+
+    100% {
+        box-shadow:
+            0 0 0 0
+            rgba(239,68,68,0);
+    }
+
+}
+
+
+/* ---------- 13. Empty State ---------- */
+
+.empty-state {
+    padding: 60px 20px;
+
+    text-align: center;
+
+    color: var(--text-muted);
+}
+
+.empty-state .empty-icon {
+    font-size: 48px;
+
+    margin-bottom: 16px;
+
+    opacity: 0.7;
+}
+
+.empty-state h3 {
+    color: var(--text-main);
+
+    margin-bottom: 8px;
+}
+
+
+/* ---------- 14. Scroll To Top Button ---------- */
+
+.scroll-top {
+    position: fixed;
+
+    right: 25px;
+    bottom: 25px;
+
+    width: 45px;
+    height: 45px;
+
+    border-radius: 50%;
+
+    border: 1px solid var(--border-glow);
+
+    background:
+        rgba(15,23,42,0.9);
+
+    color: var(--accent-cyan);
+
+    cursor: pointer;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    opacity: 0;
+
+    pointer-events: none;
+
+    transform: translateY(20px);
+
+    transition: 0.3s;
+
+    backdrop-filter: blur(10px);
+
+    z-index: 999;
+}
+
+.scroll-top.show {
+    opacity: 1;
+
+    pointer-events: auto;
+
+    transform: translateY(0);
+}
+
+.scroll-top:hover {
+    background: var(--accent-gradient);
+
+    color: #020617;
+
+    transform:
+        translateY(-4px);
+}
+
+
+/* ---------- 15. Better Modal ---------- */
+
+.modal-box {
+    animation:
+        modalEnter 0.3s
+        cubic-bezier(0.16,1,0.3,1);
+}
+
+@keyframes modalEnter {
+
+    from {
+        opacity: 0;
+
+        transform:
+            scale(0.9)
+            translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+
+        transform:
+            scale(1)
+            translateY(0);
+    }
+
+}
+
+
+/* ---------- 16. Responsive ---------- */
+
+@media (max-width: 768px) {
+
+    .top-header {
+        flex-direction: column;
+
+        align-items: flex-start;
+    }
+
+    .metric-card:hover {
+        transform: translateY(-3px);
+    }
+
+    .table-wrapper {
+        border-radius: 12px;
+    }
+
+    th,
+    td {
+        padding: 14px;
+    }
+
+    .scroll-top {
+        right: 16px;
+        bottom: 16px;
+    }
+
+}
+
+
+@media (max-width: 480px) {
+
+    .top-header h1 {
+        font-size: 22px;
+    }
+
+    .metric-value {
+        font-size: 26px;
+    }
+
+    .metric-icon {
+        padding: 10px;
+        font-size: 22px;
+    }
+
+    .glass-panel {
+        padding: 14px;
+    }
+
+}
