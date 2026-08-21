@@ -1,4 +1,4 @@
-// Google Apps Script Web App URL (ជំនួសដោយ URL របស់អ្នក)
+// Google Apps Script Web App URL
 const API_URL = "YOUR_GOOGLE_APPS_SCRIPT_WEB_URL_HERE";
 
 let currentTab = 'schedule';
@@ -6,7 +6,7 @@ let tableData = [];
 let filteredData = [];
 let currentPage = 1;
 let rowsPerPage = 8;
-let isAdmin = false; // Flag សំគាល់សិទ្ធិ Admin ឬ User
+let isAdmin = false;
 let editingId = null;
 
 // Clock Logic
@@ -14,6 +14,16 @@ setInterval(() => {
     const now = new Date();
     document.getElementById('digitalClock').innerText = now.toTimeString().split(' ')[0];
 }, 1000);
+
+// Toast Notification Function (បានកែសម្រួលឈ្មោះត្រឹមត្រូវនៅទីនេះ)
+function showToast(message) {
+    const toast = document.getElementById('toast');
+    toast.innerText = message;
+    toast.classList.add('show');
+    setTimeout(() => {
+        toast.classList.remove('show');
+    }, 3000);
+}
 
 // Switch Tabs
 function switchTab(tab) {
@@ -53,7 +63,6 @@ function handleAuthClick() {
 
 function verifyAdmin() {
     const pass = document.getElementById('adminPassword').value;
-    // លេខសម្ងាត់ Admin (អ្នកអាចប្ដូរតាមតម្រូវការ)
     if (pass === "admin123") {
         isAdmin = true;
         document.getElementById('authText').innerText = "Admin Mode";
@@ -78,7 +87,6 @@ function closeLoginModal() {
 function loadDataFromSheet() {
     showToast("STATUS: SYNCING DATABASE...");
     
-    // សម្រាប់ការតេស្តបង្ហាញជា Mock Data បើមិនទាន់ដាក់ API URL ត្រឹមត្រូវ
     setTimeout(() => {
         if (currentTab === 'students') {
             tableData = [
@@ -124,7 +132,6 @@ function renderTable() {
         }
     });
     
-    // បង្ហាញជួរឈរ ACTION เฉพาะ Admin
     if(isAdmin) {
         html += `<th style="text-align: right;">ACTIONS (ADMIN)</th>`;
     } else {
