@@ -1,7 +1,16 @@
 // Google Sheets Web App Endpoint ថ្មី
 const GOOGLE_SHEET_API_URL = "https://script.google.com/macros/s/AKfycbwzKJ8fwImxRdKwSz8QJAgnD5ek-CgeV2is10aZY2l7KeI2ChydmwXA4NkupSQrj0mj/exec";
 
-// អថេរសម្រាប់រក្សាទុកទិន្នន័យសិស្សដែល Fetch បានពី Google Sheets សម្រាប់ប្រើប្រាស់ពេល Search
+// ==========================================
+// 1. AUTHENTICATION & ROLE CONFIGURATION
+// ==========================================
+const ADMIN_USER = "admin";
+const ADMIN_PASS = "admin123";
+
+// ទាញយក Role ពី LocalStorage (Default គឺ 'user')
+let currentRole = localStorage.getItem("userRole") || "user";
+
+// អថេរសម្រាប់រក្សាទុកទិន្នន័យសិស្ស
 let studentList = [];
 
 // ទិន្នន័យគំរូដើមដំបូងសម្រាប់ Materials
@@ -13,9 +22,13 @@ let materialsList = JSON.parse(localStorage.getItem("materialsData")) || [
 document.addEventListener("DOMContentLoaded", () => {
   setupNavigation();
   fetchSchedule();
-  fetchStudents(); // ហៅអនុគមន៍ទាញយកទិន្នន័យសិស្សពី Google Sheets
+  fetchStudents();
   setupSearch();
   
+  // ដំណើរការប្រព័ន្ធ Auth & Permissions
+  setupAuthEvents();
+  updateRoleUI();
+
   // ដំណើរការផ្នែក Materials
   renderMaterials(materialsList);
   setupMaterialsForm();
@@ -40,7 +53,92 @@ function setupNavigation() {
 }
 
 /* =========================================================
-   Fetch Schedule Data from Google Sheets
+   2. AUTHENTICATION LOGIC (ADMIN vs USER)
+   ========================================================= */
+function setupAuthEvents() {
+  const authBtn = document.getElementById("auth-btn");
+  const loginModal = document.getElementById("login-modal");
+  const closeModalBtn = document.getElementById("close-modal-btn");
+  const loginForm = document.getElementById("login-form");
+  const loginError = document.getElementById("login-error");
+
+  if (authBtn) {
+    authBtn.addEventListener("click", () => {
+      if (currentRole === "admin") {
+        // Logout Action
+        currentRole = "user";
+        localStorage.setItem("userRole", "user");
+        updateRoleUI();
+        renderMaterials(materialsList);
+      } else {
+        // Open Login Modal
+        if (loginModal) {
+          loginModal.style.display = "flex";
+          if (loginError) loginError.style.display = "none";
+        }
+      }
+    });
+  }
+
+  if (closeModalBtn && loginModal) {
+    closeModalBtn.addEventListener("click", () => {
+      loginModal.style.display = "none";
+    });
+  }
+
+  if (loginForm) {
+    loginForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const u = document.getElementById("login-user").value;
+      const p = document.getElementById("login-pass").value;
+
+      if (u === ADMIN_USER && p === ADMIN_PASS) {
+        currentRole = "admin";
+        localStorage.setItem("userRole", "admin");
+        if (loginModal) loginModal.style.display = "none";
+        loginForm.reset();
+        updateRoleUI();
+        renderMaterials(materialsList);
+      } else {
+        if (loginError) loginError.style.display = "block";
+      }
+    });
+  }
+}
+
+function updateRoleUI() {
+  const roleBadge = document.getElementById("role-badge");
+  const authBtn = document.getElementById("auth-btn");
+  const uploadPanel = document.getElementById("upload-panel");
+  const adminOnlyElements = document.querySelectorAll(".admin-only");
+
+  if (currentRole === "admin") {
+    if (roleBadge) {
+      roleBadge.textContent = "ADMIN";
+      roleBadge.style.background = "rgba(16, 185, 129, 0.2)";
+      roleBadge.style.color = "#10b981";
+    }
+    if (authBtn) authBtn.textContent = "🚪 Logout";
+    
+    // បង្ហាញ Panel សម្រាប់ Admin
+    if (uploadPanel) uploadPanel.style.display = "block";
+    adminOnlyElements.forEach(el => el.style.display = "block");
+  } else {
+    if (roleBadge) {
+      roleBadge.textContent = "USER";
+      roleBadge.style.background = "rgba(148, 163, 184, 0.2)";
+      roleBadge.style.color = "#94a3b8";
+    }
+    if (authBtn) authBtn.textContent = "🔑 Login Admin";
+    
+    // លាក់ Panel សម្រាប់ User ធម្មតា
+    if (uploadPanel) uploadPanel.style.display = "none";
+    adminOnlyElements.forEach(el => el.style.display = "none");
+  }
+}
+
+/* =========================================================
+   3. FETCH SCHEDULE DATA FROM GOOGLE SHEETS
    ========================================================= */
 function fetchSchedule() {
   const tbody = document.getElementById("schedule-body");
@@ -49,11 +147,14 @@ function fetchSchedule() {
   const daysMap = { 0: "អាទិត្យ", 1: "ច័ន្ទ", 2: "អង្គារ", 3: "ពុធ", 4: "ព្រហស្បតិ៍", 5: "សុក្រ", 6: "សៅរ៍" };
   const todayKhmer = daysMap[new Date().getDay()];
 
-  tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color: var(--text-muted);">កំពុងភ្ជាប់ទៅកាន់ប្រព័ន្ធ Google Sheets...</td></tr>`;
+  if (tbody) {
+    tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color: var(--text-muted);">កំពុងភ្ជាប់ទៅកាន់ប្រព័ន្ធ Google Sheets...</td></tr>`;
+  }
 
   fetch(`${GOOGLE_SHEET_API_URL}?action=getSchedule`, { redirect: "follow" })
     .then(res => res.json())
     .then(data => {
+      if (!tbody) return;
       tbody.innerHTML = "";
       if (!data || data.length === 0 || data.error) {
         tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;">ពុំមានទិន្នន័យកាលវិភាគឡើយ</td></tr>`;
@@ -81,24 +182,28 @@ function fetchSchedule() {
     })
     .catch(err => {
       console.error(err);
-      tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:#f87171;">ការភ្ជាប់បានបរាជ័យ!</td></tr>`;
+      if (tbody) {
+        tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:#f87171;">ការភ្ជាប់បានបរាជ័យ!</td></tr>`;
+      }
     });
 }
 
 /* =========================================================
-   Fetch Students Data from Google Sheets
+   4. FETCH STUDENTS DATA FROM GOOGLE SHEETS
    ========================================================= */
 function fetchStudents() {
   const tbody = document.getElementById("student-body");
   const totalStudentsEl = document.getElementById("total-students");
 
-  tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color: var(--text-muted);">កំពុងទាញយកទិន្នន័យសិស្សពី Google Sheets...</td></tr>`;
+  if (tbody) {
+    tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color: var(--text-muted);">កំពុងទាញយកទិន្នន័យសិស្សពី Google Sheets...</td></tr>`;
+  }
 
   fetch(`${GOOGLE_SHEET_API_URL}?action=getStudents`, { redirect: "follow" })
     .then(res => res.json())
     .then(data => {
       if (data.error) {
-        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:#f87171;">មិនមាន Tab ឈ្មោះ "Students" ក្នុង Google Sheet ឡើយ!</td></tr>`;
+        if (tbody) tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:#f87171;">មិនមាន Tab ឈ្មោះ "Students" ក្នុង Google Sheet ឡើយ!</td></tr>`;
         return;
       }
 
@@ -111,12 +216,15 @@ function fetchStudents() {
     })
     .catch(err => {
       console.error(err);
-      tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:#f87171;">មិនអាចទាញយកទិន្នន័យសិស្សបានឡើយ!</td></tr>`;
+      if (tbody) {
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:#f87171;">មិនអាចទាញយកទិន្នន័យសិស្សបានឡើយ!</td></tr>`;
+      }
     });
 }
 
 function renderStudents(data) {
   const tbody = document.getElementById("student-body");
+  if (!tbody) return;
   tbody.innerHTML = "";
 
   if (!data || data.length === 0) {
@@ -155,7 +263,7 @@ function setupSearch() {
 }
 
 /* =========================================================
-   Materials Functions (Render, Add, & Search)
+   5. MATERIALS FUNCTIONS (RENDER, ADD, DELETE & SEARCH)
    ========================================================= */
 function renderMaterials(data) {
   const container = document.getElementById("materials-list");
@@ -173,11 +281,25 @@ function renderMaterials(data) {
         <span class="badge-type">${m.type}</span>
       </div>
       <div class="material-title">${m.title}</div>
-      <a href="${m.url}" target="_blank" class="btn-download">
-        📥 ទាញយកឯកសារ
-      </a>
+      <div style="display: flex; gap: 8px; margin-top: 12px;">
+        <a href="${m.url}" target="_blank" class="btn-download" style="flex: 1;">
+          📥 ទាញយកឯកសារ
+        </a>
+        ${currentRole === "admin" ? `<button onclick="deleteMaterial(${m.id})" class="btn-delete-mat" title="លុបមេរៀន">🗑️</button>` : ""}
+      </div>
     </div>
   `).join("");
+}
+
+// អនុគមន៍លុបមេរៀន (សម្រាប់តែ Admin)
+function deleteMaterial(id) {
+  if (currentRole !== "admin") return;
+  
+  if (confirm("តើអ្នកពិតជាចង់លុបឯកសារមេរៀននេះមែនទេ?")) {
+    materialsList = materialsList.filter(m => m.id !== id);
+    localStorage.setItem("materialsData", JSON.stringify(materialsList));
+    renderMaterials(materialsList);
+  }
 }
 
 function setupMaterialsForm() {
@@ -186,6 +308,12 @@ function setupMaterialsForm() {
 
   form.addEventListener("submit", (e) => {
     e.preventDefault();
+
+    // ពិនិត្យសិទ្ធិ
+    if (currentRole !== "admin") {
+      alert("មានតែ Admin ប៉ុណ្ណោះដែលអាចបន្ថែមមេរៀនបាន!");
+      return;
+    }
 
     const title = document.getElementById("doc-title").value;
     const subject = document.getElementById("doc-subject").value;
