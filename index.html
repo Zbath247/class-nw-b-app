@@ -4,95 +4,109 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CLASS G1-NW-B | Digital Enterprise Portal</title>
-    <!-- Google Fonts & FontAwesome 6 -->
-    <link href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Kantumruy+Pro:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+
     <div class="cyber-grid-bg"></div>
     <div class="ambient-glow"></div>
-    
+
     <div class="app-container">
-        <!-- Digital Header -->
+        <!-- University Enterprise Header -->
         <header class="app-header">
             <div class="brand-section">
                 <div class="logo-container">
-                    <img src="logo.png" alt="DIGITAL UNIVERSITY OF CAMBODIA Logo" class="university-logo">
+                    <img src="logo.png" alt="University Logo" class="university-logo" onerror="this.src='https://cdn-icons-png.flaticon.com/512/3135/3135715.png'">
                 </div>
                 <div>
-                    <div class="digital-badge">DIGITAL UNIVERSITY OF CAMBODIA</div>
+                    <div class="digital-badge">DIGITAL UNIVERSITY PORTAL</div>
                     <h1>CLASS G1-NW-B</h1>
                 </div>
             </div>
+            
             <div class="header-actions">
                 <div class="digital-clock" id="digitalClock">00:00:00</div>
-                <button class="icon-btn" onclick="toggleDarkMode()" title="ប្តូរទម្រង់ពណ៌"><i id="themeIcon" class="fa-solid fa-moon"></i></button>
-                <button id="authBtn" class="admin-login-btn" onclick="handleAuthClick()"><i class="fa-solid fa-fingerprint"></i> <span id="authText">Admin Auth</span></button>
+                <button class="icon-btn" onclick="toggleDarkMode()" title="Toggle Theme">
+                    <i class="fa-solid fa-moon" id="themeIcon"></i>
+                </button>
+                <button class="admin-login-btn" id="authBtn" onclick="handleAuthClick()">
+                    <i class="fa-solid fa-shield-halved"></i> <span id="authText">Admin Auth</span>
+                </button>
             </div>
         </header>
 
-        <!-- Digital Navigation Tabs -->
+        <!-- Navigation System Tabs -->
         <nav class="nav-tabs">
-            <button id="btnSchedule" class="tab-btn active" onclick="switchTab('schedule')">
-                <i class="fa-solid fa-calendar-week"></i> <span>SCHEDULE.exe</span>
+            <button class="tab-btn active" id="btnSchedule" onclick="switchTab('schedule')">
+                <i class="fa-solid fa-calendar-days"></i> SCHEDULE.exe
             </button>
-            <button id="btnStudents" class="tab-btn" onclick="switchTab('students')">
-                <i class="fa-solid fa-users-viewfinder"></i> <span>STUDENTS.db</span>
+            <button class="tab-btn" id="btnStudents" onclick="switchTab('students')">
+                <i class="fa-solid fa-users-rectangle"></i> STUDENTS.db
             </button>
-            <button id="btnMaterials" class="tab-btn" onclick="switchTab('materials')">
-                <i class="fa-solid fa-folder-open"></i> <span>LIBRARY.lib</span>
+            <button class="tab-btn" id="btnMaterials" onclick="switchTab('materials')">
+                <i class="fa-solid fa-folder-tree"></i> LIBRARY.lib
             </button>
         </nav>
 
-        <!-- Digital Stats Grid -->
-        <div class="stats-grid">
+        <!-- University Analytics & Modules Stats -->
+        <section class="stats-grid">
             <div class="stat-card">
-                <div class="stat-info">
-                    <span class="stat-label">MODULES COUNT</span>
-                    <h2 id="statColumns">05</h2>
+                <div>
+                    <span class="stat-label">ACTIVE MODULES</span>
+                    <h2>05 <span style="font-size: 13px; color: var(--primary-cyan);">UNITS</span></h2>
                 </div>
-                <div class="stat-icon-box"><i class="fa-solid fa-cube"></i></div>
-            </div>
-            <div class="stat-card highlight-card">
-                <div class="stat-info">
-                    <span class="stat-label">SECURITY PROTOCOL</span>
-                    <h2 class="active-status">SECURE</h2>
+                <div class="stat-icon-box pulse">
+                    <i class="fa-solid fa-cube"></i>
                 </div>
-                <div class="stat-icon-box pulse"><i class="fa-solid fa-shield-halved"></i></div>
             </div>
-        </div>
+            <div class="stat-card">
+                <div>
+                    <span class="stat-label">DATABASE RECORDS</span>
+                    <h2 id="statColumns" class="active-status">00</h2>
+                </div>
+                <div class="stat-icon-box">
+                    <i class="fa-solid fa-database"></i>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div>
+                    <span class="stat-label">SYSTEM SECURITY</span>
+                    <h2 style="color: #10b981;">SECURE</h2>
+                </div>
+                <div class="stat-icon-box" style="color: #10b981; background: rgba(16, 185, 129, 0.08); border-color: rgba(16, 185, 129, 0.2);">
+                    <i class="fa-solid fa-shield-check"></i>
+                </div>
+            </div>
+        </section>
 
-        <!-- Main Workspace -->
+        <!-- Dynamic Main Workspace -->
         <main class="main-content">
             <div class="section-header">
                 <h2 id="sectionTitle"><i class="fa-solid fa-terminal" style="color: var(--primary-cyan);"></i> កាលវិភាគសិក្សាថ្នាក់រៀន</h2>
-                <p id="sectionSubtitle">Digital Enterprise Portal - Connected via Google Sheets API</p>
+                <p id="sectionSubtitle">Digital Enterprise Portal - Connected via Google Apps Script</p>
             </div>
 
-            <!-- Controls Bar -->
+            <!-- Query & Controls Bar -->
             <div class="controls-bar">
                 <div class="search-box">
-                    <i class="fa-solid fa-terminal"></i>
-                    <input type="text" id="searchInput" onkeyup="filterTable()" placeholder="ស្វែងរកទិន្នន័យតាមប្រព័ន្ធ CLI...">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" id="searchInput" placeholder="ស្វែងរកទិន្នន័យក្នុងប្រព័ន្ធ (Query Database)..." oninput="filterTable()">
                 </div>
                 <div class="action-buttons">
-                    <button class="btn-primary" id="addBtn" onclick="openAddModal()" style="display: none;"><i class="fa-solid fa-plus"></i> បន្ថែម</button>
-                    <button class="btn-secondary" onclick="refreshData()" title="Sync Data"><i class="fa-solid fa-rotate"></i></button>
-                    <button class="btn-secondary" onclick="exportToCSV()" title="Export CSV"><i class="fa-solid fa-download"></i></button>
+                    <button class="btn-secondary" onclick="refreshData()" title="Refresh Data"><i class="fa-solid fa-rotate"></i> Sync</button>
+                    <button class="btn-secondary" onclick="exportToCSV()" title="Export CSV"><i class="fa-solid fa-download"></i> Export</button>
+                    <button class="btn-primary" id="addBtn" onclick="openAddModal()" style="display: none;"><i class="fa-solid fa-plus"></i> Add Record</button>
                 </div>
             </div>
 
-            <!-- Dynamic View Container (Table or Grid) -->
+            <!-- Dynamic Data View Container -->
             <div id="dynamicViewContainer">
-                <div class="table-container">
-                    <table>
-                        <thead>
-                            <tr id="tableHeaders"></tr>
-                        </thead>
-                        <tbody id="tableBody"></tbody>
-                    </table>
-                </div>
+                <!-- Data will be injected here via script.js -->
             </div>
 
             <!-- Pagination Bar -->
@@ -100,53 +114,54 @@
                 <span id="pageInfo">PAGE 1 OF 1</span>
                 <div class="pagination-btns">
                     <button id="prevBtn" onclick="changePage(-1)" disabled><i class="fa-solid fa-chevron-left"></i></button>
-                    <button id="nextBtn" onclick="changePage(1)" disabled><i class="fa-solid fa-chevron-right"></i></button>
+                    <button id="nextBtn" onclick="changePage(1)"><i class="fa-solid fa-chevron-right"></i></button>
                 </div>
             </div>
         </main>
     </div>
 
-    <!-- Admin Login Modal -->
-    <div id="loginModal" class="modal-overlay">
+    <!-- Admin Authentication Modal -->
+    <div class="modal-overlay" id="loginModal">
         <div class="modal-card">
             <div class="modal-header">
-                <h3><i class="fa-solid fa-terminal"></i> SECURE_LOGIN</h3>
-                <button class="close-btn" onclick="closeLoginModal()"><i class="fa-solid fa-xmark"></i></button>
+                <h3><i class="fa-solid fa-key"></i> ADMIN AUTHENTICATION</h3>
+                <button class="close-btn" onclick="closeLoginModal()">&times;</button>
             </div>
             <div class="modal-body">
-                <p>បញ្ចូល Admin Security Key ដើម្បីផ្ទៀងផ្ទាត់សិទ្ធិ៖</p>
-                <div class="search-box" style="margin-top: 15px;">
-                    <i class="fa-solid fa-key"></i>
-                    <input type="password" id="adminPassword" placeholder="Enter key..." style="width: 100%;">
+                <p style="margin-bottom: 14px;">សូមបញ្ចូលលេខសម្ងាត់រដ្ឋបាលដើម្បីចូលកាន់ប្រព័ន្ធគ្រប់គ្រងទិន្នន័យ៖</p>
+                <div class="form-group">
+                    <label>ADMIN PASSWORD</label>
+                    <input type="password" id="adminPassword" placeholder="Enter security key..." onkeypress="if(event.key === 'Enter') verifyAdmin()">
                 </div>
             </div>
             <div class="modal-footer">
-                <button class="btn-secondary" onclick="closeLoginModal()">CANCEL</button>
-                <button class="btn-primary" onclick="verifyAdmin()">AUTHENTICATE</button>
+                <button class="btn-secondary" onclick="closeLoginModal()">Cancel</button>
+                <button class="btn-primary" onclick="verifyAdmin()">Authenticate</button>
             </div>
         </div>
     </div>
 
-    <!-- Add/Edit Modal -->
-    <div id="dataModal" class="modal-overlay">
-        <div class="modal-card" style="max-width: 450px;">
+    <!-- Add/Edit Record Modal -->
+    <div class="modal-overlay" id="dataModal">
+        <div class="modal-card">
             <div class="modal-header">
-                <h3 id="modalTitle"><i class="fa-solid fa-terminal"></i> ADD_RECORD</h3>
-                <button class="close-btn" onclick="closeDataModal()"><i class="fa-solid fa-xmark"></i></button>
+                <h3><i class="fa-solid fa-pen-to-square"></i> INSERT NEW RECORD</h3>
+                <button class="close-btn" onclick="closeDataModal()">&times;</button>
             </div>
-            <div class="modal-body" id="modalFormContainer" style="max-height: 350px; overflow-y: auto; padding-right: 5px;">
+            <div class="modal-body" id="modalFormContainer">
                 <!-- Form fields injected dynamically -->
             </div>
             <div class="modal-footer">
-                <button class="btn-secondary" onclick="closeDataModal()">CANCEL</button>
-                <button class="btn-primary" onclick="saveRecord()">EXECUTE_SAVE</button>
+                <button class="btn-secondary" onclick="closeDataModal()">Cancel</button>
+                <button class="btn-primary" onclick="saveRecord()">Save to Sheet</button>
             </div>
         </div>
     </div>
 
-    <!-- Toast Notification -->
-    <div id="toast" class="toast"></div>
+    <!-- Toast Notifications -->
+    <div class="toast" id="toast">STATUS: OK</div>
 
+    <!-- Application Script -->
     <script src="script.js"></script>
 </body>
 </html>
