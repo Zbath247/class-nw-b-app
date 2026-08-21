@@ -1,5 +1,5 @@
-// SheetDB API URL (ជំនួសដោយ Endpoint របស់អ្នក)
-const API_URL = 'https://sheetdb.io/api/v1/your_api_id_here'; 
+// Google Apps Script Web App URL របស់អ្នក
+const API_URL = 'https://script.google.com/macros/s/AKfycbwzKJ8fwImxRdKwSz8QJAgnD5ek-CgeV2is10aZY2l7KeI2ChydmwXA4NkupSQrj0mj/exec'; 
 
 let currentTab = 'schedule';
 let tableData = [];
@@ -22,21 +22,18 @@ function updateDigitalClock() {
 setInterval(updateDigitalClock, 1000);
 
 window.onload = () => {
-    fetchData('');
+    fetchData();
     updateDigitalClock();
 };
 
-// ទាញយកទិន្នន័យពី SheetDB
-async function fetchData(query = '') {
+// ទាញយកទិន្នន័យពី Google Apps Script
+async function fetchData() {
     showToast("SYNCING_DATA...");
     try {
-        let url = API_URL;
-        if (query) {
-            url = `${API_URL}/search?${query}`;
-        }
-        const response = await fetch(url);
+        const response = await fetch(API_URL);
         const data = await response.json();
-        tableData = Array.isArray(data) ? data : [];
+        // បែងចែកទិន្នន័យតាម Tab ប្រសិនបើ Google Script ส่งมาគ្រប់ Tab ឬទាញយកទូទៅ
+        tableData = Array.isArray(data) ? data : (data[currentTab] || []);
         filteredData = tableData;
         currentPage = 1;
         renderTable();
@@ -44,12 +41,11 @@ async function fetchData(query = '') {
         showToast("STATUS: OK");
     } catch (error) {
         console.error('Error fetching data:', error);
-        // Fallback Mock Data ប្រសិនបើមិនទាន់ភ្ជាប់ API ពិតប្រាកដ
         loadMockData();
     }
 }
 
-// Mock Data សម្រាប់ពេលកំពុង ಟೆਸਟ (Testing)
+// Mock Data សម្រាប់ប្រើបណ្តោះអាសន្នបើមានបញ្ហា kết nối
 function loadMockData() {
     if (currentTab === 'schedule') {
         tableData = [
@@ -80,12 +76,12 @@ function switchTab(tabName) {
 
     if (tabName === 'schedule') {
         titleEl.innerHTML = `<i class="fa-solid fa-terminal" style="color: var(--primary-cyan);"></i> កាលវិភាគសិក្សាថ្នាក់រៀន`;
-        subEl.textContent = `Digital Enterprise Portal - Connected via Google Sheets API`;
-        fetchData('');
+        subEl.textContent = `Digital Enterprise Portal - Connected via Google Apps Script`;
+        fetchData();
     } else if (tabName === 'students') {
         titleEl.innerHTML = `<i class="fa-solid fa-users-viewfinder" style="color: var(--primary-cyan);"></i> បញ្ជីឈ្មោះនិស្សិត CLASS G1-NW-B`;
         subEl.textContent = `Student Database Records & Information Directory`;
-        fetchData('');
+        fetchData();
     } else if (tabName === 'materials') {
         titleEl.innerHTML = `<i class="fa-solid fa-folder-open" style="color: var(--primary-cyan);"></i> កម្រងឯកសារ និងមេរៀនបច្ចេកវិទ្យា`;
         subEl.textContent = `Digital Library - Cisco, Linux, & Networking Documentation`;
@@ -96,8 +92,6 @@ function switchTab(tabName) {
 
 // បង្ហាញតារាងទិន្នន័យ (Table Rendering)
 function renderTable() {
-    const headerTr = document.getElementById('tableHeaders');
-    const bodyTbody = document.getElementById('tableBody');
     const container = document.getElementById('dynamicViewContainer');
     
     container.innerHTML = `
@@ -118,13 +112,11 @@ function renderTable() {
         return;
     }
 
-    // បង្កើត Headers ស្វ័យប្រវត្តិពី Keys របស់ Object
     const keys = Object.keys(filteredData[0]);
     let headerHTML = keys.map(key => `<th>${key.toUpperCase()}</th>`).join('');
     if (isAdmin) headerHTML += `<th>ACTIONS</th>`;
     newHeaderTr.innerHTML = headerHTML;
 
-    // Pagination Calculation
     const start = (currentPage - 1) * rowsPerPage;
     const paginatedItems = filteredData.slice(start, start + rowsPerPage);
 
@@ -141,7 +133,6 @@ function renderTable() {
     });
     newBodyTbody.innerHTML = bodyHTML;
 
-    // Update Pagination Info
     const totalPages = Math.ceil(filteredData.length / rowsPerPage) || 1;
     document.getElementById('pageInfo').textContent = `PAGE ${currentPage} OF ${totalPages}`;
     document.getElementById('prevBtn').disabled = currentPage === 1;
@@ -155,8 +146,8 @@ function renderLibraryMaterials() {
 
     const materials = [
         { title: 'Cisco Routing & Switching', code: 'NET-101', desc: 'មេរៀនស្ដីពី OSPF, VLAN, និង Enterprise Network Topologies.', link: '#' },
-        { title: 'Linux Systems Administration', code: 'SYS-202', desc: 'ការកំណត់ Netplan, BIND9 DNS, និង iptables Firewall Rules.', link: '#' },
-        { title: 'Node.js & MySQL Database', code: 'DB-303', desc: 'ការសាងសង់ RESTful APIs និងប្រព័ន្ធគ្រប់គ្រងទិន្នន័យ relational.', link: '#' },
+        { title: 'Linux Systems Administration', code: 'SYS-202', desc: 'การកំណត់ Netplan, BIND9 DNS, និង iptables Firewall Rules.', link: '#' },
+        { title: 'Node.js & MySQL Database', code: 'DB-303', desc: 'การសាងសង់ RESTful APIs និងប្រព័ន្ធគ្រប់គ្រងទិន្នន័យ relational.', link: '#' },
         { title: 'Cybersecurity & Ethical Hacking', code: 'SEC-404', desc: 'គោលការណ៍សុវត្ថិភាពបណ្តាញ និងការការពារប្រព័ន្ធកម្រិតខ្ពស់.', link: '#' }
     ];
 
@@ -182,7 +173,6 @@ function renderLibraryMaterials() {
     container.innerHTML = html;
 }
 
-// មុខងារស្វែងរក (Search / Filter)
 function filterTable() {
     const keyword = document.getElementById('searchInput').value.toLowerCase();
     filteredData = tableData.filter(row => {
@@ -192,18 +182,15 @@ function filterTable() {
     renderTable();
 }
 
-// ប្តូរទំព័រ (Pagination)
 function changePage(direction) {
     currentPage += direction;
     renderTable();
 }
 
-// អាប់ដេត Stat Cards
 function updateStats() {
     document.getElementById('statColumns').textContent = String(tableData.length).padStart(2, '0');
 }
 
-// មុខងារផ្ទៀងផ្ទាត់ Admin
 function handleAuthClick() {
     if (isAdmin) {
         isAdmin = false;
@@ -224,7 +211,6 @@ function closeLoginModal() {
 
 function verifyAdmin() {
     const pass = document.getElementById('adminPassword').value;
-    // កំណត់ Password របស់អ្នកនៅទីនេះ (ឧទាហរណ៍: admin123)
     if (pass === 'admin123') {
         isAdmin = true;
         document.getElementById('authBtn').classList.add('logged-in');
@@ -238,7 +224,6 @@ function verifyAdmin() {
     }
 }
 
-// មុខងារបន្ថែមទិន្នន័យ (Add Modal)
 function openAddModal() {
     if (!tableData.length) return;
     const keys = Object.keys(tableData[0]);
@@ -269,14 +254,12 @@ async function saveRecord() {
     try {
         await fetch(API_URL, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ data: newRecord })
+            body: JSON.stringify(newRecord)
         });
         showToast("RECORD SAVED SUCCESSFULLY");
         closeDataModal();
-        fetchData('');
+        fetchData();
     } catch (error) {
-        // Fallback ប្រសិនបើមិនទាន់ต่อ API
         tableData.push(newRecord);
         filteredData = tableData;
         renderTable();
@@ -286,7 +269,6 @@ async function saveRecord() {
     }
 }
 
-// លុបទិន្នន័យ (Delete)
 async function deleteRecord(index) {
     if (!confirm('តើអ្នកពិតជាចង់លុបទិន្នន័យនេះមែនទេ?')) return;
     tableData.splice(index, 1);
@@ -296,7 +278,6 @@ async function deleteRecord(index) {
     showToast("RECORD DELETED");
 }
 
-// ប្តូរ Dark/Light Theme
 function toggleDarkMode() {
     const html = document.documentElement;
     const themeIcon = document.getElementById('themeIcon');
@@ -311,7 +292,6 @@ function toggleDarkMode() {
     }
 }
 
-// Export ជាឯកសារ CSV
 function exportToCSV() {
     if (!tableData.length) return;
     const keys = Object.keys(tableData[0]);
@@ -328,12 +308,10 @@ function exportToCSV() {
     showToast("CSV EXPORTED SUCCESSFULLY");
 }
 
-// Sync / Refresh Data
 function refreshData() {
-    fetchData('');
+    fetchData();
 }
 
-// Toast Notification System
 function showToast(message) {
     const toast = document.getElementById('toast');
     toast.textContent = message;
