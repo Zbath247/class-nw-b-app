@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="km">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Class NW_B Dashboard</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="sidebar">
+    <h2>Class NW_B</h2>
+    <ul>
+      <li><a href="#" class="active">កាលវិភាគ (Schedule)</a></li>
+      <li><a href="#">វត្តមាន (Attendance)</a></li>
+      <li><a href="#">មេរៀន (Materials)</a></li>
+    </ul>
+  </div>
+
+  <div class="main-content">
+    <header>
+      <h1>តារាងកាលវិភាគសិក្សា - ថ្នាក់ NW_B</h1>
+    </header>
+
+    <div class="card-container">
+      <div class="card">
+        <h3>មុខវិជ្ជាសរុប</h3>
+        <p id="total-subjects">0</p>
+      </div>
+      <div class="card">
+        <h3>ស្ថានភាពថ្នាក់</h3>
+        <p class="status">ដំណើរការធម្មតា</p>
+      </div>
+    </div>
+
+    <section class="schedule-section">
+      <h2>កាលវិភាគប្រចាំសប្តាហ៍</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>ថ្ងៃ</th>
+            <th>ម៉ោង</th>
+            <th>មុខវិជ្ជា</th>
+            <th>បន្ទប់</th>
+            <th>គ្រូបង្រៀន</th>
+          </tr>
+        </thead>
+        <tbody id="schedule-body">
+          <!-- ទិន្នន័យទាញចេញពី Google Sheet តាមរយៈ JavaScript -->
+        </tbody>
+      </table>
+    </section>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
