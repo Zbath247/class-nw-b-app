@@ -24,6 +24,12 @@
       </div>
     </div>
 
+    <!-- User Profile & Auth Status Panel -->
+    <div class="auth-status-card" id="auth-status-card">
+      <span class="user-badge" id="role-badge">USER</span>
+      <button id="auth-btn" class="btn-auth-toggle">🔑 Login Admin</button>
+    </div>
+
     <nav class="nav-menu">
       <a href="#" id="menu-schedule" class="nav-link active">
         <span class="icon">📅</span> កាលវិភាគ (Schedule)
@@ -160,10 +166,10 @@
         </div>
       </header>
 
-      <!-- Form សម្រាប់ Upload/បញ្ចូលមេរៀន -->
-      <div class="glass-panel" style="margin-bottom: 24px;">
+      <!-- Form សម្រាប់ Upload/បញ្ចូលមេរៀន (បង្ហាញតែពេលជា Admin) -->
+      <div id="upload-panel" class="glass-panel admin-only" style="margin-bottom: 24px; display: none;">
         <div class="panel-header">
-          <h2>📤 បន្ថែមឯកសារមេរៀនថ្មី</h2>
+          <h2>📤 បន្ថែមឯកសារមេរៀនថ្មី (Admin Only)</h2>
         </div>
         <form id="upload-form" class="upload-grid">
           <div class="input-group">
@@ -220,6 +226,31 @@
     </section>
 
   </main>
+
+  <!-- Login Modal -->
+  <div id="login-modal" class="modal-backdrop" style="display: none;">
+    <div class="modal-box">
+      <h3>🔐 ចូលប្រព័ន្ធជា Admin</h3>
+      <p class="modal-sub">សូមបញ្ចូល Username និង Password ដើម្បីគ្រប់គ្រងទិន្នន័យ</p>
+      <form id="login-form">
+        <div class="input-group" style="margin-bottom: 12px;">
+          <label>Username</label>
+          <input type="text" id="login-user" placeholder="admin" required>
+        </div>
+        <div class="input-group" style="margin-bottom: 16px;">
+          <label>Password</label>
+          <input type="password" id="login-pass" placeholder="••••••••" required>
+        </div>
+        <div id="login-error" style="color: #f87171; font-size: 0.85rem; display: none; margin-bottom: 10px;">
+          Username ឬ Password មិនត្រឹមត្រូវឡើយ!
+        </div>
+        <div class="modal-actions">
+          <button type="button" id="close-modal-btn" class="btn-cancel">បោះបង់</button>
+          <button type="submit" class="btn-primary">Login</button>
+        </div>
+      </form>
+    </div>
+  </div>
 
   <script src="script.js"></script>
 </body>
