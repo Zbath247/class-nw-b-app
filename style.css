@@ -34,6 +34,7 @@ body {
   display: flex;
   flex-direction: column;
   backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
 }
 
 .brand {
@@ -43,20 +44,21 @@ body {
   margin-bottom: 40px;
 }
 
-/* បន្ថែម Styling សម្រាប់ Logo សាកលវិទ្យាល័យ */
+/* កែសម្រួល Logo ឱ្យថ្លា Transparent គ្មានប្រអប់ខ្មៅ */
 .brand-logo {
   width: 44px;
   height: 44px;
   object-fit: contain;
-  border-radius: 8px;
-  background: rgba(255, 255, 255, 0.05);
-  padding: 2px;
-  box-shadow: 0 0 15px rgba(0, 242, 254, 0.25);
+  background: transparent;
+  padding: 0;
+  border-radius: 0;
+  box-shadow: none;
+  filter: drop-shadow(0 0 8px rgba(0, 242, 254, 0.35));
   transition: transform 0.3s ease;
 }
 
 .brand-logo:hover {
-  transform: scale(1.05);
+  transform: scale(1.08);
 }
 
 .brand-text h2 {
@@ -117,6 +119,13 @@ body {
   background-color: #34d399;
   border-radius: 50%;
   box-shadow: 0 0 8px #34d399;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.7); }
+  70% { transform: scale(1); box-shadow: 0 0 0 8px rgba(52, 211, 153, 0); }
+  100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(52, 211, 153, 0); }
 }
 
 /* Main Container */
@@ -128,10 +137,16 @@ body {
 
 .page-content {
   display: none;
+  animation: fadeIn 0.3s ease-in-out;
 }
 
 .page-content.active {
   display: block;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .top-header {
@@ -169,6 +184,12 @@ body {
   justify-content: space-between;
   align-items: center;
   backdrop-filter: blur(12px);
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.metric-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(0, 242, 254, 0.3);
 }
 
 .metric-label {
@@ -286,6 +307,10 @@ td {
   color: var(--text-main);
 }
 
+tbody tr {
+  transition: background 0.2s ease;
+}
+
 tbody tr:hover {
   background: rgba(255, 255, 255, 0.03);
 }
@@ -325,4 +350,30 @@ tr.today-highlight {
 .empty-icon {
   font-size: 48px;
   margin-bottom: 12px;
+}
+
+/* Responsive Support */
+@media (max-width: 768px) {
+  body {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    width: 100%;
+    border-right: none;
+    border-bottom: 1px solid var(--border-color);
+    padding: 16px;
+  }
+
+  .brand {
+    margin-bottom: 20px;
+  }
+
+  .main-container {
+    padding: 20px;
+  }
+
+  .search-box {
+    width: 100%;
+  }
 }
