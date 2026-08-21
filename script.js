@@ -1,4 +1,4 @@
-const API_URL = "https://script.google.com/macros/s/AKfycbzd7jsiPbha0qV0os9vSyOKFFnAF895JF96TVoo8ThoAm3JLcYHL5rbWEy_znfmU01v/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbwe3Nkapdy0QEDz4SRsoeIUUyvh5KjleyWrGBPup6h91eiG8WOm7c6dvSVjZvk5jdHU/exec";
 
 let currentTab = 'schedule';
 let tableData = [];
@@ -88,7 +88,6 @@ async function loadDataFromSheet() {
         } else if (currentTab === 'materials') {
             endpoint += "?action=getLibrary";
         }
-        // បើ currentTab เป็น schedule គឺវាទាញយក default ពី NW_B_Schedule ស្រាប់
 
         const response = await fetch(endpoint);
         const data = await response.json();
