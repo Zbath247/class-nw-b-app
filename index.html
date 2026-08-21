@@ -3,53 +3,173 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Class NW_B Dashboard</title>
+  <title>G1-NW-B | Digital Network Dashboard</title>
+  
+  <!-- Google Fonts: Kantumruy Pro & Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Kantumruy+Pro:ital,wght@0,300..700;1,300..700&display=swap" rel="stylesheet">
+  
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="sidebar">
-    <h2>Class NW_B</h2>
-    <ul>
-      <li><a href="#" class="active">កាលវិភាគ (Schedule)</a></li>
-      <li><a href="#">វត្តមាន (Attendance)</a></li>
-      <li><a href="#">មេរៀន (Materials)</a></li>
-    </ul>
-  </div>
 
-  <div class="main-content">
-    <header>
-      <h1>តារាងកាលវិភាគសិក្សា - ថ្នាក់ NW_B</h1>
-    </header>
-
-    <div class="card-container">
-      <div class="card">
-        <h3>មុខវិជ្ជាសរុប</h3>
-        <p id="total-subjects">0</p>
-      </div>
-      <div class="card">
-        <h3>ស្ថានភាពថ្នាក់</h3>
-        <p class="status">ដំណើរការធម្មតា</p>
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-icon">NW</div>
+      <div class="brand-text">
+        <h2>CLASS G1-NW-B</h2>
+        <span>Network Engineering</span>
       </div>
     </div>
 
-    <section class="schedule-section">
-      <h2>កាលវិភាគប្រចាំសប្តាហ៍</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>ថ្ងៃ</th>
-            <th>ម៉ោង</th>
-            <th>មុខវិជ្ជា</th>
-            <th>បន្ទប់</th>
-            <th>គ្រូបង្រៀន</th>
-          </tr>
-        </thead>
-        <tbody id="schedule-body">
-          <!-- ទិន្នន័យទាញចេញពី Google Sheet តាមរយៈ JavaScript -->
-        </tbody>
-      </table>
+    <nav class="nav-menu">
+      <a href="#" id="menu-schedule" class="nav-link active">
+        <span class="icon">📅</span> កាលវិភាគ (Schedule)
+      </a>
+      <a href="#" id="menu-attendance" class="nav-link">
+        <span class="icon">👥</span> បញ្ជីឈ្មោះ (Students)
+      </a>
+      <a href="#" id="menu-materials" class="nav-link">
+        <span class="icon">📚</span> មេរៀន (Materials)
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="system-status">
+        <span class="pulse-dot"></span> System Online
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="main-container">
+    
+    <!-- PAGE 1: SCHEDULE -->
+    <section id="section-schedule" class="page-content active">
+      <header class="top-header">
+        <div>
+          <h1>តារាងកាលវិភាគសិក្សា</h1>
+          <p class="subtitle">ព័ត៌មានកាលវិភាគប្រចាំសប្តាហ៍ ថ្នាក់បច្ចេកវិទ្យាបណ្តាញកុំព្យូទ័រ</p>
+        </div>
+      </header>
+
+      <div class="metrics-grid">
+        <div class="metric-card">
+          <div class="metric-info">
+            <span class="metric-label">មុខវិជ្ជាសរុប</span>
+            <p id="total-subjects" class="metric-value">0</p>
+          </div>
+          <div class="metric-icon">📖</div>
+        </div>
+
+        <div class="metric-card">
+          <div class="metric-info">
+            <span class="metric-label">ស្ថានភាពប្រព័ន្ធ</span>
+            <p class="metric-value status-active">Active</p>
+          </div>
+          <div class="metric-icon">⚡</div>
+        </div>
+      </div>
+
+      <div class="glass-panel">
+        <div class="panel-header">
+          <h2>កាលវិភាគប្រចាំសប្តាហ៍</h2>
+        </div>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>ថ្ងៃ</th>
+                <th>ម៉ោង</th>
+                <th>មុខវិជ្ជា</th>
+                <th>បន្ទប់</th>
+                <th>គ្រូបង្រៀន</th>
+              </tr>
+            </thead>
+            <tbody id="schedule-body">
+              <!-- Render by JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
     </section>
-  </div>
+
+    <!-- PAGE 2: ATTENDANCE / STUDENTS -->
+    <section id="section-attendance" class="page-content">
+      <header class="top-header">
+        <div>
+          <h1>បញ្ជីឈ្មោះនិស្សិត</h1>
+          <p class="subtitle">ព័ត៌មានសិស្សថ្នាក់ G1-NW-B សរុប ៤៧ នាក់</p>
+        </div>
+      </header>
+
+      <div class="metrics-grid">
+        <div class="metric-card">
+          <div class="metric-info">
+            <span class="metric-label">ចំនួនសិស្សសរុប</span>
+            <p id="total-students" class="metric-value">47</p>
+          </div>
+          <div class="metric-icon">🎓</div>
+        </div>
+
+        <div class="metric-card">
+          <div class="metric-info">
+            <span class="metric-label">សមាមាត្រ ស្រី/ប្រុស</span>
+            <p class="metric-value-sm"><span class="female-txt">ស្រី 14</span> | <span class="male-txt">ប្រុស 33</span></p>
+          </div>
+          <div class="metric-icon">📊</div>
+        </div>
+      </div>
+
+      <div class="glass-panel">
+        <div class="panel-header flex-header">
+          <h2>បញ្ជីឈ្មោះនិស្សិត</h2>
+          <div class="search-box">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="student-search" placeholder="ស្វែងរកឈ្មោះ ឬ អត្តលេខ...">
+          </div>
+        </div>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>ល.រ</th>
+                <th>អត្តលេខ</th>
+                <th>គោត្តនាម-នាម</th>
+                <th>ឈ្មោះជាអក្សរឡាតាំង</th>
+                <th>ភេទ</th>
+                <th>ថ្ងៃខែឆ្នាំកំណើត</th>
+              </tr>
+            </thead>
+            <tbody id="student-body">
+              <!-- Render by JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- PAGE 3: MATERIALS -->
+    <section id="section-materials" class="page-content">
+      <header class="top-header">
+        <div>
+          <h1>ឯកសារសិក្សា & Lab Manuals</h1>
+          <p class="subtitle">ប្រភពមេរៀន ស្លាយ និងលំហាត់អនុវត្ត</p>
+        </div>
+      </header>
+
+      <div class="glass-panel">
+        <div class="empty-state">
+          <div class="empty-icon">📁</div>
+          <h3>កំពុងរៀបចំប្រព័ន្ធរក្សាទុកឯកសារ (Cloud Resources)</h3>
+          <p>ប្រព័ន្ធនឹងដាក់ឱ្យប្រើប្រាស់ឆាប់ៗនេះ!</p>
+        </div>
+      </div>
+    </section>
+
+  </main>
 
   <script src="script.js"></script>
 </body>
