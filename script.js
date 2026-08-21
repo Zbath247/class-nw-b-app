@@ -1,4 +1,4 @@
-// Google Apps Script Web App URL
+// បញ្ចូល Google Apps Script Web App URL របស់អ្នកនៅទីនេះ
 const API_URL = "YOUR_GOOGLE_APPS_SCRIPT_WEB_URL_HERE";
 
 let currentTab = 'schedule';
@@ -15,7 +15,6 @@ setInterval(() => {
     document.getElementById('digitalClock').innerText = now.toTimeString().split(' ')[0];
 }, 1000);
 
-// Toast Notification Function (បានកែសម្រួលឈ្មោះត្រឹមត្រូវនៅទីនេះ)
 function showToast(message) {
     const toast = document.getElementById('toast');
     toast.innerText = message;
@@ -47,7 +46,7 @@ function switchTab(tab) {
     loadDataFromSheet();
 }
 
-// Authentication System (Admin & User)
+// Authentication System
 function handleAuthClick() {
     if (isAdmin) {
         isAdmin = false;
@@ -83,39 +82,41 @@ function closeLoginModal() {
     document.getElementById('adminPassword').value = "";
 }
 
-// Fetch Data from Google Sheet
-function loadDataFromSheet() {
+// Fetch Data from Google Sheet API
+async function loadDataFromSheet() {
     showToast("STATUS: SYNCING DATABASE...");
     
-    setTimeout(() => {
+    try {
+        let endpoint = API_URL;
         if (currentTab === 'students') {
-            tableData = [
-                { id: "1", student_id: "DUC2024-0021", name_kh: "ឡាង ដែន", name_en: "KLANG DETH" },
-                { id: "2", student_id: "DUC2024-0023", name_kh: "ឡាង លួត", name_en: "KLANG LUOT" },
-                { id: "3", student_id: "DUC2024-0024", name_kh: "ឡាង ស្វាគ", name_en: "KLANG SWAK" },
-                { id: "4", student_id: "DUC2024-0033", name_kh: "ឌុយ ស្រីនី", name_en: "DUI SREYNICH" },
-                { id: "5", student_id: "DUC2024-0036", name_kh: "ខេង កាំងលី", name_en: "KENG KANGLY" }
-            ];
+            endpoint += "?action=getStudents";
         } else if (currentTab === 'schedule') {
-            tableData = [
-                { id: "1", time: "08:00 - 11:00", subject: "Advanced Routing & OSPF", room: "Lab 302", lecturer: "Prof. Visal" },
-                { id: "2", time: "14:00 - 17:00", subject: "Linux System Administration", room: "Server Room A", lecturer: "Prof. Dara" }
-            ];
+            endpoint += "?action=getSchedule";
         } else {
-            tableData = [
-                { id: "1", title: "Cisco Packet Tracer Lab Guide", type: "PDF", size: "15 MB" },
-                { id: "2", title: "GNS3 MikroTik Enterprise Topology", type: "ZIP", size: "45 MB" }
-            ];
+            // បើគ្មាន Tab ឯកសារ បង្ហាញទិន្នន័យទទេ ឬ Mock ទុកសិន
+            tableData = [];
+            filteredData = tableData;
+            document.getElementById('statColumns').innerText = '00';
+            renderTable();
+            showToast("STATUS: SYNC COMPLETE");
+            return;
         }
+
+        const response = await fetch(endpoint);
+        const data = await response.json();
         
+        tableData = data;
         filteredData = tableData;
         document.getElementById('statColumns').innerText = tableData.length < 10 ? '0' + tableData.length : tableData.length;
         renderTable();
         showToast("STATUS: SYNC COMPLETE");
-    }, 500);
+    } catch (error) {
+        console.error("Error fetching data:", error);
+        showToast("ERROR: FAILED TO SYNC");
+    }
 }
 
-// Render Table based on Admin/User role
+// Render Table
 function renderTable() {
     const container = document.getElementById('dynamicViewContainer');
     if (filteredData.length === 0) {
@@ -143,7 +144,8 @@ function renderTable() {
     const end = start + rowsPerPage;
     const paginatedItems = filteredData.slice(start, end);
 
-    paginatedItems.forEach(item => {
+    paginatedItems.forEach((item, index) => {
+        let rowId = item.id || index;
         html += `<tr>`;
         keys.forEach(key => {
             if(key !== 'id') {
@@ -153,8 +155,8 @@ function renderTable() {
         
         if(isAdmin) {
             html += `<td style="text-align: right;">
-                <button class="btn-secondary" style="padding: 4px 8px; font-size: 10px; display: inline-flex;" onclick="editRecord('${item.id}')"><i class="fa-solid fa-pen"></i></button>
-                <button class="btn-secondary" style="padding: 4px 8px; font-size: 10px; color: #ef4444; border-color: rgba(239, 68, 68, 0.3); display: inline-flex;" onclick="deleteRecord('${item.id}')"><i class="fa-solid fa-trash"></i></button>
+                <button class="btn-secondary" style="padding: 4px 8px; font-size: 10px; display: inline-flex;" onclick="editRecord('${rowId}')"><i class="fa-solid fa-pen"></i></button>
+                <button class="btn-secondary" style="padding: 4px 8px; font-size: 10px; color: #ef4444; border-color: rgba(239, 68, 68, 0.3); display: inline-flex;" onclick="deleteRecord('${rowId}')"><i class="fa-solid fa-trash"></i></button>
             </td>`;
         } else {
             html += `<td style="text-align: right;"><span style="font-size: 10px; color: var(--text-muted); font-family: 'JetBrains Mono';">Read-Only</span></td>`;
@@ -181,13 +183,11 @@ function filterTable() {
     renderTable();
 }
 
-// Pagination Controls
 function changePage(direction) {
     currentPage += direction;
     renderTable();
 }
 
-// Admin Actions: Add / Edit / Delete
 function openAddModal() {
     if (!isAdmin) return;
     editingId = null;
@@ -202,8 +202,9 @@ function openAddModal() {
         `;
     } else {
         formHtml = `
-            <div class="form-group"><label>TITLE / SUBJECT</label><input type="text" id="f_subject" placeholder="Enter title..."></div>
-            <div class="form-group"><label>DETAILS / ROOM</label><input type="text" id="f_room" placeholder="Enter details..."></div>
+            <div class="form-group"><label>DAY</label><input type="text" id="f_day" placeholder="ថ្ងៃ..."></div>
+            <div class="form-group"><label>TIME</label><input type="text" id="f_time" placeholder="ម៉ោង..."></div>
+            <div class="form-group"><label>SUBJECT</label><input type="text" id="f_subject" placeholder="មុខវិជ្ជា..."></div>
         `;
     }
     document.getElementById('modalFormContainer').innerHTML = formHtml;
@@ -223,7 +224,7 @@ function saveRecord() {
 function deleteRecord(id) {
     if (!isAdmin) return;
     if (confirm("តើអ្នកពិតជាចង់លុបទិន្នន័យនេះមែនទេ?")) {
-        tableData = tableData.filter(item => item.id !== id);
+        tableData = tableData.filter((item, index) => (item.id || index) != id);
         filteredData = tableData;
         renderTable();
         showToast("STATUS: RECORD DELETED");
@@ -250,7 +251,6 @@ function toggleDarkMode() {
     }
 }
 
-// Initial Load
 window.onload = () => {
     loadDataFromSheet();
 };
