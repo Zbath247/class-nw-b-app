@@ -1,4 +1,3 @@
-// Google Apps Script Web App URL របស់អ្នក
 const API_URL = "https://script.google.com/macros/s/AKfycbzONK-u99A7CeM920d_tSOMo2k_0wNhzjQdehh_ORAvPnfdcbpibUn7pGyUIiX5Kxkl/exec";
 
 let currentTab = 'schedule';
@@ -9,7 +8,6 @@ let rowsPerPage = 8;
 let isAdmin = false;
 let editingId = null;
 
-// Clock Logic
 setInterval(() => {
     const now = new Date();
     document.getElementById('digitalClock').innerText = now.toTimeString().split(' ')[0];
@@ -24,7 +22,6 @@ function showToast(message) {
     }, 3000);
 }
 
-// Switch Tabs
 function switchTab(tab) {
     currentTab = tab;
     document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
@@ -46,7 +43,6 @@ function switchTab(tab) {
     loadDataFromSheet();
 }
 
-// Authentication System
 function handleAuthClick() {
     if (isAdmin) {
         isAdmin = false;
@@ -82,7 +78,6 @@ function closeLoginModal() {
     document.getElementById('adminPassword').value = "";
 }
 
-// Fetch Data from Google Sheet API
 async function loadDataFromSheet() {
     showToast("STATUS: SYNCING DATABASE...");
     
@@ -92,13 +87,8 @@ async function loadDataFromSheet() {
             endpoint += "?action=getStudents";
         } else if (currentTab === 'schedule') {
             endpoint += "?action=getSchedule";
-        } else {
-            tableData = [];
-            filteredData = tableData;
-            document.getElementById('statColumns').innerText = '00';
-            renderTable();
-            showToast("STATUS: SYNC COMPLETE");
-            return;
+        } else if (currentTab === 'materials') {
+            endpoint += "?action=getLibrary";
         }
 
         const response = await fetch(endpoint);
@@ -115,7 +105,6 @@ async function loadDataFromSheet() {
     }
 }
 
-// Render Table
 function renderTable() {
     const container = document.getElementById('dynamicViewContainer');
     if (filteredData.length === 0) {
@@ -127,12 +116,14 @@ function renderTable() {
     const keys = Object.keys(filteredData[0]);
     
     keys.forEach(key => {
-        if(key !== 'id') {
+        if(key !== 'id' && key !== 'link') {
             html += `<th>${key.toUpperCase()}</th>`;
         }
     });
     
-    if(isAdmin) {
+    if (currentTab === 'materials') {
+        html += `<th style="text-align: right;">ACTIONS</th>`;
+    } else if(isAdmin) {
         html += `<th style="text-align: right;">ACTIONS (ADMIN)</th>`;
     } else {
         html += `<th style="text-align: right;">ACCESS</th>`;
@@ -147,12 +138,24 @@ function renderTable() {
         let rowId = item.id || index;
         html += `<tr>`;
         keys.forEach(key => {
-            if(key !== 'id') {
+            if(key !== 'id' && key !== 'link') {
                 html += `<td>${item[key]}</td>`;
             }
         });
         
-        if(isAdmin) {
+        if (currentTab === 'materials') {
+            let rawLink = item.link || '#';
+            // แปลง Google Drive Link ให้อยู่ในรูป format ที่สามารถ Embed មើលក្នុង iframe បាន
+            let embedLink = rawLink;
+            if (rawLink.includes('drive.google.com')) {
+                embedLink = rawLink.replace('/view?usp=sharing', '/preview').replace('/edit?usp=sharing', '/preview');
+            }
+
+            html += `<td style="text-align: right; display: flex; gap: 6px; justify-content: flex-end;">
+                <button class="btn-primary" style="padding: 4px 10px; font-size: 10px; display: inline-flex;" onclick="openPdfViewer('${embedLink}', '${item.title || 'Document'}')"><i class="fa-solid fa-eye"></i> View</button>
+                <a href="${rawLink}" target="_blank" class="btn-secondary" style="padding: 4px 10px; font-size: 10px; display: inline-flex; text-decoration: none;"><i class="fa-solid fa-download"></i></a>
+            </td>`;
+        } else if(isAdmin) {
             html += `<td style="text-align: right;">
                 <button class="btn-secondary" style="padding: 4px 8px; font-size: 10px; display: inline-flex;" onclick="editRecord('${rowId}')"><i class="fa-solid fa-pen"></i></button>
                 <button class="btn-secondary" style="padding: 4px 8px; font-size: 10px; color: #ef4444; border-color: rgba(239, 68, 68, 0.3); display: inline-flex;" onclick="deleteRecord('${rowId}')"><i class="fa-solid fa-trash"></i></button>
@@ -172,7 +175,17 @@ function renderTable() {
     document.getElementById('nextBtn').disabled = currentPage >= totalPages;
 }
 
-// Search Filter
+function openPdfViewer(url, title) {
+    document.getElementById('pdfModalTitle').innerHTML = `<i class="fa-solid fa-file-pdf"></i> ${title}`;
+    document.getElementById('pdfIframe').src = url;
+    document.getElementById('pdfModal').classList.add('active');
+}
+
+function closePdfModal() {
+    document.getElementById('pdfModal').classList.remove('active');
+    document.getElementById('pdfIframe').src = '';
+}
+
 function filterTable() {
     const query = document.getElementById('searchInput').value.toLowerCase();
     filteredData = tableData.filter(item => {
@@ -198,6 +211,13 @@ function openAddModal() {
             <div class="form-group"><label>STUDENT ID</label><input type="text" id="f_student_id" placeholder="e.g. DUC2024-0050"></div>
             <div class="form-group"><label>NAME (KH)</label><input type="text" id="f_name_kh" placeholder="ឈ្មោះភាសាខ្មែរ"></div>
             <div class="form-group"><label>NAME (EN)</label><input type="text" id="f_name_en" placeholder="FULL NAME IN ENGLISH"></div>
+        `;
+    } else if (currentTab === 'materials') {
+        formHtml = `
+            <div class="form-group"><label>TITLE</label><input type="text" id="f_title" placeholder="ឈ្មោះមេរៀន..."></div>
+            <div class="form-group"><label>TYPE</label><input type="text" id="f_type" placeholder="PDF, ZIP, DOCX..."></div>
+            <div class="form-group"><label>SIZE</label><input type="text" id="f_size" placeholder="15 MB..."></div>
+            <div class="form-group"><label>DOWNLOAD LINK</label><input type="text" id="f_link" placeholder="Google Drive Share Link..."></div>
         `;
     } else {
         formHtml = `
