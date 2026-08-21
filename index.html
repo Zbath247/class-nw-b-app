@@ -79,7 +79,7 @@
                     <h2 style="color: #10b981;">SECURE</h2>
                 </div>
                 <div class="stat-icon-box" style="color: #10b981; background: rgba(16, 185, 129, 0.08); border-color: rgba(16, 185, 129, 0.2);">
-                    <i class="fa-solid fa-shield-check"></i>
+                    <i class="fa-solid fa-shield-halved"></i>
                 </div>
             </div>
         </section>
@@ -105,7 +105,7 @@
             </div>
 
             <!-- Dynamic Data View Container -->
-            <div id="dynamicViewContainer">
+            <div id="dynamicViewContainer" class="table-container">
                 <!-- Data will be injected here via script.js -->
             </div>
 
@@ -128,7 +128,7 @@
                 <button class="close-btn" onclick="closeLoginModal()">&times;</button>
             </div>
             <div class="modal-body">
-                <p style="margin-bottom: 14px;">សូមបញ្ចូលលេខសម្ងាត់រដ្ឋបាលដើម្បីចូលកាន់ប្រព័ន្ធគ្រប់គ្រងទិន្នន័យ៖</p>
+                <p style="margin-bottom: 14px; font-size: 12px; color: var(--text-muted);">សូមបញ្ចូលលេខសម្ងាត់រដ្ឋបាលដើម្បីទទួលបានសិទ្ធិពេញលេញ (Full Control):</p>
                 <div class="form-group">
                     <label>ADMIN PASSWORD</label>
                     <input type="password" id="adminPassword" placeholder="Enter security key..." onkeypress="if(event.key === 'Enter') verifyAdmin()">
@@ -145,7 +145,7 @@
     <div class="modal-overlay" id="dataModal">
         <div class="modal-card">
             <div class="modal-header">
-                <h3><i class="fa-solid fa-pen-to-square"></i> INSERT NEW RECORD</h3>
+                <h3 id="modalTitle"><i class="fa-solid fa-pen-to-square"></i> INSERT NEW RECORD</h3>
                 <button class="close-btn" onclick="closeDataModal()">&times;</button>
             </div>
             <div class="modal-body" id="modalFormContainer">
