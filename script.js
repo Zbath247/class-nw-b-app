@@ -26,14 +26,20 @@ window.onload = () => {
     updateDigitalClock();
 };
 
-// ទាញយកទិន្នន័យពី Google Apps Script
+// ទាញយកទិន្នន័យពី Google Apps Script តាម Tab នីមួយៗ
 async function fetchData() {
     showToast("SYNCING_DATA...");
     try {
-        const response = await fetch(API_URL);
+        let url = API_URL;
+        // ប្រសិនបើជា Tab និស្សិត បន្ថែម action=getStudents ទៅក្នុង URL ស្របតាម Apps Script របស់អ្នក
+        if (currentTab === 'students') {
+            url = `${API_URL}?action=getStudents`;
+        }
+        
+        const response = await fetch(url);
         const data = await response.json();
-        // បែងចែកទិន្នន័យតាម Tab ប្រសិនបើ Google Script ส่งมาគ្រប់ Tab ឬទាញយកទូទៅ
-        tableData = Array.isArray(data) ? data : (data[currentTab] || []);
+        
+        tableData = Array.isArray(data) ? data : [];
         filteredData = tableData;
         currentPage = 1;
         renderTable();
@@ -93,6 +99,7 @@ function switchTab(tabName) {
 // បង្ហាញតារាងទិន្នន័យ (Table Rendering)
 function renderTable() {
     const container = document.getElementById('dynamicViewContainer');
+    document.getElementById('paginationBar').style.display = 'flex';
     
     container.innerHTML = `
         <div class="table-container">
@@ -146,8 +153,8 @@ function renderLibraryMaterials() {
 
     const materials = [
         { title: 'Cisco Routing & Switching', code: 'NET-101', desc: 'មេរៀនស្ដីពី OSPF, VLAN, និង Enterprise Network Topologies.', link: '#' },
-        { title: 'Linux Systems Administration', code: 'SYS-202', desc: 'การកំណត់ Netplan, BIND9 DNS, និង iptables Firewall Rules.', link: '#' },
-        { title: 'Node.js & MySQL Database', code: 'DB-303', desc: 'การសាងសង់ RESTful APIs និងប្រព័ន្ធគ្រប់គ្រងទិន្នន័យ relational.', link: '#' },
+        { title: 'Linux Systems Administration', code: 'SYS-202', desc: 'ការកំណត់ Netplan, BIND9 DNS, និង iptables Firewall Rules.', link: '#' },
+        { title: 'Node.js & MySQL Database', code: 'DB-303', desc: 'ការសាងសង់ RESTful APIs និងប្រព័ន្ធគ្រប់គ្រងទិន្នន័យ relational.', link: '#' },
         { title: 'Cybersecurity & Ethical Hacking', code: 'SEC-404', desc: 'គោលការណ៍សុវត្ថិភាពបណ្តាញ និងការការពារប្រព័ន្ធកម្រិតខ្ពស់.', link: '#' }
     ];
 
@@ -173,6 +180,7 @@ function renderLibraryMaterials() {
     container.innerHTML = html;
 }
 
+// មុខងារស្វែងរក (Search / Filter)
 function filterTable() {
     const keyword = document.getElementById('searchInput').value.toLowerCase();
     filteredData = tableData.filter(row => {
@@ -182,15 +190,18 @@ function filterTable() {
     renderTable();
 }
 
+// ប្តូរទំព័រ (Pagination)
 function changePage(direction) {
     currentPage += direction;
     renderTable();
 }
 
+// អាប់ដេត Stat Cards
 function updateStats() {
     document.getElementById('statColumns').textContent = String(tableData.length).padStart(2, '0');
 }
 
+// មុខងារផ្ទៀងផ្ទាត់ Admin
 function handleAuthClick() {
     if (isAdmin) {
         isAdmin = false;
@@ -224,6 +235,7 @@ function verifyAdmin() {
     }
 }
 
+// មុខងារបន្ថែមទិន្នន័យ (Add Modal)
 function openAddModal() {
     if (!tableData.length) return;
     const keys = Object.keys(tableData[0]);
@@ -269,6 +281,7 @@ async function saveRecord() {
     }
 }
 
+// លុបទិន្នន័យ (Delete)
 async function deleteRecord(index) {
     if (!confirm('តើអ្នកពិតជាចង់លុបទិន្នន័យនេះមែនទេ?')) return;
     tableData.splice(index, 1);
@@ -278,6 +291,7 @@ async function deleteRecord(index) {
     showToast("RECORD DELETED");
 }
 
+// ប្តូរ Dark/Light Theme
 function toggleDarkMode() {
     const html = document.documentElement;
     const themeIcon = document.getElementById('themeIcon');
@@ -292,6 +306,7 @@ function toggleDarkMode() {
     }
 }
 
+// Export ជាឯកសារ CSV
 function exportToCSV() {
     if (!tableData.length) return;
     const keys = Object.keys(tableData[0]);
@@ -308,10 +323,12 @@ function exportToCSV() {
     showToast("CSV EXPORTED SUCCESSFULLY");
 }
 
+// Sync / Refresh Data
 function refreshData() {
     fetchData();
 }
 
+// Toast Notification System
 function showToast(message) {
     const toast = document.getElementById('toast');
     toast.textContent = message;
