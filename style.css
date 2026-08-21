@@ -167,24 +167,33 @@ body {
     color: var(--primary-cyan);
 }
 
+/* កែសម្រួល Navigation Tabs ឱ្យអាច Scroll មិនបាំងនៅលើទូរសព្ទ */
 .nav-tabs {
     display: flex;
-    gap: 10px;
+    gap: 8px;
     margin-bottom: 20px;
     overflow-x: auto;
-    padding-bottom: 4px;
+    overflow-y: hidden;
+    padding-bottom: 6px;
+    width: 100%;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+}
+
+.nav-tabs::-webkit-scrollbar {
+    display: none;
 }
 
 .tab-btn {
-    flex: 1;
-    min-width: 140px;
+    flex: 0 0 auto;
+    min-width: 130px;
     background: var(--bg-card);
     border: 1px solid var(--border-color);
     color: var(--text-muted);
     padding: 12px 16px;
     border-radius: 12px;
     font-family: 'JetBrains Mono', monospace;
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 600;
     cursor: pointer;
     transition: var(--transition);
