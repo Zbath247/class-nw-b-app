@@ -105,7 +105,7 @@ function logout() {
   location.reload();
 }
 
-// Fetch Schedules
+// Fetch Schedules & Update Dashboard Stats
 function fetchSchedules() {
   const scheduleTbody = document.getElementById("scheduleList");
   if (!scheduleTbody) return;
@@ -117,8 +117,14 @@ function fetchSchedules() {
 
       if (!data || !Array.isArray(data) || data.length === 0) {
         scheduleTbody.innerHTML = `<tr><td colspan="5" class="p-8 text-center text-slate-400 font-medium">មិនទាន់មានកាលវិភាគនៅឡើយទេ។</td></tr>`;
+        updateScheduleStats(0, 0);
         return;
       }
+
+      // Calculate total sessions and unique subjects
+      const totalSessions = data.length;
+      const uniqueSubjects = new Set(data.map(item => item.subject ? item.subject.trim() : '')).size;
+      updateScheduleStats(uniqueSubjects, totalSessions);
 
       data.forEach(item => {
         scheduleTbody.innerHTML += `
@@ -141,22 +147,37 @@ function fetchSchedules() {
     .catch(err => console.error("Schedule Error:", err));
 }
 
-// Fetch Lessons
+// Helper to Update Schedule Stat Cards
+function updateScheduleStats(totalClasses, totalSessions) {
+  const statClasses = document.getElementById("statTotalClasses");
+  const statSessions = document.getElementById("statTotalSessions");
+
+  if (statClasses) statClasses.innerText = totalClasses;
+  if (statSessions) statSessions.innerText = `${totalSessions} Sessions`;
+}
+
+// Fetch Lessons & Update Lesson Stat Card
 function fetchLessons() {
   const lessonListDiv = document.getElementById("lessonList");
+  const statLessons = document.getElementById("statTotalLessons");
   if (!lessonListDiv) return;
 
   fetch(`${API_URL}?action=getLessons`)
     .then(res => res.json())
     .then(data => {
       lessonListDiv.innerHTML = "";
-      
+
+      const lessonCount = Array.isArray(data) ? data.length : 0;
+      if (statLessons) statLessons.innerText = lessonCount;
+
       if (!data || !Array.isArray(data) || data.length === 0) {
         lessonListDiv.innerHTML = "<p class='text-slate-400 text-xs text-center py-6'>មិនទាន់មានមេរៀននៅឡើយទេ។</p>";
         return;
       }
 
       data.forEach(item => {
+        const isAdmin = currentUser && currentUser.role === "admin";
+        
         lessonListDiv.innerHTML += `
           <div class="p-4 rounded-xl border border-slate-200/70 bg-slate-50/50 hover:bg-white hover:shadow-md transition flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
             <div class="space-y-1">
@@ -164,10 +185,17 @@ function fetchLessons() {
               <h3 class="font-bold text-sm text-slate-800 mt-1">${item.title || ''}</h3>
               <p class="text-xs text-slate-500 line-clamp-2">${item.description || "គ្មានការពិពណ៌នា"}</p>
             </div>
-            <a href="${item.file_url || '#'}" target="_blank" class="w-full md:w-auto bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2.5 rounded-xl text-xs font-semibold flex items-center justify-center gap-2 transition shadow-sm shadow-emerald-600/20 whitespace-nowrap">
-              <i data-lucide="download-cloud" class="w-4 h-4"></i>
-              <span>មើល / Download File</span>
-            </a>
+            <div class="flex items-center gap-2 w-full md:w-auto">
+              <a href="${item.file_url || '#'}" target="_blank" class="flex-1 md:flex-initial bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2.5 rounded-xl text-xs font-semibold flex items-center justify-center gap-2 transition shadow-sm shadow-emerald-600/20 whitespace-nowrap">
+                <i data-lucide="download-cloud" class="w-4 h-4"></i>
+                <span>មើល / Download File</span>
+              </a>
+              ${isAdmin ? `
+                <button onclick="deleteLesson('${item.lesson_id}')" class="p-2.5 bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-100 rounded-xl transition" title="លុបមេរៀន">
+                  <i data-lucide="trash-2" class="w-4 h-4"></i>
+                </button>
+              ` : ''}
+            </div>
           </div>
         `;
       });
@@ -210,4 +238,21 @@ if (addLessonForm) {
         }
       });
   });
+}
+
+// Delete Lesson Handler
+function deleteLesson(lessonId) {
+  if (!lessonId) return;
+  if (confirm("តើអ្នកប្រាកដជាចង់លុបមេរៀននេះមែនទេ?")) {
+    fetch(`${API_URL}?action=deleteLesson&lesson_id=${encodeURIComponent(lessonId)}`)
+      .then(res => res.json())
+      .then(data => {
+        alert("លុបមេរៀនជោគជ័យ!");
+        fetchLessons();
+      })
+      .catch(err => {
+        console.error("Delete Lesson Error:", err);
+        alert("មានបញ្ហាក្នុងការលុបមេរៀន!");
+      });
+  }
 }
