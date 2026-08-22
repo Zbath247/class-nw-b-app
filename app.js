@@ -6,7 +6,6 @@ const state = {
   currentFilter: "ALL",
 };
 
-// UI Element Cache
 const elements = {
   loginSection: document.getElementById("loginSection"),
   dashboardSection: document.getElementById("dashboardSection"),
@@ -26,7 +25,6 @@ const elements = {
   addLessonBtn: document.getElementById("addLessonBtn"),
 };
 
-// Application Initialization
 document.addEventListener("DOMContentLoaded", () => {
   initApp();
   setupEventListeners();
@@ -39,7 +37,7 @@ function initApp() {
       state.currentUser = JSON.parse(savedUser);
       showDashboard();
     } catch (e) {
-      console.error("Failed to parse local session:", e);
+      console.error("Failed to parse stored session:", e);
       localStorage.removeItem("user");
     }
   }
@@ -54,7 +52,6 @@ function setupEventListeners() {
   }
 }
 
-// Icon Refresh Utility
 function refreshIcons() {
   requestAnimationFrame(() => {
     if (window.lucide) {
@@ -63,10 +60,8 @@ function refreshIcons() {
   });
 }
 
-// Authentication Handler
 async function handleLogin(e) {
   e.preventDefault();
-
   const email = elements.loginEmail?.value.trim() || "";
   const password = elements.loginPassword?.value.trim() || "";
 
@@ -84,7 +79,7 @@ async function handleLogin(e) {
       body: JSON.stringify({ action: "login", email, password }),
     });
 
-    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+    if (!response.ok) throw new Error(`HTTP Error: ${response.status}`);
     const data = await response.json();
 
     if (data?.status === "success") {
@@ -125,19 +120,18 @@ function logout() {
   location.reload();
 }
 
-// Fetch Schedules & Dashboard Metrics
 async function fetchSchedules() {
   if (!elements.scheduleList) return;
 
   try {
     const res = await fetch(`${API_URL}?action=getSchedules`);
-    if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+    if (!res.ok) throw new Error(`HTTP error: ${res.status}`);
     const data = await res.json();
 
     if (!Array.isArray(data) || data.length === 0) {
       elements.scheduleList.innerHTML = `
         <tr>
-          <td colspan="5" class="p-8 text-center text-slate-400 font-medium">
+          <td colspan="5" class="py-8 text-center text-slate-400 font-medium">
             មិនទាន់មានកាលវិភាគនៅឡើយទេ។
           </td>
         </tr>`;
@@ -151,20 +145,20 @@ async function fetchSchedules() {
     const fragment = document.createDocumentFragment();
     data.forEach(item => {
       const tr = document.createElement("tr");
-      tr.className = "hover:bg-indigo-50/30 transition border-b border-slate-100/80";
+      tr.className = "hover:bg-slate-50/80 transition duration-150 border-b border-slate-200/60";
       tr.innerHTML = `
-        <td class="p-3.5 pl-5 font-bold text-indigo-600 flex items-center gap-1.5">
-          <i data-lucide="calendar-days" class="w-4 h-4 text-indigo-400"></i>
+        <td class="py-4 px-6 font-bold text-indigo-600 flex items-center gap-2">
+          <i data-lucide="calendar-days" class="w-4 h-4 text-indigo-500"></i>
           ${escapeHTML(item.day || '')}
         </td>
-        <td class="p-3.5 text-slate-600 font-medium">${escapeHTML(item.time || '')}</td>
-        <td class="p-3.5 font-semibold text-slate-800">${escapeHTML(item.subject || '')}</td>
-        <td class="p-3.5">
-          <span class="bg-slate-100 text-slate-600 border border-slate-200 px-2.5 py-1 rounded-lg text-[11px] font-semibold">
+        <td class="py-4 px-4 text-slate-600 font-semibold">${escapeHTML(item.time || '')}</td>
+        <td class="py-4 px-4 font-bold text-slate-900">${escapeHTML(item.subject || '')}</td>
+        <td class="py-4 px-4">
+          <span class="bg-slate-100 text-slate-700 border border-slate-200 px-2.5 py-1 rounded-lg text-[11px] font-bold">
             ${escapeHTML(item.room || '')}
           </span>
         </td>
-        <td class="p-3.5 pr-5 text-slate-600 font-medium">${escapeHTML(item.teacher || '')}</td>
+        <td class="py-4 px-6 text-right text-slate-600 font-medium">${escapeHTML(item.teacher || '')}</td>
       `;
       fragment.appendChild(tr);
     });
@@ -181,11 +175,10 @@ function updateScheduleStats(totalClasses, totalSessions) {
   if (elements.statTotalSessions) elements.statTotalSessions.innerText = `${totalSessions} Sessions`;
 }
 
-// Fetch & Render Lessons
 async function fetchLessons() {
   try {
     const res = await fetch(`${API_URL}?action=getLessons`);
-    if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+    if (!res.ok) throw new Error(`HTTP error: ${res.status}`);
     const data = await res.json();
 
     state.allLessons = Array.isArray(data) ? data : [];
@@ -200,13 +193,13 @@ function filterLessons(subject, targetBtn = null) {
   state.currentFilter = subject;
 
   document.querySelectorAll('.subject-filter-btn').forEach(btn => {
-    btn.classList.remove('bg-indigo-600', 'text-white');
+    btn.classList.remove('bg-indigo-600', 'text-white', 'shadow-indigo-600/20');
     btn.classList.add('bg-slate-100', 'text-slate-600', 'hover:bg-slate-200');
   });
 
   if (targetBtn) {
     targetBtn.classList.remove('bg-slate-100', 'text-slate-600', 'hover:bg-slate-200');
-    targetBtn.classList.add('bg-indigo-600', 'text-white');
+    targetBtn.classList.add('bg-indigo-600', 'text-white', 'shadow-indigo-600/20');
   }
 
   renderLessonsByFilter();
@@ -221,9 +214,9 @@ function renderLessonsByFilter() {
 
   if (filtered.length === 0) {
     elements.lessonList.innerHTML = `
-      <p class='text-slate-400 text-xs text-center py-6 bg-slate-50 rounded-xl border border-dashed border-slate-200'>
+      <div class='text-slate-400 text-xs text-center py-8 bg-slate-50/50 rounded-2xl border border-dashed border-slate-200'>
         មិនទាន់មានមេរៀនសម្រាប់មុខវិជ្ជានេះនៅឡើយទេ។
-      </p>`;
+      </div>`;
     return;
   }
 
@@ -233,23 +226,23 @@ function renderLessonsByFilter() {
   filtered.forEach(item => {
     const previewUrl = getMobilePreviewLink(item.file_url);
     const card = document.createElement("div");
-    card.className = "p-4 rounded-xl border border-slate-200/70 bg-slate-50/50 hover:bg-white hover:shadow-md transition flex flex-col md:flex-row justify-between items-start md:items-center gap-4";
+    card.className = "p-4 sm:p-5 rounded-2xl border border-slate-200/80 bg-white hover:border-indigo-200 hover:shadow-md transition duration-200 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4";
 
     card.innerHTML = `
       <div class="space-y-1">
-        <span class="bg-indigo-50 text-indigo-600 border border-indigo-100 text-[10px] font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider">
+        <span class="inline-block bg-indigo-50 text-indigo-700 border border-indigo-100 text-[10px] font-extrabold px-2.5 py-0.5 rounded-md uppercase tracking-wider">
           ${escapeHTML(item.class_code || 'G1-NW-B')}
         </span>
-        <h3 class="font-bold text-sm text-slate-800 mt-1">${escapeHTML(item.title || '')}</h3>
+        <h3 class="font-bold text-sm text-slate-900 mt-1">${escapeHTML(item.title || '')}</h3>
         <p class="text-xs text-slate-500 line-clamp-2">${escapeHTML(item.description || "គ្មានការពិពណ៌នា")}</p>
       </div>
-      <div class="flex items-center gap-2 w-full md:w-auto">
-        <a href="${escapeHTML(previewUrl)}" target="_blank" rel="noopener noreferrer" class="flex-1 md:flex-initial bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2.5 rounded-xl text-xs font-semibold flex items-center justify-center gap-2 transition shadow-sm shadow-emerald-600/20 whitespace-nowrap">
+      <div class="flex items-center gap-2 w-full sm:w-auto">
+        <a href="${escapeHTML(previewUrl)}" target="_blank" rel="noopener noreferrer" class="flex-1 sm:flex-initial bg-emerald-600 hover:bg-emerald-700 active:scale-[0.98] text-white px-4 py-2.5 rounded-xl text-xs font-semibold flex items-center justify-center gap-2 transition shadow-sm shadow-emerald-600/20 whitespace-nowrap">
           <i data-lucide="eye" class="w-4 h-4"></i>
           <span>មើល / Download File</span>
         </a>
         ${isAdmin ? `
-          <button data-id="${escapeHTML(item.lesson_id)}" class="btn-delete-lesson p-2.5 bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-100 rounded-xl transition" title="លុបមេរៀន">
+          <button data-id="${escapeHTML(item.lesson_id)}" class="btn-delete-lesson p-2.5 bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200/60 rounded-xl transition active:scale-[0.98]" title="លុបមេរៀន">
             <i data-lucide="trash-2" class="w-4 h-4"></i>
           </button>
         ` : ''}
@@ -268,10 +261,8 @@ function renderLessonsByFilter() {
   refreshIcons();
 }
 
-// Add Lesson Handler
 async function handleAddLesson(e) {
   e.preventDefault();
-
   const fileInput = document.getElementById("lessonFileInput");
   if (!fileInput?.files?.[0]) {
     alert("សូមជ្រើសរើស File ឯកសារជាមុនសិន!");
@@ -321,7 +312,6 @@ async function handleAddLesson(e) {
   }
 }
 
-// Delete Lesson Handler
 async function deleteLesson(lessonId) {
   if (!lessonId || !confirm("តើអ្នកប្រាកដជាចង់លុបមេរៀននេះមែនទេ?")) return;
 
@@ -341,7 +331,6 @@ async function deleteLesson(lessonId) {
   }
 }
 
-// Helper Utilities
 function fileToBase64(file) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
