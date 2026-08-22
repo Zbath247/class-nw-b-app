@@ -1,56 +1,124 @@
-// API Configuration
-const API_URL = "https://script.google.com/macros/s/AKfycbwByUEIOfC4_G0UdVOwNAa2FYjsJTO64oidaC1Bg3EWeqOWdDBXsaUWRztdAixwbxaf/exec";
+// ===============================
+// Configuration
+// ===============================
+const API_URL = "https://script.google.com/macros/s/AKfycbxq0WCESMqtfQcEv2g5Hv4L_pxD2UdUL8atOtfEFMvEjkluX9TkDWWpb7cIOjNW2QVM/exec"; // 👉 Replace with your deployed Apps Script URL
 
-// Navigation
-document.querySelectorAll(".sidebar li").forEach(item => {
-  item.addEventListener("click", () => {
-    const sectionId = item.getAttribute("data-section");
-    document.querySelectorAll(".section").forEach(sec => sec.classList.remove("active"));
-    document.getElementById(sectionId).classList.add("active");
-    document.getElementById("section-title").textContent = item.textContent;
-  });
-});
+// ===============================
+// DOM Elements
+// ===============================
+const tableBody = document.querySelector("#students-table tbody");
+const searchInput = document.querySelector("#search-input");
 
-// Example API Functions
+// ===============================
+// Fetch Students
+// ===============================
 async function getStudents() {
   try {
     const res = await fetch(`${API_URL}?action=students`);
+    if (!res.ok) throw new Error(`HTTP error! Status: ${res.status}`);
     const data = await res.json();
     renderStudents(data);
   } catch (err) {
     console.error("Error fetching students:", err);
+    tableBody.innerHTML = `
+      <tr>
+        <td colspan="8" style="text-align:center;color:red;">
+          ⚠️ Failed to load data. Please check API connection.
+        </td>
+      </tr>`;
   }
 }
 
+// ===============================
+// Render Students
+// ===============================
 function renderStudents(students) {
-  const tbody = document.getElementById("students-table");
-  tbody.innerHTML = "";
-  students.forEach(stu => {
-    const tr = document.createElement("tr");
-    tr.innerHTML = `
-      <td>${stu.student_id}</td>
-      <td>${stu.student_name}</td>
-      <td>${stu.gender}</td>
-      <td>${stu.major}</td>
-      <td>${stu.year}</td>
-      <td>${stu.class}</td>
-      <td>${stu.phone}</td>
-      <td>${stu.email}</td>
-      <td>${stu.status}</td>
-      <td><button onclick="deleteStudent('${stu.student_id}')">Delete</button></td>
+  tableBody.innerHTML = "";
+  students.forEach((s, index) => {
+    const row = document.createElement("tr");
+    row.innerHTML = `
+      <td>${index + 1}</td>
+      <td>${s.student_name || "-"}</td>
+      <td>${s.gender || "-"}</td>
+      <td>${s.major || "-"}</td>
+      <td>${s.year || "-"}</td>
+      <td>${s.class || "-"}</td>
+      <td>${s.phone || "-"}</td>
+      <td>${s.email || "-"}</td>
+      <td>${s.status || "-"}</td>
+      <td>
+        <button class="btn-edit" onclick="editStudent('${s.student_id}')">✏️ Edit</button>
+        <button class="btn-delete" onclick="deleteStudent('${s.student_id}')">🗑️ Delete</button>
+      </td>
     `;
-    tbody.appendChild(tr);
+    tableBody.appendChild(row);
   });
 }
 
-async function deleteStudent(id) {
+// ===============================
+// Search Students
+// ===============================
+searchInput.addEventListener("input", () => {
+  const query = searchInput.value.toLowerCase();
+  const rows = tableBody.querySelectorAll("tr");
+  rows.forEach(row => {
+    const name = row.children[1].textContent.toLowerCase();
+    row.style.display = name.includes(query) ? "" : "none";
+  });
+});
+
+// ===============================
+// Add Student
+// ===============================
+async function addStudent(student) {
   try {
-    await fetch(`${API_URL}?action=deleteStudent&id=${id}`, { method: "DELETE" });
+    const res = await fetch(`${API_URL}?action=students`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(student)
+    });
+    const result = await res.json();
+    alert(result.success ? "✅ Student added successfully!" : "❌ Failed to add student.");
+    getStudents();
+  } catch (err) {
+    console.error("Error adding student:", err);
+  }
+}
+
+// ===============================
+// Update Student
+// ===============================
+async function updateStudent(id, student) {
+  try {
+    const res = await fetch(`${API_URL}?action=students`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id, ...student })
+    });
+    const result = await res.json();
+    alert(result.success ? "✅ Student updated successfully!" : "❌ Student not found.");
+    getStudents();
+  } catch (err) {
+    console.error("Error updating student:", err);
+  }
+}
+
+// ===============================
+// Delete Student
+// ===============================
+async function deleteStudent(id) {
+  if (!confirm("Are you sure you want to delete this student?")) return;
+  try {
+    const res = await fetch(`${API_URL}?action=students&id=${id}`, { method: "DELETE" });
+    const result = await res.json();
+    alert(result.success ? "🗑️ Student deleted successfully!" : "❌ Student not found.");
     getStudents();
   } catch (err) {
     console.error("Error deleting student:", err);
   }
 }
 
+// ===============================
 // Initialize
-getStudents();
+// ===============================
+document.addEventListener("DOMContentLoaded", getStudents);
