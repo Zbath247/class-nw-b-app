@@ -1,4 +1,4 @@
-const API_URL = "https://script.google.com/macros/s/AKfycbxeSpP2GT0mH0qsOkg_Mpi_3k6HTlBT5p_kjxaNVVggnwjjWBym6ItW1y-VHnU0EKy0/exec";
+const API_URL = "/api/proxy";
 
 let currentUser = null;
 
