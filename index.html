@@ -1,72 +1,754 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
   <title>Class_NW_B</title>
-  <link rel="stylesheet" href="style.css">
+
+  <link
+    rel="stylesheet"
+    href="style.css"
+  >
+
 </head>
+
+
 <body>
-  <div class="app">
-    <!-- Sidebar -->
-    <aside class="sidebar">
+
+
+<div class="app">
+
+
+  <!-- =========================
+       SIDEBAR
+  ========================== -->
+
+  <aside class="sidebar">
+
+    <div class="logo">
+
       <h2>Class_NW_B</h2>
-      <nav>
-        <ul>
-          <li data-section="dashboard">Dashboard</li>
-          <li data-section="students">Students</li>
-          <li data-section="attendance">Attendance</li>
-          <li data-section="subjects">Subjects</li>
-          <li data-section="schedule">Schedule</li>
-          <li data-section="assignments">Assignments</li>
-          <li data-section="scores">Scores</li>
-          <li data-section="announcements">Announcements</li>
-          <li data-section="profile">Profile</li>
-          <li data-section="settings">Settings</li>
-        </ul>
-      </nav>
-    </aside>
 
-    <!-- Main Content -->
-    <main class="main">
-      <header class="header">
-        <h1 id="section-title">Dashboard</h1>
-      </header>
+      <p>Management System</p>
 
-      <section id="dashboard" class="section active">
-        <div class="card">Total Students: <span id="total-students">0</span></div>
-        <div class="card">Present Today: <span id="present-today">0</span></div>
-        <div class="card">Absent Today: <span id="absent-today">0</span></div>
-        <div class="card">Late Today: <span id="late-today">0</span></div>
-        <div class="card">Total Subjects: <span id="total-subjects">0</span></div>
-        <div class="card">Upcoming Assignments: <span id="upcoming-assignments">0</span></div>
-      </section>
+    </div>
 
-      <section id="students" class="section">
-        <h2>Students</h2>
-        <input type="text" id="search-student" placeholder="Search students...">
+
+    <nav>
+
+      <ul>
+
+        <li
+          class="nav-item active"
+          data-section="dashboard"
+        >
+          📊 Dashboard
+        </li>
+
+
+        <li
+          class="nav-item"
+          data-section="students"
+        >
+          👨‍🎓 Students
+        </li>
+
+
+        <li
+          class="nav-item"
+          data-section="attendance"
+        >
+          📅 Attendance
+        </li>
+
+
+        <li
+          class="nav-item"
+          data-section="subjects"
+        >
+          📚 Subjects
+        </li>
+
+
+        <li
+          class="nav-item"
+          data-section="schedule"
+        >
+          🕒 Schedule
+        </li>
+
+
+        <li
+          class="nav-item"
+          data-section="assignments"
+        >
+          📝 Assignments
+        </li>
+
+
+        <li
+          class="nav-item"
+          data-section="scores"
+        >
+          🏆 Scores
+        </li>
+
+
+        <li
+          class="nav-item"
+          data-section="announcements"
+        >
+          📢 Announcements
+        </li>
+
+
+        <li
+          class="nav-item"
+          data-section="profile"
+        >
+          👤 Profile
+        </li>
+
+
+        <li
+          class="nav-item"
+          data-section="settings"
+        >
+          ⚙️ Settings
+        </li>
+
+      </ul>
+
+    </nav>
+
+  </aside>
+
+
+
+  <!-- =========================
+       MAIN CONTENT
+  ========================== -->
+
+  <main class="main">
+
+
+    <!-- HEADER -->
+
+    <header class="header">
+
+      <h1 id="section-title">
+
+        Dashboard
+
+      </h1>
+
+    </header>
+
+
+
+    <!-- =========================
+         DASHBOARD
+    ========================== -->
+
+    <section
+      id="dashboard"
+      class="section active"
+    >
+
+      <div class="dashboard-grid">
+
+
+        <div class="card">
+
+          <h3>Total Students</h3>
+
+          <span
+            id="total-students"
+          >
+            0
+          </span>
+
+        </div>
+
+
+        <div class="card">
+
+          <h3>Active Students</h3>
+
+          <span
+            id="active-students"
+          >
+            0
+          </span>
+
+        </div>
+
+
+        <div class="card">
+
+          <h3>Male Students</h3>
+
+          <span
+            id="male-students"
+          >
+            0
+          </span>
+
+        </div>
+
+
+        <div class="card">
+
+          <h3>Female Students</h3>
+
+          <span
+            id="female-students"
+          >
+            0
+          </span>
+
+        </div>
+
+
+      </div>
+
+    </section>
+
+
+
+    <!-- =========================
+         STUDENTS
+    ========================== -->
+
+    <section
+      id="students"
+      class="section"
+    >
+
+
+      <div class="section-header">
+
+        <h2>
+          Students
+        </h2>
+
+
+        <button
+          id="add-student-btn"
+          class="btn btn-primary"
+        >
+
+          + Add Student
+
+        </button>
+
+      </div>
+
+
+
+      <!-- SEARCH -->
+
+      <input
+
+        type="text"
+
+        id="search-student"
+
+        placeholder="🔍 Search student..."
+
+      >
+
+
+
+      <!-- TABLE -->
+
+      <div class="table-container">
+
         <table>
-          <thead>
-            <tr>
-              <th>ID</th><th>Name</th><th>Gender</th><th>Major</th><th>Year</th><th>Class</th><th>Phone</th><th>Email</th><th>Status</th><th>Action</th>
-            </tr>
-          </thead>
-          <tbody id="students-table"></tbody>
-        </table>
-      </section>
 
-      <!-- Other sections -->
-      <section id="attendance" class="section"><h2>Attendance</h2></section>
-      <section id="subjects" class="section"><h2>Subjects</h2></section>
-      <section id="schedule" class="section"><h2>Schedule</h2></section>
-      <section id="assignments" class="section"><h2>Assignments</h2></section>
-      <section id="scores" class="section"><h2>Scores</h2></section>
-      <section id="announcements" class="section"><h2>Announcements</h2></section>
-      <section id="profile" class="section"><h2>Profile</h2></section>
-      <section id="settings" class="section"><h2>Settings</h2></section>
-    </main>
+          <thead>
+
+            <tr>
+
+              <th>#</th>
+
+              <th>Name</th>
+
+              <th>Gender</th>
+
+              <th>Major</th>
+
+              <th>Year</th>
+
+              <th>Class</th>
+
+              <th>Phone</th>
+
+              <th>Email</th>
+
+              <th>Status</th>
+
+              <th>Action</th>
+
+            </tr>
+
+          </thead>
+
+
+          <tbody
+            id="students-table"
+          >
+
+          </tbody>
+
+        </table>
+
+      </div>
+
+
+    </section>
+
+
+
+    <!-- =========================
+         OTHER SECTIONS
+    ========================== -->
+
+
+    <section
+      id="attendance"
+      class="section"
+    >
+
+      <h2>
+        Attendance
+      </h2>
+
+      <p>
+        Attendance management
+        will be added soon.
+      </p>
+
+    </section>
+
+
+
+    <section
+      id="subjects"
+      class="section"
+    >
+
+      <h2>
+        Subjects
+      </h2>
+
+      <p>
+        Subject management
+        will be added soon.
+      </p>
+
+    </section>
+
+
+
+    <section
+      id="schedule"
+      class="section"
+    >
+
+      <h2>
+        Schedule
+      </h2>
+
+      <p>
+        Class schedule
+        will be added soon.
+      </p>
+
+    </section>
+
+
+
+    <section
+      id="assignments"
+      class="section"
+    >
+
+      <h2>
+        Assignments
+      </h2>
+
+      <p>
+        Assignment management
+        will be added soon.
+      </p>
+
+    </section>
+
+
+
+    <section
+      id="scores"
+      class="section"
+    >
+
+      <h2>
+        Scores
+      </h2>
+
+      <p>
+        Student scores
+        will be added soon.
+      </p>
+
+    </section>
+
+
+
+    <section
+      id="announcements"
+      class="section"
+    >
+
+      <h2>
+        Announcements
+      </h2>
+
+      <p>
+        Announcements
+        will be added soon.
+      </p>
+
+    </section>
+
+
+
+    <section
+      id="profile"
+      class="section"
+    >
+
+      <h2>
+        Profile
+      </h2>
+
+      <p>
+        User profile
+        will be added soon.
+      </p>
+
+    </section>
+
+
+
+    <section
+      id="settings"
+      class="section"
+    >
+
+      <h2>
+        Settings
+      </h2>
+
+      <p>
+        Settings
+        will be added soon.
+      </p>
+
+    </section>
+
+
+  </main>
+
+
+</div>
+
+
+
+<!-- =========================
+     STUDENT MODAL
+========================== -->
+
+<div
+  id="student-modal"
+  class="modal"
+>
+
+
+  <div class="modal-content">
+
+
+    <div class="modal-header">
+
+      <h2
+        id="modal-title"
+      >
+
+        Add Student
+
+      </h2>
+
+
+      <button
+        id="close-modal"
+        class="close-btn"
+      >
+
+        ×
+
+      </button>
+
+    </div>
+
+
+
+    <form
+      id="student-form"
+    >
+
+
+      <input
+        type="hidden"
+        id="student-id"
+      >
+
+
+
+      <div class="form-group">
+
+        <label>
+          Student Name
+        </label>
+
+        <input
+
+          type="text"
+
+          id="student-name"
+
+          required
+
+        >
+
+      </div>
+
+
+
+      <div class="form-group">
+
+        <label>
+          Gender
+        </label>
+
+        <select
+          id="student-gender"
+          required
+        >
+
+          <option value="">
+            Select Gender
+          </option>
+
+          <option value="Male">
+            Male
+          </option>
+
+          <option value="Female">
+            Female
+          </option>
+
+        </select>
+
+      </div>
+
+
+
+      <div class="form-group">
+
+        <label>
+          Date of Birth
+        </label>
+
+        <input
+          type="date"
+          id="student-dob"
+        >
+
+      </div>
+
+
+
+      <div class="form-group">
+
+        <label>
+          Phone
+        </label>
+
+        <input
+          type="text"
+          id="student-phone"
+        >
+
+      </div>
+
+
+
+      <div class="form-group">
+
+        <label>
+          Email
+        </label>
+
+        <input
+          type="email"
+          id="student-email"
+        >
+
+      </div>
+
+
+
+      <div class="form-group">
+
+        <label>
+          Major
+        </label>
+
+        <input
+          type="text"
+          id="student-major"
+        >
+
+      </div>
+
+
+
+      <div class="form-group">
+
+        <label>
+          Year
+        </label>
+
+        <select
+          id="student-year"
+        >
+
+          <option value="">
+            Select Year
+          </option>
+
+          <option value="1">
+            Year 1
+          </option>
+
+          <option value="2">
+            Year 2
+          </option>
+
+          <option value="3">
+            Year 3
+          </option>
+
+          <option value="4">
+            Year 4
+          </option>
+
+        </select>
+
+      </div>
+
+
+
+      <div class="form-group">
+
+        <label>
+          Class
+        </label>
+
+        <input
+          type="text"
+          id="student-class"
+          value="NW_B"
+        >
+
+      </div>
+
+
+
+      <div class="form-group">
+
+        <label>
+          Status
+        </label>
+
+        <select
+          id="student-status"
+        >
+
+          <option value="Active">
+            Active
+          </option>
+
+          <option value="Inactive">
+            Inactive
+          </option>
+
+        </select>
+
+      </div>
+
+
+
+      <div class="form-actions">
+
+
+        <button
+          type="button"
+          id="cancel-btn"
+          class="btn btn-secondary"
+        >
+
+          Cancel
+
+        </button>
+
+
+
+        <button
+          type="submit"
+          class="btn btn-primary"
+        >
+
+          Save Student
+
+        </button>
+
+
+      </div>
+
+
+    </form>
+
+
   </div>
 
-  <script src="script.js"></script>
+
+</div>
+
+
+
+<script
+  src="script.js"
+></script>
+
+
 </body>
+
 </html>
