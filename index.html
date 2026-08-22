@@ -1,93 +1,72 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="light">
+<html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Class_NW_B — University Networking Class Management</title>
-  <meta name="description" content="Class_NW_B: manage students, teachers, courses, schedule, attendance, assignments, exams and grades for the university Networking class." />
-  <link rel="icon" href="/favicon.ico" type="image/x-icon" />
-  <link rel="stylesheet" href="style.css" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Class_NW_B</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <div class="app">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <h2>Class_NW_B</h2>
+      <nav>
+        <ul>
+          <li data-section="dashboard">Dashboard</li>
+          <li data-section="students">Students</li>
+          <li data-section="attendance">Attendance</li>
+          <li data-section="subjects">Subjects</li>
+          <li data-section="schedule">Schedule</li>
+          <li data-section="assignments">Assignments</li>
+          <li data-section="scores">Scores</li>
+          <li data-section="announcements">Announcements</li>
+          <li data-section="profile">Profile</li>
+          <li data-section="settings">Settings</li>
+        </ul>
+      </nav>
+    </aside>
 
-<!-- ============ LOGIN SCREEN ============ -->
-<div id="loginScreen" class="login-wrap">
-  <div class="login-card">
-    <div class="login-brand">
-      <div class="logo">NW</div>
-      <div>
-        <h1>Class_NW_B</h1>
-        <p>University Networking Class Management</p>
-      </div>
-    </div>
-    <form id="loginForm" novalidate>
-      <label for="loginEmail">Email</label>
-      <input type="email" id="loginEmail" placeholder="you@university.edu" autocomplete="username" />
-      <label for="loginPassword">Password</label>
-      <div class="pw-field">
-        <input type="password" id="loginPassword" placeholder="••••••••" autocomplete="current-password" />
-        <button type="button" id="togglePw" class="pw-toggle" aria-label="Show password">Show</button>
-      </div>
-      <label class="checkline"><input type="checkbox" id="rememberMe" checked /> Remember me</label>
-      <div id="loginError" class="form-error" hidden></div>
-      <button type="submit" id="loginBtn" class="btn btn-primary btn-block">Sign in</button>
-    </form>
-    <div class="login-hint">
-      <strong>Demo accounts</strong> (used when no Apps Script URL is set):<br />
-      admin@nw.edu / admin123 · teacher@nw.edu / teacher123 · student@nw.edu / student123
-    </div>
+    <!-- Main Content -->
+    <main class="main">
+      <header class="header">
+        <h1 id="section-title">Dashboard</h1>
+      </header>
+
+      <section id="dashboard" class="section active">
+        <div class="card">Total Students: <span id="total-students">0</span></div>
+        <div class="card">Present Today: <span id="present-today">0</span></div>
+        <div class="card">Absent Today: <span id="absent-today">0</span></div>
+        <div class="card">Late Today: <span id="late-today">0</span></div>
+        <div class="card">Total Subjects: <span id="total-subjects">0</span></div>
+        <div class="card">Upcoming Assignments: <span id="upcoming-assignments">0</span></div>
+      </section>
+
+      <section id="students" class="section">
+        <h2>Students</h2>
+        <input type="text" id="search-student" placeholder="Search students...">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th><th>Name</th><th>Gender</th><th>Major</th><th>Year</th><th>Class</th><th>Phone</th><th>Email</th><th>Status</th><th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="students-table"></tbody>
+        </table>
+      </section>
+
+      <!-- Other sections -->
+      <section id="attendance" class="section"><h2>Attendance</h2></section>
+      <section id="subjects" class="section"><h2>Subjects</h2></section>
+      <section id="schedule" class="section"><h2>Schedule</h2></section>
+      <section id="assignments" class="section"><h2>Assignments</h2></section>
+      <section id="scores" class="section"><h2>Scores</h2></section>
+      <section id="announcements" class="section"><h2>Announcements</h2></section>
+      <section id="profile" class="section"><h2>Profile</h2></section>
+      <section id="settings" class="section"><h2>Settings</h2></section>
+    </main>
   </div>
-</div>
 
-<!-- ============ APP ============ -->
-<div id="app" class="app" hidden>
-  <aside id="sidebar" class="sidebar">
-    <div class="sidebar-head">
-      <div class="logo">NW</div>
-      <div class="sidebar-title">
-        <strong>Class_NW_B</strong>
-        <span>Networking Dept.</span>
-      </div>
-    </div>
-    <nav id="navMenu" class="nav"></nav>
-    <button id="logoutBtn" class="btn btn-ghost btn-block nav-logout">Logout</button>
-  </aside>
-  <div id="overlay" class="overlay" hidden></div>
-
-  <div class="main">
-    <header class="topbar">
-      <button id="menuBtn" class="icon-btn" aria-label="Toggle menu">☰</button>
-      <h2 id="pageTitle">Dashboard</h2>
-      <div class="topbar-right">
-        <button id="themeBtn" class="icon-btn" aria-label="Toggle theme">🌙</button>
-        <div class="user-chip">
-          <span id="userAvatar" class="avatar">U</span>
-          <span class="user-meta">
-            <strong id="userName">User</strong>
-            <small id="userRole">Role</small>
-          </span>
-        </div>
-      </div>
-    </header>
-    <main id="views" class="views"></main>
-  </div>
-</div>
-
-<!-- ============ MODAL ============ -->
-<div id="modal" class="modal" hidden>
-  <div class="modal-card" role="dialog" aria-modal="true">
-    <div class="modal-head">
-      <h3 id="modalTitle">Title</h3>
-      <button id="modalClose" class="icon-btn" aria-label="Close">✕</button>
-    </div>
-    <div id="modalBody" class="modal-body"></div>
-    <div id="modalFoot" class="modal-foot"></div>
-  </div>
-</div>
-
-<div id="loader" class="loader" hidden><div class="spinner"></div></div>
-<div id="toasts" class="toasts"></div>
-
-<script src="script.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>
