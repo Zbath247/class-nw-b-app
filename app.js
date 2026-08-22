@@ -20,6 +20,7 @@ const elements = {
   statTotalClasses: document.getElementById("statTotalClasses"),
   statTotalSessions: document.getElementById("statTotalSessions"),
   statTotalLessons: document.getElementById("statTotalLessons"),
+  statTotalStudents: document.getElementById("statTotalStudents"), // [ADDED]
   lessonList: document.getElementById("lessonList"),
   studentList: document.getElementById("studentList"),
   addLessonForm: document.getElementById("addLessonForm"),
@@ -63,14 +64,9 @@ function refreshIcons() {
   });
 }
 
-// [ADDED] Helper Function សម្រាប់ Format ISO Date ទៅជា DD/MM/YYYY
 function formatDate(dateStr) {
   if (!dateStr) return '';
-  
-  // ប្រសិនបើជា Format DD/MM/YYYY រួចហើយ មិនបាច់ Format ទេ
-  if (/^\d{2}\/\d{2}\/\d{4}$/.test(dateStr)) {
-    return dateStr;
-  }
+  if (/^\d{2}\/\d{2}\/\d{4}$/.test(dateStr)) return dateStr;
 
   const date = new Date(dateStr);
   if (isNaN(date.getTime())) return dateStr;
@@ -212,9 +208,10 @@ async function fetchLessons() {
   }
 }
 
-// [EDITED] បន្ថែម formatDate(student.dob) ដើម្បីបង្ហាញថ្ងៃខែឆ្នាំកំណើតឱ្យត្រឹមត្រូវ
+// [UPDATED] អាប់ដេតចំនួនសរុបនិស្សិត Dynamic តាម API Data
 async function fetchStudents() {
   const studentContainer = elements.studentList || document.getElementById("studentList");
+  const totalStudentBadge = elements.statTotalStudents || document.getElementById("statTotalStudents");
   if (!studentContainer) return;
 
   try {
@@ -229,10 +226,21 @@ async function fetchStudents() {
             មិនទាន់មានទិន្នន័យនិស្សិតនៅឡើយទេ។
           </td>
         </tr>`;
+      if (totalStudentBadge) totalStudentBadge.innerText = "សរុប ០ នាក់ (ស្រី ០ នាក់)";
       return;
     }
 
+    // គណនាចំនួនសរុប និងចំនួនសិស្សស្រី
+    const totalCount = data.length;
+    const femaleCount = data.filter(student => String(student.gender).trim() === "ស្រី").length;
+
+    if (totalStudentBadge) {
+      totalStudentBadge.innerText = `សរុប ${totalCount} នាក់ (ស្រី ${femaleCount} នាក់)`;
+    }
+
     const fragment = document.createDocumentFragment();
+    const isAdmin = state.currentUser?.role === "admin";
+
     data.forEach((student, index) => {
       const tr = document.createElement("tr");
       tr.className = "hover:bg-slate-800/40 transition duration-150 border-b border-slate-800/40";
@@ -250,11 +258,25 @@ async function fetchStudents() {
           </span>
         </td>
         <td class="py-3 px-4 text-slate-400 text-xs font-mono">${escapeHTML(formattedDob)}</td>
+        ${isAdmin ? `
+          <td class="py-3 px-4 text-right">
+            <button data-id="${escapeHTML(student.student_id)}" class="btn-delete-student p-1.5 bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/20 rounded-lg transition" title="លុបនិស្សិត">
+              <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+            </button>
+          </td>
+        ` : ''}
       `;
+
+      if (isAdmin) {
+        const deleteBtn = tr.querySelector('.btn-delete-student');
+        deleteBtn?.addEventListener('click', () => deleteStudent(student.student_id));
+      }
+
       fragment.appendChild(tr);
     });
 
     studentContainer.replaceChildren(fragment);
+    refreshIcons();
   } catch (err) {
     console.error("Error fetching students:", err);
     studentContainer.innerHTML = `
@@ -263,6 +285,26 @@ async function fetchStudents() {
           មិនអាចទាញយកទិន្នន័យនិស្សិតបានទេ។
         </td>
       </tr>`;
+  }
+}
+
+// [ADDED] មុខងារលុបនិស្សិតសម្រាប់ Admin
+async function deleteStudent(studentId) {
+  if (!studentId || !confirm("តើអ្នកប្រាកដជាចង់លុបទិន្នន័យនិស្សិតនេះមែនទេ?")) return;
+
+  try {
+    const res = await fetch(`${API_URL}?action=deleteStudent&student_id=${encodeURIComponent(studentId)}`);
+    const data = await res.json();
+
+    if (data?.status === "success") {
+      alert("លុបទិន្នន័យនិស្សិតជោគជ័យ!");
+      fetchStudents();
+    } else {
+      alert(data?.message || "មានបញ្ហាក្នុងការលុបទិន្នន័យនិស្សិត!");
+    }
+  } catch (err) {
+    console.error("Delete Student Error:", err);
+    alert("មានបញ្ហាក្នុងការលុបទិន្នន័យនិស្សិត!");
   }
 }
 
