@@ -1,4 +1,4 @@
-const API_URL = "https://script.google.com/macros/s/AKfycbw54cEpJFju9PZhA1G5cuaenmx8r8EfX3Mcdq2L9mVSIVLL6bn8aT7aeyldGTbDaohJ/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbxeSpP2GT0mH0qsOkg_Mpi_3k6HTlBT5p_kjxaNVVggnwjjWBym6ItW1y-VHnU0EKy0/exec";
 
 let currentUser = null;
 
@@ -11,44 +11,35 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 });
 
-// Login Handler
+// Login Handler using GET Parameters (Eliminating CORS Issues)
 document.getElementById("loginForm").addEventListener("submit", function(e) {
   e.preventDefault();
   const btn = document.getElementById("loginBtn");
   btn.innerText = "កំពុងផ្ទៀងផ្ទាត់...";
   btn.disabled = true;
 
-  const payload = {
-    action: "login",
-    email: document.getElementById("loginEmail").value,
-    password: document.getElementById("loginPassword").value
-  };
+  const email = encodeURIComponent(document.getElementById("loginEmail").value.trim());
+  const password = encodeURIComponent(document.getElementById("loginPassword").value.trim());
 
-  fetch(API_URL, {
-    method: "POST",
-    headers: {
-      "Content-Type": "text/plain;charset=utf-8",
-    },
-    body: JSON.stringify(payload)
-  })
-  .then(res => res.json())
-  .then(data => {
-    if (data.status === "success") {
-      currentUser = data.user;
-      localStorage.setItem("user", JSON.stringify(currentUser));
-      showDashboard();
-    } else {
-      alert(data.message);
-    }
-  })
-  .catch(err => {
-    console.error(err);
-    alert("មានបញ្ហាក្នុងការភ្ជាប់ទៅកាន់ Server! សូមពិនិត្យមើល Web App Deployment Permissions (Who has access: Anyone) ក្នុង Apps Script។");
-  })
-  .finally(() => {
-    btn.innerText = "ចូលប្រព័ន្ធ";
-    btn.disabled = false;
-  });
+  fetch(`${API_URL}?action=login&email=${email}&password=${password}`)
+    .then(res => res.json())
+    .then(data => {
+      if (data.status === "success") {
+        currentUser = data.user;
+        localStorage.setItem("user", JSON.stringify(currentUser));
+        showDashboard();
+      } else {
+        alert(data.message);
+      }
+    })
+    .catch(err => {
+      console.error(err);
+      alert("មានបញ្ហាក្នុងការភ្ជាប់ទៅកាន់ Server! សូមពិនិត្យមើល permissions (Who has access: Anyone)។");
+    })
+    .finally(() => {
+      btn.innerText = "ចូលប្រព័ន្ធ";
+      btn.disabled = false;
+    });
 });
 
 function showDashboard() {
@@ -58,7 +49,6 @@ function showDashboard() {
   document.getElementById("userName").innerText = currentUser.name;
   document.getElementById("userRole").innerText = currentUser.role;
 
-  // Show Admin Panel for Admin Role
   if (currentUser.role === "admin") {
     document.getElementById("adminPanel").classList.remove("hidden");
   } else {
@@ -99,7 +89,7 @@ function fetchSchedules() {
         `;
       });
     })
-    .catch(err => console.error("Schedule Fetch Error:", err));
+    .catch(err => console.error("Schedule Error:", err));
 }
 
 // Fetch Lessons
@@ -130,40 +120,32 @@ function fetchLessons() {
         `;
       });
     })
-    .catch(err => console.error("Lesson Fetch Error:", err));
+    .catch(err => console.error("Lesson Error:", err));
 }
 
-// Add Lesson Form Handler (Admin Only)
+// Add Lesson Handler
 document.getElementById("addLessonForm").addEventListener("submit", function(e) {
   e.preventDefault();
   const btn = document.getElementById("addLessonBtn");
   btn.innerText = "កំពុងរក្សាទុក...";
   btn.disabled = true;
 
-  const payload = {
-    action: "addLesson",
-    lesson_id: "LES-" + Date.now(),
-    title: document.getElementById("lessonTitle").value,
-    description: document.getElementById("lessonDesc").value,
-    file_url: document.getElementById("fileUrl").value,
-    class_code: document.getElementById("classCode").value
-  };
+  const lessonId = "LES-" + Date.now();
+  const title = encodeURIComponent(document.getElementById("lessonTitle").value);
+  const desc = encodeURIComponent(document.getElementById("lessonDesc").value);
+  const fileUrl = encodeURIComponent(document.getElementById("fileUrl").value);
+  const classCode = encodeURIComponent(document.getElementById("classCode").value);
 
-  fetch(API_URL, {
-    method: "POST",
-    headers: {
-      "Content-Type": "text/plain;charset=utf-8",
-    },
-    body: JSON.stringify(payload)
-  })
-  .then(() => {
-    alert("បញ្ចូលមេរៀនជោគជ័យ!");
-    document.getElementById("addLessonForm").reset();
-    setTimeout(fetchLessons, 1000);
-  })
-  .catch(err => alert("មានបញ្ហាក្នុងការបញ្ចូលមេរៀន!"))
-  .finally(() => {
-    btn.innerText = "រក្សាទុកមេរៀន";
-    btn.disabled = false;
-  });
+  fetch(`${API_URL}?action=addLesson&lesson_id=${lessonId}&title=${title}&description=${desc}&file_url=${fileUrl}&class_code=${classCode}`)
+    .then(res => res.json())
+    .then(data => {
+      alert("បញ្ចូលមេរៀនជោគជ័យ!");
+      document.getElementById("addLessonForm").reset();
+      fetchLessons();
+    })
+    .catch(err => alert("មានបញ្ហាក្នុងការបញ្ចូលមេរៀន!"))
+    .finally(() => {
+      btn.innerText = "រក្សាទុកមេរៀន";
+      btn.disabled = false;
+    });
 });
