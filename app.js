@@ -36,7 +36,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       } catch (err) {
         console.error("Login Error:", err);
-        alert("មានបញ្ហាក្នុងการភ្ជាប់ទៅកាន់ Server!");
+        alert("មានបញ្ហាក្នុងការភ្ជាប់ទៅកាន់ Server!");
       }
     });
   }
@@ -92,7 +92,7 @@ function setButtonLoading(button, isLoading, text, iconName = "save") {
   if (typeof lucide !== 'undefined') lucide.createIcons();
 }
 
-// ប្រមូលផ្ដុំមុខងារទាញយកទិន្នន័យទាំងអស់ (Students, Classes, Lessons, Schedules)
+// ប្រមូលផ្ដុំមុខងារទាញយកទិន្នន័យទាំងអស់
 function fetchAllData() {
   fetchStudents();
   fetchClasses();
@@ -100,7 +100,7 @@ function fetchAllData() {
   fetchSchedules();
 }
 
-// 1. មុខងារទាញយកទិន្នន័យនិស្សិតពី Server មកបង្ហាញក្នុងតារាង
+// 1. មុខងារទាញយក និងបង្ហាញទិន្នន័យនិស្សិត
 async function fetchStudents() {
   const tbody = document.getElementById("studentList");
   if (tbody) {
@@ -140,43 +140,78 @@ async function fetchStudents() {
   }
 }
 
-// 2. មុខងារទាញយកទិន្នន័យថ្នាក់រៀន (Classes)
+// 2. មុខងារទាញយក និងបង្ហាញទិន្នន័យថ្នាក់រៀន (Classes)
 async function fetchClasses() {
   try {
     const res = await fetch(`${API_URL}?action=getClasses`);
     const classes = await res.json();
-    console.log("Classes fetched:", classes);
-    // បើអ្នកមាន ID សម្រាប់បង្ហាញ Classes អាចដាក់កូដបង្ហាញទីនេះ
+    
+    // បើអ្នកមាន ID Container សម្រាប់បង្ហាញ Classes (ឧ. classList) អាចកែសម្រួលទីនេះ
+    const classContainer = document.getElementById("classList");
+    if (classContainer && Array.isArray(classes)) {
+      classContainer.innerHTML = classes.map(c => `
+        <div class="p-3 bg-slate-800/50 rounded-lg border border-slate-700/50 mb-2">
+          <div class="font-bold text-white">${c.class_name}</div>
+          <div class="text-sm text-indigo-400">កូដថ្នាក់៖ ${c.class_code} | គ្រូបង្រៀន៖ ${c.teacher_name}</div>
+        </div>
+      `).join('');
+    }
   } catch (err) {
     console.error("Error fetching classes:", err);
   }
 }
 
-// 3. មុខងារទាញយកទិន្នន័យមេរៀន (Lessons)
+// 3. មុខងារទាញយក និងបង្ហាញទិន្នន័យមេរៀន (Lessons)
 async function fetchLessons() {
   try {
     const res = await fetch(`${API_URL}?action=getLessons`);
     const lessons = await res.json();
-    console.log("Lessons fetched:", lessons);
-    // បើអ្នកមាន ID សម្រាប់បង្ហាញ Lessons អាចដាក់កូដបង្ហាញទីនេះ
+    
+    // បើអ្នកមាន ID Container សម្រាប់បង្ហាញ Lessons (ឧ. lessonList) អាចកែសម្រួលទីនេះ
+    const lessonContainer = document.getElementById("lessonList");
+    if (lessonContainer && Array.isArray(lessons)) {
+      lessonContainer.innerHTML = lessons.map(l => `
+        <div class="p-4 bg-slate-800/50 rounded-lg border border-slate-700/50 mb-3">
+          <h4 class="font-bold text-white">${l.title}</h4>
+          <p class="text-sm text-slate-300 mt-1">${l.description || ''}</p>
+          <div class="mt-2">
+            <a href="${l.file_url}" target="_blank" class="text-indigo-400 hover:underline text-sm flex items-center gap-1">
+              <i data-lucide="external-link" class="w-3.5 h-3.5"></i> មើលឯកសារមេរៀន
+            </a>
+          </div>
+        </div>
+      `).join('');
+      if (typeof lucide !== 'undefined') lucide.createIcons();
+    }
   } catch (err) {
     console.error("Error fetching lessons:", err);
   }
 }
 
-// 4. មុខងារទាញយកទិន្នន័យកាលវិភាគសិក្សា (Schedules)
+// 4. មុខងារទាញយក និងបង្ហាញទិន្នន័យកាលវិភាគសិក្សា (Schedules)
 async function fetchSchedules() {
   try {
     const res = await fetch(`${API_URL}?action=getSchedules`);
     const schedules = await res.json();
-    console.log("Schedules fetched:", schedules);
-    // បើអ្នកមាន ID សម្រាប់បង្ហាញ Schedules អាចដាក់កូដបង្ហាញទីនេះ
+    
+    // បើអ្នកមាន ID Container សម្រាប់បង្ហាញ Schedules (ឧ. scheduleList) អាចកែសម្រួលទីនេះ
+    const scheduleContainer = document.getElementById("scheduleList");
+    if (scheduleContainer && Array.isArray(schedules)) {
+      scheduleContainer.innerHTML = schedules.map(sch => `
+        <tr class="hover:bg-slate-900/50 transition border-b border-slate-800/40">
+          <td class="py-3 px-4 text-slate-300">${sch.day || ''}</td>
+          <td class="py-3 px-4 text-slate-300">${sch.time || ''}</td>
+          <td class="py-3 px-4 font-bold text-white">${sch.subject || ''}</td>
+          <td class="py-3 px-4 text-indigo-400">${sch.room || ''}</td>
+        </tr>
+      `).join('');
+    }
   } catch (err) {
     console.error("Error fetching schedules:", err);
   }
 }
 
-// មុខងារបញ្ជូនទិន្នន័យបន្ថែមនិស្សិតថ្មីទៅកាន់ Server (API)
+// 5. មុខងារបន្ថែមនិស្សិតថ្មី
 async function handleAddStudent(e) {
   e.preventDefault();
   
