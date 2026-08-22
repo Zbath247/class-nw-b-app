@@ -21,6 +21,7 @@ const elements = {
   statTotalSessions: document.getElementById("statTotalSessions"),
   statTotalLessons: document.getElementById("statTotalLessons"),
   lessonList: document.getElementById("lessonList"),
+  studentList: document.getElementById("studentList"), // [ADDED] Reference ទៅកាន់ studentList
   addLessonForm: document.getElementById("addLessonForm"),
   addLessonBtn: document.getElementById("addLessonBtn"),
 };
@@ -112,6 +113,7 @@ function showDashboard() {
 
   fetchSchedules();
   fetchLessons();
+  fetchStudents(); // [ADDED] ហៅទាញយកទិន្នន័យបញ្ជីឈ្មោះនិស្សិត
   refreshIcons();
 }
 
@@ -186,6 +188,57 @@ async function fetchLessons() {
     renderLessonsByFilter();
   } catch (err) {
     console.error("Lesson Fetch Error:", err);
+  }
+}
+
+// [ADDED] មុខងារទាញយកបញ្ជីឈ្មោះនិស្សិតពី Google Sheet / Backend Proxy
+async function fetchStudents() {
+  const studentContainer = elements.studentList || document.getElementById("studentList");
+  if (!studentContainer) return;
+
+  try {
+    const res = await fetch(`${API_URL}?action=getStudents`);
+    if (!res.ok) throw new Error(`HTTP Error: ${res.status}`);
+    const data = await res.json();
+
+    if (!Array.isArray(data) || data.length === 0) {
+      studentContainer.innerHTML = `
+        <tr>
+          <td colspan="6" class="py-8 text-center text-slate-400 font-medium">
+            មិនទាន់មានទិន្នន័យនិស្សិតនៅឡើយទេ។
+          </td>
+        </tr>`;
+      return;
+    }
+
+    const fragment = document.createDocumentFragment();
+    data.forEach((student, index) => {
+      const tr = document.createElement("tr");
+      tr.className = "hover:bg-slate-800/40 transition duration-150 border-b border-slate-800/40";
+      tr.innerHTML = `
+        <td class="py-3 px-4 text-slate-500 font-mono text-xs">${index + 1}</td>
+        <td class="py-3 px-4 font-mono font-bold text-indigo-400">${escapeHTML(student.student_id || '')}</td>
+        <td class="py-3 px-4 font-semibold text-white">${escapeHTML(student.khmer_name || '')}</td>
+        <td class="py-3 px-4 text-slate-300 uppercase text-xs font-medium tracking-wide">${escapeHTML(student.latin_name || '')}</td>
+        <td class="py-3 px-4">
+          <span class="px-2.5 py-0.5 rounded-md text-[11px] font-extrabold ${student.gender === 'ស្រី' ? 'bg-pink-500/10 text-pink-400 border border-pink-500/20' : 'bg-blue-500/10 text-blue-400 border border-blue-500/20'}">
+            ${escapeHTML(student.gender || '')}
+          </span>
+        </td>
+        <td class="py-3 px-4 text-slate-400 text-xs font-mono">${escapeHTML(student.dob || '')}</td>
+      `;
+      fragment.appendChild(tr);
+    });
+
+    studentContainer.replaceChildren(fragment);
+  } catch (err) {
+    console.error("Error fetching students:", err);
+    studentContainer.innerHTML = `
+      <tr>
+        <td colspan="6" class="py-8 text-center text-rose-400 font-medium">
+          មិនអាចទាញយកទិន្នន័យនិស្សិតបានទេ។
+        </td>
+      </tr>`;
   }
 }
 
@@ -318,10 +371,9 @@ async function handleAddLesson(e) {
   }
 }
 
-// មុខងារកែប្រែមេរៀន (Edit Lesson)
 async function editLesson(item) {
   const newTitle = prompt("បញ្ចូលចំណងជើងថ្មី៖", item.title);
-  if (newTitle === null) return; // User canceled
+  if (newTitle === null) return;
 
   const newDesc = prompt("បញ្ចូលការពិពណ៌នាថ្មី៖", item.description || "");
   if (newDesc === null) return;
