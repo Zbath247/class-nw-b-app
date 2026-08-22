@@ -20,7 +20,7 @@ const elements = {
   statTotalClasses: document.getElementById("statTotalClasses"),
   statTotalSessions: document.getElementById("statTotalSessions"),
   statTotalLessons: document.getElementById("statTotalLessons"),
-  statTotalStudents: document.getElementById("statTotalStudents"), // [ADDED]
+  statTotalStudents: document.getElementById("statTotalStudents"),
   lessonList: document.getElementById("lessonList"),
   studentList: document.getElementById("studentList"),
   addLessonForm: document.getElementById("addLessonForm"),
@@ -109,7 +109,7 @@ async function handleLogin(e) {
     }
   } catch (err) {
     console.error("Login Error:", err);
-    alert("មានបញ្ហាក្នុងការភ្ជាប់ទៅកាន់ Server!");
+    alert("មានបញ្ហាក្នុងการភ្ជាប់ទៅកាន់ Server!");
   } finally {
     setButtonLoading(elements.loginBtn, false, "ចូលប្រព័ន្ធ", "arrow-right");
   }
@@ -208,7 +208,7 @@ async function fetchLessons() {
   }
 }
 
-// [UPDATED] អាប់ដេតចំនួនសរុបនិស្សិត Dynamic តាម API Data
+// មុខងារទាញយក និងបង្ហាញទិន្នន័យនិស្សិត (ការពារ [object Object] និងបន្ថែមប៊ូតុង Edit/Delete)
 async function fetchStudents() {
   const studentContainer = elements.studentList || document.getElementById("studentList");
   const totalStudentBadge = elements.statTotalStudents || document.getElementById("statTotalStudents");
@@ -230,9 +230,11 @@ async function fetchStudents() {
       return;
     }
 
-    // គណនាចំនួនសរុប និងចំនួនសិស្សស្រី
     const totalCount = data.length;
-    const femaleCount = data.filter(student => String(student.gender).trim() === "ស្រី").length;
+    const femaleCount = data.filter(student => {
+      const g = String(student.gender || '').trim();
+      return g === "ស្រី" || g.toLowerCase() === "female";
+    }).length;
 
     if (totalStudentBadge) {
       totalStudentBadge.innerText = `សរុប ${totalCount} នាក់ (ស្រី ${femaleCount} នាក់)`;
@@ -245,22 +247,29 @@ async function fetchStudents() {
       const tr = document.createElement("tr");
       tr.className = "hover:bg-slate-800/40 transition duration-150 border-b border-slate-800/40";
       
-      const formattedDob = formatDate(student.dob);
+      const studentId = student.student_id || student.id || student.code || '';
+      const khName = student.khmer_name || student.nameKh || student.name_kh || '';
+      const laName = student.latin_name || student.nameEn || student.name_en || '';
+      const gender = student.gender || '';
+      const formattedDob = formatDate(student.dob || student.birthDate || student.dateOfBirth);
 
       tr.innerHTML = `
         <td class="py-3 px-4 text-slate-500 font-mono text-xs">${index + 1}</td>
-        <td class="py-3 px-4 font-mono font-bold text-indigo-400">${escapeHTML(student.student_id || '')}</td>
-        <td class="py-3 px-4 font-semibold text-white">${escapeHTML(student.khmer_name || '')}</td>
-        <td class="py-3 px-4 text-slate-300 uppercase text-xs font-medium tracking-wide">${escapeHTML(student.latin_name || '')}</td>
+        <td class="py-3 px-4 font-mono font-bold text-indigo-400">${escapeHTML(studentId)}</td>
+        <td class="py-3 px-4 font-semibold text-white">${escapeHTML(khName)}</td>
+        <td class="py-3 px-4 text-slate-300 uppercase text-xs font-medium tracking-wide">${escapeHTML(laName)}</td>
         <td class="py-3 px-4">
-          <span class="px-2.5 py-0.5 rounded-md text-[11px] font-extrabold ${student.gender === 'ស្រី' ? 'bg-pink-500/10 text-pink-400 border border-pink-500/20' : 'bg-blue-500/10 text-blue-400 border border-blue-500/20'}">
-            ${escapeHTML(student.gender || '')}
+          <span class="px-2.5 py-0.5 rounded-md text-[11px] font-extrabold ${gender === 'ស្រី' ? 'bg-pink-500/10 text-pink-400 border border-pink-500/20' : 'bg-blue-500/10 text-blue-400 border border-blue-500/20'}">
+            ${escapeHTML(gender)}
           </span>
         </td>
         <td class="py-3 px-4 text-slate-400 text-xs font-mono">${escapeHTML(formattedDob)}</td>
         ${isAdmin ? `
-          <td class="py-3 px-4 text-right">
-            <button data-id="${escapeHTML(student.student_id)}" class="btn-delete-student p-1.5 bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/20 rounded-lg transition" title="លុបនិស្សិត">
+          <td class="py-3 px-4 text-right flex items-center justify-end gap-1.5">
+            <button data-id="${escapeHTML(studentId)}" class="btn-edit-student p-1.5 bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 border border-amber-500/20 rounded-lg transition" title="កែប្រែនិស្សិត">
+              <i data-lucide="pencil" class="w-3.5 h-3.5"></i>
+            </button>
+            <button data-id="${escapeHTML(studentId)}" class="btn-delete-student p-1.5 bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/20 rounded-lg transition" title="លុបទិន្នន័យនិស្សិត">
               <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
             </button>
           </td>
@@ -268,8 +277,11 @@ async function fetchStudents() {
       `;
 
       if (isAdmin) {
+        const editBtn = tr.querySelector('.btn-edit-student');
+        editBtn?.addEventListener('click', () => editStudent(student));
+
         const deleteBtn = tr.querySelector('.btn-delete-student');
-        deleteBtn?.addEventListener('click', () => deleteStudent(student.student_id));
+        deleteBtn?.addEventListener('click', () => deleteStudent(studentId));
       }
 
       fragment.appendChild(tr);
@@ -288,7 +300,52 @@ async function fetchStudents() {
   }
 }
 
-// [ADDED] មុខងារលុបនិស្សិតសម្រាប់ Admin
+// មុខងារកែប្រែទិន្នន័យនិស្សិតសម្រាប់ Admin
+async function editStudent(student) {
+  const currentId = student.student_id || student.id || '';
+  const newKhName = prompt("កែប្រែឈ្មោះខ្មែរ៖", student.khmer_name || student.nameKh || "");
+  if (newKhName === null) return;
+
+  const newLaName = prompt("កែប្រែឈ្មោះឡាតាំង (Latin):", student.latin_name || student.nameEn || "");
+  if (newLaName === null) return;
+
+  const newGender = prompt("កែប្រែភេទ (ប្រុស / ស្រី):", student.gender || "ប្រុស");
+  if (newGender === null) return;
+
+  const newDob = prompt("កែប្រែថ្ងៃខែឆ្នាំកំណើត (YYYY-MM-DD):", student.dob || "");
+  if (newDob === null) return;
+
+  try {
+    const payload = {
+      action: "editStudent",
+      student_id: currentId,
+      khmer_name: newKhName.trim(),
+      latin_name: newLaName.trim(),
+      gender: newGender.trim(),
+      dob: newDob.trim()
+    };
+
+    const res = await fetch(API_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    });
+
+    const data = await res.json();
+
+    if (data?.status === "success" || data === true) {
+      alert("ធ្វើបច្ចុប្បន្នភាពទិន្នន័យនិស្សិតជោគជ័យ!");
+      fetchStudents();
+    } else {
+      alert(data?.message || "មានបញ្ហាក្នុងការកែប្រែទិន្នន័យនិស្សិត!");
+    }
+  } catch (err) {
+    console.error("Edit Student Error:", err);
+    alert("មានបញ្ហាក្នុងការភ្ជាប់ទៅកាន់ Server!");
+  }
+}
+
+// មុខងារលុបនិស្សិតសម្រាប់ Admin
 async function deleteStudent(studentId) {
   if (!studentId || !confirm("តើអ្នកប្រាកដជាចង់លុបទិន្នន័យនិស្សិតនេះមែនទេ?")) return;
 
