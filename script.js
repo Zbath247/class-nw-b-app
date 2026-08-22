@@ -8,6 +8,7 @@ let rowsPerPage = 8;
 let isAdmin = false;
 let editingId = null;
 
+// បង្ហាញនាឡិកាឌីជីថលរៀងរាល់ ១វិនាទី
 setInterval(() => {
     const now = new Date();
     document.getElementById('digitalClock').innerText = now.toTimeString().split(' ')[0];
@@ -107,6 +108,9 @@ function renderTable() {
     const container = document.getElementById('dynamicViewContainer');
     if (filteredData.length === 0) {
         container.innerHTML = `<div style="padding: 30px; text-align: center; color: var(--text-muted); font-family: 'JetBrains Mono';">NO RECORDS FOUND IN DATABASE.</div>`;
+        document.getElementById('pageInfo').innerText = "PAGE 1 OF 1";
+        document.getElementById('prevBtn').disabled = true;
+        document.getElementById('nextBtn').disabled = true;
         return;
     }
 
@@ -133,11 +137,11 @@ function renderTable() {
     const paginatedItems = filteredData.slice(start, end);
 
     paginatedItems.forEach((item, index) => {
-        let rowId = item.id || index;
+        let rowId = item.id || (start + index);
         html += `<tr>`;
         keys.forEach(key => {
             if(key !== 'id' && key !== 'link') {
-                html += `<td>${item[key]}</td>`;
+                html += `<td>${item[key] !== undefined ? item[key] : ''}</td>`;
             }
         });
         
@@ -263,6 +267,9 @@ async function saveRecord() {
     try {
         await fetch(API_URL, {
             method: 'POST',
+            headers: {
+                'Content-Type': 'text/plain;charset=utf-8',
+            },
             body: JSON.stringify(payload)
         });
         
@@ -282,6 +289,11 @@ const toBase64 = file => new Promise((resolve, reject) => {
     reader.onerror = error => reject(error);
 });
 
+function editRecord(id) {
+    if (!isAdmin) return;
+    showToast("STATUS: EDIT FEATURE COMING SOON");
+}
+
 function deleteRecord(id) {
     if (!isAdmin) return;
     if (confirm("តើអ្នកពិតជាចង់លុបទិន្នន័យនេះមែនទេ?")) {
@@ -297,6 +309,24 @@ function refreshData() {
 }
 
 function exportToCSV() {
+    if (tableData.length === 0) {
+        showToast("ERROR: NO DATA TO EXPORT");
+        return;
+    }
+    
+    let keys = Object.keys(tableData[0]);
+    let csvContent = "data:text/csv;charset=utf-8," 
+        + keys.join(",") + "\n"
+        + tableData.map(row => keys.map(k => `"${row[k] !== undefined ? row[k] : ''}"`).join(",")).join("\n");
+
+    let encodedUri = encodeURI(csvContent);
+    let link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", `${currentTab}_export.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
     showToast("STATUS: CSV EXPORTED");
 }
 
