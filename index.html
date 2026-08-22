@@ -357,6 +357,91 @@
 
   </div>
 
+  <!-- Modal សម្រាប់បន្ថែមនិស្សិតថ្មី -->
+  <div id="addStudentModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
+    <div class="glass-card-dark border border-slate-700/80 w-full max-w-md rounded-3xl p-6 sm:p-8 shadow-2xl relative animate-in fade-in zoom-in-95 duration-200">
+      <div class="flex justify-between items-center mb-6 pb-4 border-b border-slate-800">
+        <div class="flex items-center gap-3">
+          <div class="p-2 bg-indigo-500/10 rounded-xl border border-indigo-500/20 text-indigo-400">
+            <i data-lucide="user-plus" class="w-5 h-5"></i>
+          </div>
+          <h3 class="text-white font-bold text-base">បន្ថែមព័ត៌មាននិស្សិតថ្មី</h3>
+        </div>
+        <button type="button" onclick="closeAddStudentModal()" class="text-slate-400 hover:text-white p-1.5 hover:bg-slate-800 rounded-xl transition">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <form id="addStudentForm" class="space-y-4">
+        <div>
+          <label for="newStudentId" class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">អត្តលេខ (Student ID)</label>
+          <input type="text" id="newStudentId" required placeholder="ឧ. DUC-NW-048" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-white text-xs placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition">
+        </div>
+        <div>
+          <label for="newKhmerName" class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">គោត្តនាម និងនាម (ឈ្មោះខ្មែរ)</label>
+          <input type="text" id="newKhmerName" required placeholder="ឧ. មោក សម្បត្តិ" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-white text-xs placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition">
+        </div>
+        <div>
+          <label for="newLatinName" class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">ឈ្មោះឡាតាំង (Latin Name)</label>
+          <input type="text" id="newLatinName" placeholder="ឧ. MOK SAMBATH" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-white text-xs placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition">
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label for="newGender" class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">ភេទ</label>
+            <select id="newGender" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-white text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500 transition">
+              <option value="ប្រុស">ប្រុស</option>
+              <option value="ស្រី">ស្រី</option>
+            </select>
+          </div>
+          <div>
+            <label for="newDob" class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">ថ្ងៃខែឆ្នាំកំណើត</label>
+            <input type="date" id="newDob" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-white text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500 transition">
+          </div>
+        </div>
+
+        <div class="flex justify-end gap-3 pt-4 border-t border-slate-800">
+          <button type="button" onclick="closeAddStudentModal()" class="px-5 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-bold transition">បោះបង់</button>
+          <button type="submit" id="saveStudentBtn" class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-500 active:scale-[0.98] text-white rounded-xl text-xs font-bold transition flex items-center gap-2 shadow-lg shadow-indigo-600/30">
+            <i data-lucide="save" class="w-4 h-4"></i>
+            <span>រក្សាទុក</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Script សម្រាប់បន្ថែមប៊ូតុងបើក Modal ក្នុង Admin Panel ដោយស្វ័យប្រវត្តិ -->
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const adminPanelForm = document.querySelector("#adminPanel form");
+      if (adminPanelForm) {
+        const studentActionDiv = document.createElement("div");
+        studentActionDiv.className = "md:col-span-2 pt-4 border-t border-slate-800 flex justify-between items-center";
+        studentActionDiv.innerHTML = `
+          <span class="text-xs text-slate-400 font-medium">គ្រប់គ្រងបញ្ជីឈ្មោះនិស្សិតក្នុងថ្នាក់ G1-NW-B</span>
+          <button type="button" onclick="openAddStudentModal()" class="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold transition flex items-center gap-2 shadow-lg shadow-emerald-600/20">
+            <i data-lucide="user-plus" class="w-4 h-4"></i>
+            <span>បន្ថែមនិស្សិតថ្មី</span>
+          </button>
+        `;
+        adminPanelForm.appendChild(studentActionDiv);
+        if (typeof lucide !== 'undefined') lucide.createIcons();
+      }
+    });
+
+    function openAddStudentModal() {
+      const modal = document.getElementById("addStudentModal");
+      if (modal) modal.classList.remove("hidden");
+    }
+
+    function closeAddStudentModal() {
+      const modal = document.getElementById("addStudentModal");
+      if (modal) modal.classList.add("hidden");
+      const form = document.getElementById("addStudentForm");
+      if (form) form.reset();
+    }
+  </script>
+
   <script src="app.js" defer></script>
 </body>
 </html>
