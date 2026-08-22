@@ -11,7 +11,7 @@ export default function handler(req, res) {
   }
 
   // URL Google Apps Script របស់អ្នក
-  const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxYih92lIL48oKQad6zsD8PZQcQt2_H2Z8MfYOZcLbv9crfhfDwuVR41SDC7BE2BcRt/exec";
+  const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzmQZ9QlBPH6RM_Vjs_lWKiGBL7jTPguUhzjwGt-gMe6Qsp329rPiqdPVsZrxF3QUXS/exec";
 
   // បង្កើត Query String
   const queryParams = new URLSearchParams(req.query).toString();
