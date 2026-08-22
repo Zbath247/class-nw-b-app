@@ -9,7 +9,7 @@
    Until a real URL is set, the app runs on built-in DEMO data
    so every screen and button stays usable.
 ========================================================= */
-const API_URL = "YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL";
+const API_URL = "https://script.google.com/macros/s/AKfycbyX16XnIsn1klExZVcIiwEBOuJxA-AYm33JRUzb0340tdzojhzy_OaJfKwqza_GUzmS/exec";
 
 const USE_DEMO = !API_URL || API_URL.indexOf("script.google.com") === -1;
 
