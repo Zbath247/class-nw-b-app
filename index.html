@@ -1,180 +1,93 @@
 <!DOCTYPE html>
-<html lang="km" data-theme="dark">
+<html lang="en" data-theme="light">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CLASS G1-NW-B | Digital Enterprise Portal</title>
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Kantumruy+Pro:wght@300;400;600;700&display=swap" rel="stylesheet">
-    <!-- FontAwesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Class_NW_B — University Networking Class Management</title>
+  <meta name="description" content="Class_NW_B: manage students, teachers, courses, schedule, attendance, assignments, exams and grades for the university Networking class." />
+  <link rel="icon" href="/favicon.ico" type="image/x-icon" />
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
-    <div class="cyber-grid-bg"></div>
-    <div class="ambient-glow"></div>
-
-    <div class="app-container">
-        <!-- University Enterprise Header -->
-        <header class="app-header">
-            <div class="brand-section">
-                <div class="logo-container">
-                    <img src="logo.png" alt="University Logo" class="university-logo" onerror="this.src='https://cdn-icons-png.flaticon.com/512/3135/3135715.png'">
-                </div>
-                <div>
-                    <div class="digital-badge">DIGITAL UNIVERSITY PORTAL</div>
-                    <h1>CLASS G1-NW-B</h1>
-                </div>
-            </div>
-            
-            <div class="header-actions">
-                <div class="digital-clock" id="digitalClock">00:00:00</div>
-                <button class="icon-btn" onclick="toggleDarkMode()" title="Toggle Theme">
-                    <i class="fa-solid fa-moon" id="themeIcon"></i>
-                </button>
-                <button class="admin-login-btn" id="authBtn" onclick="handleAuthClick()">
-                    <i class="fa-solid fa-shield-halved"></i> <span id="authText">Admin Auth</span>
-                </button>
-            </div>
-        </header>
-
-        <!-- Navigation System Tabs -->
-        <nav class="nav-tabs">
-            <button class="tab-btn active" id="btnSchedule" onclick="switchTab('schedule')">
-                <i class="fa-solid fa-calendar-days"></i> SCHEDULE.exe
-            </button>
-            <button class="tab-btn" id="btnStudents" onclick="switchTab('students')">
-                <i class="fa-solid fa-users-rectangle"></i> STUDENTS.db
-            </button>
-            <button class="tab-btn" id="btnMaterials" onclick="switchTab('materials')">
-                <i class="fa-solid fa-folder-tree"></i> LIBRARY.lib
-            </button>
-        </nav>
-
-        <!-- University Analytics & Modules Stats -->
-        <section class="stats-grid">
-            <div class="stat-card">
-                <div>
-                    <span class="stat-label">ACTIVE MODULES</span>
-                    <h2>05 <span style="font-size: 13px; color: var(--primary-cyan);">UNITS</span></h2>
-                </div>
-                <div class="stat-icon-box pulse">
-                    <i class="fa-solid fa-cube"></i>
-                </div>
-            </div>
-            <div class="stat-card">
-                <div>
-                    <span class="stat-label">DATABASE RECORDS</span>
-                    <h2 id="statColumns" class="active-status">00</h2>
-                </div>
-                <div class="stat-icon-box">
-                    <i class="fa-solid fa-database"></i>
-                </div>
-            </div>
-            <div class="stat-card">
-                <div>
-                    <span class="stat-label">SYSTEM SECURITY</span>
-                    <h2 style="color: #10b981;">SECURE</h2>
-                </div>
-                <div class="stat-icon-box" style="color: #10b981; background: rgba(16, 185, 129, 0.08); border-color: rgba(16, 185, 129, 0.2);">
-                    <i class="fa-solid fa-shield-halved"></i>
-                </div>
-            </div>
-        </section>
-
-        <!-- Dynamic Main Workspace -->
-        <main class="main-content">
-            <div class="section-header">
-                <h2 id="sectionTitle"><i class="fa-solid fa-terminal" style="color: var(--primary-cyan);"></i> កាលវិភាគសិក្សាថ្នាក់រៀន</h2>
-                <p id="sectionSubtitle">Digital Enterprise Portal - Connected via Google Apps Script</p>
-            </div>
-
-            <!-- Query & Controls Bar -->
-            <div class="controls-bar">
-                <div class="search-box">
-                    <i class="fa-solid fa-magnifying-glass"></i>
-                    <input type="text" id="searchInput" placeholder="ស្វែងរកទិន្នន័យក្នុងប្រព័ន្ធ (Query Database)..." oninput="filterTable()">
-                </div>
-                <div class="action-buttons">
-                    <button class="btn-secondary" onclick="refreshData()" title="Refresh Data"><i class="fa-solid fa-rotate"></i> Sync</button>
-                    <button class="btn-secondary" onclick="exportToCSV()" title="Export CSV"><i class="fa-solid fa-download"></i> Export</button>
-                    <button class="btn-primary" id="addBtn" onclick="openAddModal()" style="display: none;"><i class="fa-solid fa-plus"></i> Add Record</button>
-                </div>
-            </div>
-
-            <!-- Dynamic Data View Container -->
-            <div id="dynamicViewContainer" class="table-container">
-                <!-- Data will be injected here via script.js -->
-            </div>
-
-            <!-- Pagination Bar -->
-            <div class="pagination-bar" id="paginationBar">
-                <span id="pageInfo">PAGE 1 OF 1</span>
-                <div class="pagination-btns">
-                    <button id="prevBtn" onclick="changePage(-1)" disabled><i class="fa-solid fa-chevron-left"></i></button>
-                    <button id="nextBtn" onclick="changePage(1)"><i class="fa-solid fa-chevron-right"></i></button>
-                </div>
-            </div>
-        </main>
+<!-- ============ LOGIN SCREEN ============ -->
+<div id="loginScreen" class="login-wrap">
+  <div class="login-card">
+    <div class="login-brand">
+      <div class="logo">NW</div>
+      <div>
+        <h1>Class_NW_B</h1>
+        <p>University Networking Class Management</p>
+      </div>
     </div>
+    <form id="loginForm" novalidate>
+      <label for="loginEmail">Email</label>
+      <input type="email" id="loginEmail" placeholder="you@university.edu" autocomplete="username" />
+      <label for="loginPassword">Password</label>
+      <div class="pw-field">
+        <input type="password" id="loginPassword" placeholder="••••••••" autocomplete="current-password" />
+        <button type="button" id="togglePw" class="pw-toggle" aria-label="Show password">Show</button>
+      </div>
+      <label class="checkline"><input type="checkbox" id="rememberMe" checked /> Remember me</label>
+      <div id="loginError" class="form-error" hidden></div>
+      <button type="submit" id="loginBtn" class="btn btn-primary btn-block">Sign in</button>
+    </form>
+    <div class="login-hint">
+      <strong>Demo accounts</strong> (used when no Apps Script URL is set):<br />
+      admin@nw.edu / admin123 · teacher@nw.edu / teacher123 · student@nw.edu / student123
+    </div>
+  </div>
+</div>
 
-    <!-- Admin Authentication Modal -->
-    <div class="modal-overlay" id="loginModal">
-        <div class="modal-card">
-            <div class="modal-header">
-                <h3><i class="fa-solid fa-key"></i> ADMIN AUTHENTICATION</h3>
-                <button class="close-btn" onclick="closeLoginModal()">&times;</button>
-            </div>
-            <div class="modal-body">
-                <p style="margin-bottom: 14px; font-size: 12px; color: var(--text-muted);">សូមបញ្ចូលលេខសម្ងាត់រដ្ឋបាលដើម្បីទទួលបានសិទ្ធិពេញលេញ (Full Control):</p>
-                <div class="form-group">
-                    <label>ADMIN PASSWORD</label>
-                    <input type="password" id="adminPassword" placeholder="Enter security key..." onkeypress="if(event.key === 'Enter') verifyAdmin()">
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn-secondary" onclick="closeLoginModal()">Cancel</button>
-                <button class="btn-primary" onclick="verifyAdmin()">Authenticate</button>
-            </div>
+<!-- ============ APP ============ -->
+<div id="app" class="app" hidden>
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-head">
+      <div class="logo">NW</div>
+      <div class="sidebar-title">
+        <strong>Class_NW_B</strong>
+        <span>Networking Dept.</span>
+      </div>
+    </div>
+    <nav id="navMenu" class="nav"></nav>
+    <button id="logoutBtn" class="btn btn-ghost btn-block nav-logout">Logout</button>
+  </aside>
+  <div id="overlay" class="overlay" hidden></div>
+
+  <div class="main">
+    <header class="topbar">
+      <button id="menuBtn" class="icon-btn" aria-label="Toggle menu">☰</button>
+      <h2 id="pageTitle">Dashboard</h2>
+      <div class="topbar-right">
+        <button id="themeBtn" class="icon-btn" aria-label="Toggle theme">🌙</button>
+        <div class="user-chip">
+          <span id="userAvatar" class="avatar">U</span>
+          <span class="user-meta">
+            <strong id="userName">User</strong>
+            <small id="userRole">Role</small>
+          </span>
         </div>
+      </div>
+    </header>
+    <main id="views" class="views"></main>
+  </div>
+</div>
+
+<!-- ============ MODAL ============ -->
+<div id="modal" class="modal" hidden>
+  <div class="modal-card" role="dialog" aria-modal="true">
+    <div class="modal-head">
+      <h3 id="modalTitle">Title</h3>
+      <button id="modalClose" class="icon-btn" aria-label="Close">✕</button>
     </div>
+    <div id="modalBody" class="modal-body"></div>
+    <div id="modalFoot" class="modal-foot"></div>
+  </div>
+</div>
 
-    <!-- Add/Edit Record Modal -->
-    <div class="modal-overlay" id="dataModal">
-        <div class="modal-card">
-            <div class="modal-header">
-                <h3 id="modalTitle"><i class="fa-solid fa-pen-to-square"></i> INSERT NEW RECORD</h3>
-                <button class="close-btn" onclick="closeDataModal()">&times;</button>
-            </div>
-            <div class="modal-body" id="modalFormContainer">
-                <!-- Form fields injected dynamically -->
-            </div>
-            <div class="modal-footer">
-                <button class="btn-secondary" onclick="closeDataModal()">Cancel</button>
-                <button class="btn-primary" onclick="saveRecord()">Save to Sheet</button>
-            </div>
-        </div>
-    </div>
+<div id="loader" class="loader" hidden><div class="spinner"></div></div>
+<div id="toasts" class="toasts"></div>
 
-    <!-- PDF Viewer Modal (Added) -->
-    <div class="modal-overlay" id="pdfModal">
-        <div class="modal-card" style="max-width: 850px; width: 92%; height: 85vh; display: flex; flex-direction: column;">
-            <div class="modal-header">
-                <h3 id="pdfModalTitle"><i class="fa-solid fa-file-pdf"></i> PDF VIEWER</h3>
-                <button class="close-btn" onclick="closePdfModal()">&times;</button>
-            </div>
-            <div style="flex: 1; width: 100%; margin-top: 10px;">
-                <iframe id="pdfIframe" src="" style="width: 100%; height: 100%; border: 1px solid var(--border-color); border-radius: 8px;" frameborder="0"></iframe>
-            </div>
-        </div>
-    </div>
-
-    <!-- Toast Notifications -->
-    <div class="toast" id="toast">STATUS: OK</div>
-
-    <!-- Application Script -->
-    <script src="script.js"></script>
+<script src="script.js"></script>
 </body>
 </html>
