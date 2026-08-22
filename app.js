@@ -145,20 +145,20 @@ async function fetchSchedules() {
     const fragment = document.createDocumentFragment();
     data.forEach(item => {
       const tr = document.createElement("tr");
-      tr.className = "hover:bg-slate-50/80 transition duration-150 border-b border-slate-200/60";
+      tr.className = "hover:bg-slate-800/50 transition duration-150 border-b border-slate-800/60";
       tr.innerHTML = `
-        <td class="py-4 px-6 font-bold text-indigo-600 flex items-center gap-2">
-          <i data-lucide="calendar-days" class="w-4 h-4 text-indigo-500"></i>
+        <td class="py-4 px-6 font-bold text-indigo-400 flex items-center gap-2">
+          <i data-lucide="calendar-days" class="w-4 h-4 text-indigo-400"></i>
           ${escapeHTML(item.day || '')}
         </td>
-        <td class="py-4 px-4 text-slate-600 font-semibold">${escapeHTML(item.time || '')}</td>
-        <td class="py-4 px-4 font-bold text-slate-900">${escapeHTML(item.subject || '')}</td>
+        <td class="py-4 px-4 text-slate-300 font-semibold">${escapeHTML(item.time || '')}</td>
+        <td class="py-4 px-4 font-bold text-white">${escapeHTML(item.subject || '')}</td>
         <td class="py-4 px-4">
-          <span class="bg-slate-100 text-slate-700 border border-slate-200 px-2.5 py-1 rounded-lg text-[11px] font-bold">
+          <span class="bg-indigo-500/10 text-indigo-300 border border-indigo-500/20 px-2.5 py-1 rounded-lg text-[11px] font-bold">
             ${escapeHTML(item.room || '')}
           </span>
         </td>
-        <td class="py-4 px-6 text-right text-slate-600 font-medium">${escapeHTML(item.teacher || '')}</td>
+        <td class="py-4 px-6 text-right text-slate-400 font-medium">${escapeHTML(item.teacher || '')}</td>
       `;
       fragment.appendChild(tr);
     });
@@ -193,13 +193,13 @@ function filterLessons(subject, targetBtn = null) {
   state.currentFilter = subject;
 
   document.querySelectorAll('.subject-filter-btn').forEach(btn => {
-    btn.classList.remove('bg-indigo-600', 'text-white', 'shadow-indigo-600/20');
-    btn.classList.add('bg-slate-100', 'text-slate-600', 'hover:bg-slate-200');
+    btn.classList.remove('bg-indigo-600', 'text-white', 'shadow-indigo-600/30');
+    btn.classList.add('bg-slate-800', 'text-slate-300', 'hover:bg-slate-700');
   });
 
   if (targetBtn) {
-    targetBtn.classList.remove('bg-slate-100', 'text-slate-600', 'hover:bg-slate-200');
-    targetBtn.classList.add('bg-indigo-600', 'text-white', 'shadow-indigo-600/20');
+    targetBtn.classList.remove('bg-slate-800', 'text-slate-300', 'hover:bg-slate-700');
+    targetBtn.classList.add('bg-indigo-600', 'text-white', 'shadow-indigo-600/30');
   }
 
   renderLessonsByFilter();
@@ -214,7 +214,7 @@ function renderLessonsByFilter() {
 
   if (filtered.length === 0) {
     elements.lessonList.innerHTML = `
-      <div class='text-slate-400 text-xs text-center py-8 bg-slate-50/50 rounded-2xl border border-dashed border-slate-200'>
+      <div class='text-slate-400 text-xs text-center py-8 bg-slate-900/40 rounded-2xl border border-dashed border-slate-800'>
         មិនទាន់មានមេរៀនសម្រាប់មុខវិជ្ជានេះនៅឡើយទេ។
       </div>`;
     return;
@@ -226,23 +226,26 @@ function renderLessonsByFilter() {
   filtered.forEach(item => {
     const previewUrl = getMobilePreviewLink(item.file_url);
     const card = document.createElement("div");
-    card.className = "p-4 sm:p-5 rounded-2xl border border-slate-200/80 bg-white hover:border-indigo-200 hover:shadow-md transition duration-200 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4";
+    card.className = "p-4 sm:p-5 rounded-2xl border border-slate-800 bg-slate-900/60 hover:border-indigo-500/40 transition duration-200 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4";
 
     card.innerHTML = `
       <div class="space-y-1">
-        <span class="inline-block bg-indigo-50 text-indigo-700 border border-indigo-100 text-[10px] font-extrabold px-2.5 py-0.5 rounded-md uppercase tracking-wider">
+        <span class="inline-block bg-indigo-500/10 text-indigo-300 border border-indigo-500/20 text-[10px] font-extrabold px-2.5 py-0.5 rounded-md uppercase tracking-wider">
           ${escapeHTML(item.class_code || 'G1-NW-B')}
         </span>
-        <h3 class="font-bold text-sm text-slate-900 mt-1">${escapeHTML(item.title || '')}</h3>
-        <p class="text-xs text-slate-500 line-clamp-2">${escapeHTML(item.description || "គ្មានការពិពណ៌នា")}</p>
+        <h3 class="font-bold text-sm text-white mt-1">${escapeHTML(item.title || '')}</h3>
+        <p class="text-xs text-slate-400 line-clamp-2">${escapeHTML(item.description || "គ្មានការពិពណ៌នា")}</p>
       </div>
       <div class="flex items-center gap-2 w-full sm:w-auto">
-        <a href="${escapeHTML(previewUrl)}" target="_blank" rel="noopener noreferrer" class="flex-1 sm:flex-initial bg-emerald-600 hover:bg-emerald-700 active:scale-[0.98] text-white px-4 py-2.5 rounded-xl text-xs font-semibold flex items-center justify-center gap-2 transition shadow-sm shadow-emerald-600/20 whitespace-nowrap">
+        <a href="${escapeHTML(previewUrl)}" target="_blank" rel="noopener noreferrer" class="flex-1 sm:flex-initial bg-emerald-600 hover:bg-emerald-500 active:scale-[0.98] text-white px-4 py-2.5 rounded-xl text-xs font-semibold flex items-center justify-center gap-2 transition shadow-lg shadow-emerald-600/20 whitespace-nowrap">
           <i data-lucide="eye" class="w-4 h-4"></i>
           <span>មើល / Download File</span>
         </a>
         ${isAdmin ? `
-          <button data-id="${escapeHTML(item.lesson_id)}" class="btn-delete-lesson p-2.5 bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200/60 rounded-xl transition active:scale-[0.98]" title="លុបមេរៀន">
+          <button data-id="${escapeHTML(item.lesson_id)}" class="btn-edit-lesson p-2.5 bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 border border-amber-500/20 rounded-xl transition active:scale-[0.98]" title="កែប្រែមេរៀន">
+            <i data-lucide="pencil" class="w-4 h-4"></i>
+          </button>
+          <button data-id="${escapeHTML(item.lesson_id)}" class="btn-delete-lesson p-2.5 bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/20 rounded-xl transition active:scale-[0.98]" title="លុបមេរៀន">
             <i data-lucide="trash-2" class="w-4 h-4"></i>
           </button>
         ` : ''}
@@ -250,6 +253,9 @@ function renderLessonsByFilter() {
     `;
 
     if (isAdmin) {
+      const editBtn = card.querySelector('.btn-edit-lesson');
+      editBtn?.addEventListener('click', () => editLesson(item));
+
       const deleteBtn = card.querySelector('.btn-delete-lesson');
       deleteBtn?.addEventListener('click', () => deleteLesson(item.lesson_id));
     }
@@ -309,6 +315,47 @@ async function handleAddLesson(e) {
     alert("មានបញ្ហាក្នុងការ Upload មេរៀន!");
   } finally {
     setButtonLoading(elements.addLessonBtn, false, "រក្សាទុកមេរៀន", "save");
+  }
+}
+
+// មុខងារកែប្រែមេរៀន (Edit Lesson)
+async function editLesson(item) {
+  const newTitle = prompt("បញ្ចូលចំណងជើងថ្មី៖", item.title);
+  if (newTitle === null) return; // User canceled
+
+  const newDesc = prompt("បញ្ចូលការពិពណ៌នាថ្មី៖", item.description || "");
+  if (newDesc === null) return;
+
+  if (!newTitle.trim()) {
+    alert("ចំណងជើងមិនអាចទទេបានទេ!");
+    return;
+  }
+
+  try {
+    const payload = {
+      action: "editLesson",
+      lesson_id: item.lesson_id,
+      title: newTitle.trim(),
+      description: newDesc.trim()
+    };
+
+    const res = await fetch(API_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    });
+
+    const data = await res.json();
+
+    if (data?.status === "success" || data === true) {
+      alert("ធ្វើបច្ចុប្បន្នភាពមេរៀនជោគជ័យ!");
+      fetchLessons();
+    } else {
+      alert(data?.message || "មានបញ្ហាក្នុងការកែប្រែមេរៀន!");
+    }
+  } catch (err) {
+    console.error("Edit Lesson Error:", err);
+    alert("មានបញ្ហាក្នុងការកែប្រែមេរៀន!");
   }
 }
 
