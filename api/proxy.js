@@ -7,21 +7,36 @@ export const config = {
 };
 
 export default async function handler(req, res) {
-  // កំណត់ CORS Header
+  // កំណត់ CORS Headers
+  res.setHeader('Access-Control-Allow-Credentials', 'true');
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS, PATCH, DELETE, POST, PUT');
+  res.setHeader(
+    'Access-Control-Allow-Headers',
+    'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
+  );
 
+  // ប្រសិនបើជា Preflight Option Request
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
   }
 
-  const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbza7fEBkq3WejAnCCkc1UqUIo11CUbT5_j1UWM36S2A9OOdogQZfN57NXPQtcuRBI5q/exec";
+  // URL Google Apps Script Web App
+  const GOOGLE_SCRIPT_URL = process.env.GOOGLE_SCRIPT_URL || "https://script.google.com/macros/s/AKfycbzXlSgtgz2zwbjOa3-bQAS6jkYn5sKgnPIty_JcoesrTPbZqny4pRPNYGXCqFP_DO-h/exec";
 
   try {
     if (req.method === 'POST') {
-      const postData = typeof req.body === 'object' ? JSON.stringify(req.body) : req.body;
+      let postData;
       
+      // ផ្ទៀងផ្ទាត់ និងរៀបចំ Payload ឲ្យបានត្រឹមត្រូវ
+      if (typeof req.body === 'object') {
+        postData = JSON.stringify(req.body);
+      } else if (typeof req.body === 'string') {
+        postData = req.body;
+      } else {
+        postData = JSON.stringify({});
+      }
+
       const response = await fetch(GOOGLE_SCRIPT_URL, {
         method: 'POST',
         headers: {
@@ -31,10 +46,17 @@ export default async function handler(req, res) {
         redirect: 'follow'
       });
 
-      const data = await response.json();
-      return res.status(200).json(data);
+      const responseText = await response.text();
+      let data;
+      try {
+        data = JSON.parse(responseText);
+      } catch (e) {
+        data = { status: "raw", result: responseText };
+      }
 
-    } else {
+      return res.status(response.status || 200).json(data);
+
+    } else if (req.method === 'GET') {
       const queryParams = new URLSearchParams(req.query).toString();
       const targetUrl = queryParams ? `${GOOGLE_SCRIPT_URL}?${queryParams}` : GOOGLE_SCRIPT_URL;
 
@@ -43,11 +65,23 @@ export default async function handler(req, res) {
         redirect: 'follow'
       });
 
-      const data = await response.json();
-      return res.status(200).json(data);
+      const responseText = await response.text();
+      let data;
+      try {
+        data = JSON.parse(responseText);
+      } catch (e) {
+        data = { status: "raw", result: responseText };
+      }
+
+      return res.status(response.status || 200).json(data);
+    } else {
+      return res.status(405).json({ status: "error", message: "Method Not Allowed" });
     }
   } catch (error) {
-    console.error("Proxy Error:", error);
-    return res.status(500).json({ error: error.message || "Internal Proxy Error" });
+    console.error("Vercel Proxy Error:", error);
+    return res.status(500).json({ 
+      status: "error", 
+      message: error.message || "Internal Proxy Error" 
+    });
   }
 }
