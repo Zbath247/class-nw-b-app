@@ -1,4 +1,4 @@
-const API_URL = "https://script.google.com/macros/s/AKfycbwaYuYqj5IrvSr6-xx_kvujEfhmjU1358iwRe3fkVcmvd_P12sWEsAOn_lEpQsadQgZ/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbw54cEpJFju9PZhA1G5cuaenmx8r8EfX3Mcdq2L9mVSIVLL6bn8aT7aeyldGTbDaohJ/exec";
 
 let currentUser = null;
 
@@ -26,6 +26,9 @@ document.getElementById("loginForm").addEventListener("submit", function(e) {
 
   fetch(API_URL, {
     method: "POST",
+    headers: {
+      "Content-Type": "text/plain;charset=utf-8",
+    },
     body: JSON.stringify(payload)
   })
   .then(res => res.json())
@@ -38,7 +41,10 @@ document.getElementById("loginForm").addEventListener("submit", function(e) {
       alert(data.message);
     }
   })
-  .catch(err => alert("មានបញ្ហាក្នុងការភ្ជាប់ទៅកាន់ Server!"))
+  .catch(err => {
+    console.error(err);
+    alert("មានបញ្ហាក្នុងការភ្ជាប់ទៅកាន់ Server! សូមពិនិត្យមើល Web App Deployment Permissions (Who has access: Anyone) ក្នុង Apps Script។");
+  })
   .finally(() => {
     btn.innerText = "ចូលប្រព័ន្ធ";
     btn.disabled = false;
@@ -92,7 +98,8 @@ function fetchSchedules() {
           </tr>
         `;
       });
-    });
+    })
+    .catch(err => console.error("Schedule Fetch Error:", err));
 }
 
 // Fetch Lessons
@@ -122,7 +129,8 @@ function fetchLessons() {
           </div>
         `;
       });
-    });
+    })
+    .catch(err => console.error("Lesson Fetch Error:", err));
 }
 
 // Add Lesson Form Handler (Admin Only)
@@ -143,6 +151,9 @@ document.getElementById("addLessonForm").addEventListener("submit", function(e) 
 
   fetch(API_URL, {
     method: "POST",
+    headers: {
+      "Content-Type": "text/plain;charset=utf-8",
+    },
     body: JSON.stringify(payload)
   })
   .then(() => {
