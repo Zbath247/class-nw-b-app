@@ -138,6 +138,53 @@
         </form>
       </section>
 
+      <!-- Dashboard Overview Stats -->
+      <section id="statsSection" class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <!-- Card 1: Total Subjects -->
+        <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm flex items-center gap-3">
+          <div class="p-3 bg-indigo-50 text-indigo-600 rounded-xl">
+            <i data-lucide="book-open" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <p class="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">មុខវិជ្ជាសរុប</p>
+            <h3 id="statTotalClasses" class="text-lg font-bold text-slate-800">5</h3>
+          </div>
+        </div>
+
+        <!-- Card 2: Weekly Sessions -->
+        <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm flex items-center gap-3">
+          <div class="p-3 bg-blue-50 text-blue-600 rounded-xl">
+            <i data-lucide="clock" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <p class="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">ម៉ោងសិក្សា/សប្តាហ៍</p>
+            <h3 id="statTotalSessions" class="text-lg font-bold text-slate-800">5 Sessions</h3>
+          </div>
+        </div>
+
+        <!-- Card 3: Lessons Uploaded -->
+        <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm flex items-center gap-3">
+          <div class="p-3 bg-emerald-50 text-emerald-600 rounded-xl">
+            <i data-lucide="file-text" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <p class="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">ឯកសារមេរៀន</p>
+            <h3 id="statTotalLessons" class="text-lg font-bold text-slate-800">0</h3>
+          </div>
+        </div>
+
+        <!-- Card 4: Active Class Code -->
+        <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm flex items-center gap-3">
+          <div class="p-3 bg-amber-50 text-amber-600 rounded-xl">
+            <i data-lucide="graduation-cap" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <p class="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">កូដថ្នាក់</p>
+            <h3 class="text-base font-bold text-slate-800">G1-NW-B</h3>
+          </div>
+        </div>
+      </section>
+
       <!-- Schedules Section -->
       <section class="bg-white rounded-2xl shadow-sm border border-slate-200/80 overflow-hidden">
         <div class="p-5 border-b border-slate-100 flex items-center gap-2 text-indigo-600">
