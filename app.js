@@ -63,6 +63,25 @@ function refreshIcons() {
   });
 }
 
+// [ADDED] Helper Function សម្រាប់ Format ISO Date ទៅជា DD/MM/YYYY
+function formatDate(dateStr) {
+  if (!dateStr) return '';
+  
+  // ប្រសិនបើជា Format DD/MM/YYYY រួចហើយ មិនបាច់ Format ទេ
+  if (/^\d{2}\/\d{2}\/\d{4}$/.test(dateStr)) {
+    return dateStr;
+  }
+
+  const date = new Date(dateStr);
+  if (isNaN(date.getTime())) return dateStr;
+
+  const day = String(date.getUTCDate()).padStart(2, '0');
+  const month = String(date.getUTCMonth() + 1).padStart(2, '0');
+  const year = date.getUTCFullYear();
+
+  return `${day}/${month}/${year}`;
+}
+
 async function handleLogin(e) {
   e.preventDefault();
   const email = elements.loginEmail?.value.trim() || "";
@@ -193,6 +212,7 @@ async function fetchLessons() {
   }
 }
 
+// [EDITED] បន្ថែម formatDate(student.dob) ដើម្បីបង្ហាញថ្ងៃខែឆ្នាំកំណើតឱ្យត្រឹមត្រូវ
 async function fetchStudents() {
   const studentContainer = elements.studentList || document.getElementById("studentList");
   if (!studentContainer) return;
@@ -216,6 +236,9 @@ async function fetchStudents() {
     data.forEach((student, index) => {
       const tr = document.createElement("tr");
       tr.className = "hover:bg-slate-800/40 transition duration-150 border-b border-slate-800/40";
+      
+      const formattedDob = formatDate(student.dob);
+
       tr.innerHTML = `
         <td class="py-3 px-4 text-slate-500 font-mono text-xs">${index + 1}</td>
         <td class="py-3 px-4 font-mono font-bold text-indigo-400">${escapeHTML(student.student_id || '')}</td>
@@ -226,7 +249,7 @@ async function fetchStudents() {
             ${escapeHTML(student.gender || '')}
           </span>
         </td>
-        <td class="py-3 px-4 text-slate-400 text-xs font-mono">${escapeHTML(student.dob || '')}</td>
+        <td class="py-3 px-4 text-slate-400 text-xs font-mono">${escapeHTML(formattedDob)}</td>
       `;
       fragment.appendChild(tr);
     });
@@ -323,7 +346,6 @@ function renderLessonsByFilter(customLessons = null) {
   refreshIcons();
 }
 
-// [ADDED] មុខងារស្វែងរកសកល (Global Real-time Search)
 function handleGlobalSearch(query) {
   const searchTerm = (query || "").trim().toLowerCase();
   const clearBtn = elements.clearSearchBtn || document.getElementById("clearSearchBtn");
@@ -332,7 +354,6 @@ function handleGlobalSearch(query) {
     clearBtn.classList.toggle("hidden", searchTerm === "");
   }
 
-  // 1. Filter បញ្ជីឈ្មោះនិស្សិត (Students Table)
   const studentContainer = elements.studentList || document.getElementById("studentList");
   if (studentContainer) {
     const studentRows = studentContainer.querySelectorAll("tr");
@@ -342,7 +363,6 @@ function handleGlobalSearch(query) {
     });
   }
 
-  // 2. Filter បញ្ជីមេរៀន (Lessons List)
   if (state.allLessons && state.allLessons.length > 0) {
     if (searchTerm === "") {
       renderLessonsByFilter();
@@ -357,7 +377,6 @@ function handleGlobalSearch(query) {
     }
   }
 
-  // 3. Filter កាលវិភាគ (Schedules Table)
   const scheduleContainer = elements.scheduleList || document.getElementById("scheduleList");
   if (scheduleContainer) {
     const scheduleRows = scheduleContainer.querySelectorAll("tr");
@@ -368,7 +387,6 @@ function handleGlobalSearch(query) {
   }
 }
 
-// [ADDED] មុខងារលុបពាក្យស្វែងរក (Clear Search Input)
 function clearGlobalSearch() {
   const input = elements.bottomSearchInput || document.getElementById("bottomSearchInput");
   if (input) {
@@ -523,7 +541,6 @@ function setButtonLoading(btn, isLoading, text, iconName = "loader-2") {
   refreshIcons();
 }
 
-// Global functions declaration for Inline HTML Handlers
 window.handleGlobalSearch = handleGlobalSearch;
 window.clearGlobalSearch = clearGlobalSearch;
 window.filterLessons = filterLessons;
