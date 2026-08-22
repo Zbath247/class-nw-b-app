@@ -1,5 +1,5 @@
 // API Configuration
-const API_URL = "YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL";
+const API_URL = "https://script.google.com/macros/s/AKfycbwohS-KoptupMvspNZNHY54QQ4sTavAERSUPrhF_DrAagivphhoNHDD267Tli8si4wf/exec";
 
 // Navigation
 document.querySelectorAll(".sidebar li").forEach(item => {
