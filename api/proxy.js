@@ -1,4 +1,7 @@
-export default async function handler(req, res) {
+import https from 'https';
+
+export default function handler(req, res) {
+  // កំណត់ CORS Header
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
@@ -7,35 +10,40 @@ export default async function handler(req, res) {
     return res.status(200).end();
   }
 
-  // URL Web App របស់ Apps Script
+  // URL Google Apps Script របស់អ្នក
   const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw54cEpJFju9PZhA1G5cuaenmx8r8EfX3Mcdq2L9mVSIVLL6bn8aT7aeyldGTbDaohJ/exec";
 
-  try {
-    // រៀបចំ URL Parameters
-    const url = new URL(GOOGLE_SCRIPT_URL);
-    Object.keys(req.query).forEach(key => url.searchParams.append(key, req.query[key]));
+  // បង្កើត Query String
+  const queryParams = new URLSearchParams(req.query).toString();
+  const targetUrl = queryParams ? `${GOOGLE_SCRIPT_URL}?${queryParams}` : GOOGLE_SCRIPT_URL;
 
-    const fetchOptions = {
-      method: req.method,
-      redirect: 'follow', // ដើរតាម Google Redirects (302)
-    };
+  // Function សម្រាប់ Handle Redirection របស់ Google (302 Found)
+  const makeRequest = (url) => {
+    https.get(url, (response) => {
+      // ប្រសិនបើ Google បញ្ជូន 301 ឬ 302 Redirection
+      if (response.statusCode === 301 || response.statusCode === 302) {
+        if (response.headers.location) {
+          return makeRequest(response.headers.location);
+        }
+      }
 
-    if (req.method === 'POST') {
-      fetchOptions.body = typeof req.body === 'object' ? JSON.stringify(req.body) : req.body;
-      fetchOptions.headers = { 'Content-Type': 'text/plain;charset=utf-8' };
-    }
+      let data = '';
+      response.on('data', (chunk) => {
+        data += chunk;
+      });
 
-    const response = await fetch(url.toString(), fetchOptions);
-    const textData = await response.text();
+      response.on('end', () => {
+        try {
+          const jsonData = JSON.parse(data);
+          return res.status(200).json(jsonData);
+        } catch (e) {
+          return res.status(500).json({ error: "Failed to parse JSON", raw: data });
+        }
+      });
+    }).on('error', (err) => {
+      return res.status(500).json({ error: err.message });
+    });
+  };
 
-    try {
-      const jsonData = JSON.parse(textData);
-      return res.status(200).json(jsonData);
-    } catch (e) {
-      // បើ Google ឆ្លើយតបជា HTML Error ជំនួសឱ្យ JSON
-      return res.status(500).json({ status: "error", message: "Google Apps Script Response Error", raw: textData });
-    }
-  } catch (error) {
-    return res.status(500).json({ status: "error", message: error.message });
-  }
+  makeRequest(targetUrl);
 }
