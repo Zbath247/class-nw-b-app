@@ -4,86 +4,166 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ប្រព័ន្ធគ្រប់គ្រងថ្នាក់រៀន G1-NW-B</title>
+  <!-- Google Fonts & Tailwind -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:ital,wght@0,300..700;1,300..700&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    body { font-family: 'Kantumruy Pro', sans-serif; }
+    .glass-card {
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(229, 231, 235, 0.8);
+    }
+  </style>
 </head>
-<body class="bg-gray-100 min-h-screen">
+<body class="bg-slate-900 min-h-screen text-slate-800 relative overflow-x-hidden">
 
-  <!-- 1. ផ្ទាំង LOGIN FORM -->
-  <div id="loginSection" class="flex items-center justify-center min-h-screen p-4">
-    <div class="bg-white p-8 rounded-xl shadow-lg w-full max-w-md">
-      <div class="text-center mb-6">
-        <h2 class="text-2xl font-bold text-blue-600">សាកលវិទ្យាល័យឌីជីថលកម្ពុជា</h2>
-        <p class="text-gray-500 text-sm mt-1">ប្រព័ន្ធថ្នាក់រៀន G1-NW-B</p>
+  <!-- Background Animated Blobs -->
+  <div class="fixed top-0 -left-20 w-96 h-96 bg-indigo-600 rounded-full mix-blend-multiply filter blur-3xl opacity-30 pointer-events-none"></div>
+  <div class="fixed bottom-0 right-0 w-96 h-96 bg-blue-500 rounded-full mix-blend-multiply filter blur-3xl opacity-30 pointer-events-none"></div>
+
+  <!-- 1. LOGIN SECTION -->
+  <div id="loginSection" class="flex items-center justify-center min-h-screen p-4 relative z-10">
+    <div class="glass-card p-8 rounded-3xl shadow-2xl w-full max-w-md border border-white/20">
+      <div class="text-center mb-8">
+        <div class="inline-flex p-3 rounded-2xl bg-indigo-50 text-indigo-600 mb-3 shadow-inner">
+          <i data-lucide="graduation-cap" class="w-10 h-10"></i>
+        </div>
+        <h2 class="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-blue-600 bg-clip-text text-transparent">សាកលវិទ្យាល័យឌីជីថលកម្ពុជា</h2>
+        <p class="text-xs text-slate-500 font-medium mt-1">ប្រព័ន្ធគ្រប់គ្រងថ្នាក់រៀន G1-NW-B</p>
       </div>
-      <form id="loginForm" class="space-y-4">
+
+      <form id="loginForm" class="space-y-5">
         <div>
-          <label class="block text-sm font-medium text-gray-700">អ៊ីម៉ែល</label>
-          <input type="email" id="loginEmail" required class="w-full border border-gray-300 p-2.5 rounded-lg mt-1 focus:ring-2 focus:ring-blue-500 outline-none" placeholder="moksambath@gmail.com">
+          <label class="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-2">អ៊ីម៉ែល</label>
+          <div class="relative">
+            <i data-lucide="mail" class="w-5 h-5 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"></i>
+            <input type="email" id="loginEmail" required class="w-full pl-11 pr-4 py-3 rounded-xl border border-slate-200 bg-slate-50/50 text-sm focus:bg-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition" placeholder="example@gmail.com">
+          </div>
         </div>
+
         <div>
-          <label class="block text-sm font-medium text-gray-700">ពាក្យសម្ងាត់</label>
-          <input type="password" id="loginPassword" required class="w-full border border-gray-300 p-2.5 rounded-lg mt-1 focus:ring-2 focus:ring-blue-500 outline-none" placeholder="123456">
+          <label class="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-2">ពាក្យសម្ងាត់</label>
+          <div class="relative">
+            <i data-lucide="lock" class="w-5 h-5 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"></i>
+            <input type="password" id="loginPassword" required class="w-full pl-11 pr-4 py-3 rounded-xl border border-slate-200 bg-slate-50/50 text-sm focus:bg-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition" placeholder="••••••••">
+          </div>
         </div>
-        <button type="submit" id="loginBtn" class="w-full bg-blue-600 text-white py-2.5 rounded-lg font-bold hover:bg-blue-700 transition">ចូលប្រព័ន្ធ</button>
+
+        <button type="submit" id="loginBtn" class="w-full py-3.5 px-4 bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-700 hover:to-blue-700 text-white font-semibold rounded-xl shadow-lg shadow-indigo-500/25 transition duration-200 flex items-center justify-center gap-2">
+          <span>ចូលប្រព័ន្ធ</span>
+          <i data-lucide="arrow-right" class="w-4 h-4"></i>
+        </button>
       </form>
     </div>
   </div>
 
-  <!-- 2. ផ្ទាំង MAIN DASHBOARD -->
-  <div id="dashboardSection" class="hidden p-4 md:p-8 max-w-5xl mx-auto space-y-6">
-    
-    <!-- User Header Bar -->
-    <div class="flex justify-between items-center bg-white p-5 rounded-xl shadow-sm border border-gray-100">
-      <div>
-        <h1 class="text-xl font-bold text-gray-800">សួស្តី, <span id="userName" class="text-blue-600"></span></h1>
-        <p class="text-xs text-gray-500 mt-0.5">តួនាទី៖ <span id="userRole" class="font-bold uppercase text-green-600 bg-green-50 px-2 py-0.5 rounded border border-green-200"></span></p>
+  <!-- 2. DASHBOARD SECTION -->
+  <div id="dashboardSection" class="hidden min-h-screen bg-slate-50 relative z-10 pb-12">
+    <!-- Navbar -->
+    <header class="bg-white/80 backdrop-blur-md sticky top-0 z-50 border-b border-slate-200/80">
+      <div class="max-w-6xl mx-auto px-4 py-3.5 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="p-2 bg-indigo-600 text-white rounded-xl shadow-md">
+            <i data-lucide="layout-dashboard" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h1 id="userName" class="font-bold text-slate-800 text-sm md:text-base leading-tight">...</h1>
+            <span id="userRole" class="inline-block text-[10px] font-bold uppercase tracking-wider bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded-full mt-0.5">...</span>
+          </div>
+        </div>
+
+        <button onclick="logout()" class="flex items-center gap-2 text-xs font-semibold text-rose-600 bg-rose-50 hover:bg-rose-100 px-3.5 py-2 rounded-xl transition border border-rose-100">
+          <i data-lucide="log-out" class="w-4 h-4"></i>
+          <span>ចាកចេញ</span>
+        </button>
       </div>
-      <button onclick="logout()" class="bg-red-50 hover:bg-red-100 text-red-600 px-4 py-2 rounded-lg text-sm font-semibold transition border border-red-200">ចាកចេញ</button>
-    </div>
+    </header>
 
-    <!-- ADMIN PANEL: បន្ថែមមេរៀន/ឯកសារ -->
-    <div id="adminPanel" class="hidden bg-white p-6 rounded-xl shadow-sm border-l-4 border-blue-600">
-      <h2 class="text-lg font-bold mb-4 text-blue-600 flex items-center gap-2">🛠️ ផ្ទាំង Admin: បន្ថែមមេរៀន / ឯកសារសិក្សា</h2>
-      <form id="addLessonForm" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <input type="text" id="lessonTitle" placeholder="ចំណងជើងមេរៀន (ឧ. DA II - Chapter 1)" required class="border p-2.5 rounded-lg col-span-2 md:col-span-1 text-sm outline-none border-gray-300">
-        <input type="text" id="classCode" placeholder="កូដថ្នាក់" value="G1-NW-B" required class="border p-2.5 rounded-lg col-span-2 md:col-span-1 text-sm outline-none border-gray-300">
-        <input type="url" id="fileUrl" placeholder="Link File (Google Drive Share Link)" required class="border p-2.5 rounded-lg col-span-2 text-sm outline-none border-gray-300">
-        <textarea id="lessonDesc" placeholder="ការពិពណ៌នាអំពីមេរៀន..." class="border p-2.5 rounded-lg col-span-2 text-sm outline-none border-gray-300" rows="2"></textarea>
-        <button type="submit" id="addLessonBtn" class="bg-blue-600 text-white px-6 py-2.5 rounded-lg text-sm font-semibold hover:bg-blue-700 col-span-2 md:w-auto transition">រក្សាទុកមេរៀន</button>
-      </form>
-    </div>
+    <main class="max-w-6xl mx-auto px-4 mt-6 space-y-6">
 
-    <!-- ផ្នែកកាលវិភាគសិក្សា -->
-    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-      <h2 class="text-lg font-bold mb-4 text-gray-800 flex items-center gap-2">📅 កាលវិភាគសិក្សា (ថ្នាក់ G1-NW-B)</h2>
-      <div class="overflow-x-auto">
-        <table class="w-full text-left border-collapse text-sm">
-          <thead>
-            <tr class="bg-blue-600 text-white">
-              <th class="p-3 rounded-tl-lg">ថ្ងៃ</th>
-              <th class="p-3">ម៉ោង</th>
-              <th class="p-3">មុខវិជ្ជា</th>
-              <th class="p-3">បន្ទប់</th>
-              <th class="p-3 rounded-tr-lg">គ្រូបង្រៀន</th>
-            </tr>
-          </thead>
-          <tbody id="scheduleList" class="divide-y divide-gray-100">
-            <tr><td colspan="5" class="p-4 text-center text-gray-400">កំពុងទាញយកកាលវិភាគ...</td></tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
+      <!-- Admin Panel Form -->
+      <section id="adminPanel" class="hidden glass-card p-6 rounded-2xl shadow-sm border border-slate-200">
+        <div class="flex items-center gap-2 mb-4 text-indigo-600 border-b border-slate-100 pb-3">
+          <i data-lucide="folder-plus" class="w-5 h-5"></i>
+          <h2 class="font-bold text-base text-slate-800">ផ្ទាំង Admin: បន្ថែមមេរៀន / ឯកសារសិក្សា</h2>
+        </div>
 
-    <!-- ផ្នែកបញ្ជីមេរៀន -->
-    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-      <h2 class="text-lg font-bold mb-4 text-gray-800 flex items-center gap-2">📖 បញ្ជីមេរៀន និង ឯកសារសិក្សា</h2>
-      <div id="lessonList" class="space-y-3">
-        <p class="text-gray-400 text-sm">កំពុងទាញយកទិន្នន័យមេរៀន...</p>
-      </div>
-    </div>
+        <form id="addLessonForm" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-medium text-slate-600 mb-1">ចំណងជើងមេរៀន</label>
+            <input type="text" id="lessonTitle" required placeholder="ឧ. DA II - Chapter 1" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs focus:ring-2 focus:ring-indigo-500 outline-none">
+          </div>
 
+          <div>
+            <label class="block text-xs font-medium text-slate-600 mb-1">កូដថ្នាក់</label>
+            <input type="text" id="classCode" value="G1-NW-B" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs bg-slate-50 font-semibold text-slate-600">
+          </div>
+
+          <div class="md:col-span-2">
+            <label class="block text-xs font-medium text-slate-600 mb-1">Link File (Google Drive Share Link)</label>
+            <input type="url" id="fileUrl" required placeholder="https://drive.google.com/file/d/..." class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs focus:ring-2 focus:ring-indigo-500 outline-none">
+          </div>
+
+          <div class="md:col-span-2">
+            <label class="block text-xs font-medium text-slate-600 mb-1">ការពិពណ៌នាបន្ថែម</label>
+            <textarea id="lessonDesc" rows="2" placeholder="ការពិពណ៌នាសង្ខេបអំពីមេរៀន..." class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs focus:ring-2 focus:ring-indigo-500 outline-none"></textarea>
+          </div>
+
+          <div class="md:col-span-2">
+            <button type="submit" id="addLessonBtn" class="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl text-xs shadow-md transition flex items-center justify-center gap-2">
+              <i data-lucide="save" class="w-4 h-4"></i>
+              <span>រក្សាទុកមេរៀន</span>
+            </button>
+          </div>
+        </form>
+      </section>
+
+      <!-- Schedules Section -->
+      <section class="bg-white rounded-2xl shadow-sm border border-slate-200/80 overflow-hidden">
+        <div class="p-5 border-b border-slate-100 flex items-center gap-2 text-indigo-600">
+          <i data-lucide="calendar" class="w-5 h-5"></i>
+          <h2 class="font-bold text-slate-800 text-base">កាលវិភាគសិក្សា (ថ្នាក់ G1-NW-B)</h2>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse">
+            <thead>
+              <tr class="bg-slate-50 text-[11px] font-bold uppercase tracking-wider text-slate-500 border-b border-slate-100">
+                <th class="p-3.5 pl-5">ថ្ងៃ</th>
+                <th class="p-3.5">ម៉ោង</th>
+                <th class="p-3.5">មុខវិជ្ជា</th>
+                <th class="p-3.5">បន្ទប់</th>
+                <th class="p-3.5 pr-5">គ្រូបង្រៀន</th>
+              </tr>
+            </thead>
+            <tbody id="scheduleList" class="divide-y divide-slate-100 text-xs text-slate-700">
+              <!-- JS Injected Data -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Lessons Section -->
+      <section class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200/80">
+        <div class="flex items-center gap-2 text-indigo-600 mb-4 pb-3 border-b border-slate-100">
+          <i data-lucide="book-open" class="w-5 h-5"></i>
+          <h2 class="font-bold text-slate-800 text-base">បញ្ជីមេរៀន និង ឯកសារសិក្សា</h2>
+        </div>
+        <div id="lessonList" class="space-y-3">
+          <!-- JS Injected Data -->
+        </div>
+      </section>
+
+    </main>
   </div>
 
-  <script src="app.js"></script>
+  <script>
+    // Initialize Lucide Icons
+    lucide.createIcons();
+  </script>
 </body>
 </html>
