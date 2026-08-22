@@ -21,9 +21,11 @@ const elements = {
   statTotalSessions: document.getElementById("statTotalSessions"),
   statTotalLessons: document.getElementById("statTotalLessons"),
   lessonList: document.getElementById("lessonList"),
-  studentList: document.getElementById("studentList"), // [ADDED] Reference ទៅកាន់ studentList
+  studentList: document.getElementById("studentList"),
   addLessonForm: document.getElementById("addLessonForm"),
   addLessonBtn: document.getElementById("addLessonBtn"),
+  bottomSearchInput: document.getElementById("bottomSearchInput"),
+  clearSearchBtn: document.getElementById("clearSearchBtn"),
 };
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -113,7 +115,7 @@ function showDashboard() {
 
   fetchSchedules();
   fetchLessons();
-  fetchStudents(); // [ADDED] ហៅទាញយកទិន្នន័យបញ្ជីឈ្មោះនិស្សិត
+  fetchStudents();
   refreshIcons();
 }
 
@@ -191,7 +193,6 @@ async function fetchLessons() {
   }
 }
 
-// [ADDED] មុខងារទាញយកបញ្ជីឈ្មោះនិស្សិតពី Google Sheet / Backend Proxy
 async function fetchStudents() {
   const studentContainer = elements.studentList || document.getElementById("studentList");
   if (!studentContainer) return;
@@ -258,17 +259,19 @@ function filterLessons(subject, targetBtn = null) {
   renderLessonsByFilter();
 }
 
-function renderLessonsByFilter() {
+function renderLessonsByFilter(customLessons = null) {
   if (!elements.lessonList) return;
 
-  const filtered = state.currentFilter === "ALL" 
-    ? state.allLessons 
-    : state.allLessons.filter(item => item.title?.toUpperCase().includes(state.currentFilter.toUpperCase()));
+  const sourceLessons = customLessons !== null ? customLessons : state.allLessons;
+  
+  const filtered = (customLessons === null && state.currentFilter !== "ALL")
+    ? sourceLessons.filter(item => (item.title || "").toUpperCase().includes(state.currentFilter.toUpperCase()))
+    : sourceLessons;
 
   if (filtered.length === 0) {
     elements.lessonList.innerHTML = `
       <div class='text-slate-400 text-xs text-center py-8 bg-slate-900/40 rounded-2xl border border-dashed border-slate-800'>
-        មិនទាន់មានមេរៀនសម្រាប់មុខវិជ្ជានេះនៅឡើយទេ។
+        មិនទាន់មានមេរៀនដែលត្រូវនឹងលក្ខខណ្ឌនេះទេ។
       </div>`;
     return;
   }
@@ -318,6 +321,61 @@ function renderLessonsByFilter() {
 
   elements.lessonList.replaceChildren(fragment);
   refreshIcons();
+}
+
+// [ADDED] មុខងារស្វែងរកសកល (Global Real-time Search)
+function handleGlobalSearch(query) {
+  const searchTerm = (query || "").trim().toLowerCase();
+  const clearBtn = elements.clearSearchBtn || document.getElementById("clearSearchBtn");
+
+  if (clearBtn) {
+    clearBtn.classList.toggle("hidden", searchTerm === "");
+  }
+
+  // 1. Filter បញ្ជីឈ្មោះនិស្សិត (Students Table)
+  const studentContainer = elements.studentList || document.getElementById("studentList");
+  if (studentContainer) {
+    const studentRows = studentContainer.querySelectorAll("tr");
+    studentRows.forEach(row => {
+      const text = row.innerText.toLowerCase();
+      row.style.display = text.includes(searchTerm) ? "" : "none";
+    });
+  }
+
+  // 2. Filter បញ្ជីមេរៀន (Lessons List)
+  if (state.allLessons && state.allLessons.length > 0) {
+    if (searchTerm === "") {
+      renderLessonsByFilter();
+    } else {
+      const filteredLessons = state.allLessons.filter(lesson => {
+        const title = (lesson.title || "").toLowerCase();
+        const desc = (lesson.description || "").toLowerCase();
+        const code = (lesson.class_code || "").toLowerCase();
+        return title.includes(searchTerm) || desc.includes(searchTerm) || code.includes(searchTerm);
+      });
+      renderLessonsByFilter(filteredLessons);
+    }
+  }
+
+  // 3. Filter កាលវិភាគ (Schedules Table)
+  const scheduleContainer = elements.scheduleList || document.getElementById("scheduleList");
+  if (scheduleContainer) {
+    const scheduleRows = scheduleContainer.querySelectorAll("tr");
+    scheduleRows.forEach(row => {
+      const text = row.innerText.toLowerCase();
+      row.style.display = text.includes(searchTerm) ? "" : "none";
+    });
+  }
+}
+
+// [ADDED] មុខងារលុបពាក្យស្វែងរក (Clear Search Input)
+function clearGlobalSearch() {
+  const input = elements.bottomSearchInput || document.getElementById("bottomSearchInput");
+  if (input) {
+    input.value = "";
+    handleGlobalSearch("");
+    input.focus();
+  }
 }
 
 async function handleAddLesson(e) {
@@ -464,3 +522,9 @@ function setButtonLoading(btn, isLoading, text, iconName = "loader-2") {
   }
   refreshIcons();
 }
+
+// Global functions declaration for Inline HTML Handlers
+window.handleGlobalSearch = handleGlobalSearch;
+window.clearGlobalSearch = clearGlobalSearch;
+window.filterLessons = filterLessons;
+window.logout = logout;
