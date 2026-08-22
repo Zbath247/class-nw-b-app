@@ -1,5 +1,5 @@
-// កំណត់តំណភ្ជាប់ API របស់អ្នក (សូមជំនួស URL ខាងក្រោមដោយ Google Apps Script Web App URL របស់អ្នក)
-const API_URL = "YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE";
+// កំណត់តំណភ្ជាប់ API ទៅកាន់ Vercel Proxy របស់អ្នក
+const API_URL = "/api/proxy"; 
 
 document.addEventListener("DOMContentLoaded", () => {
   // 1. មុខងារ Login Form Handler
@@ -11,7 +11,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const email = document.getElementById("loginEmail").value.trim();
       const password = document.getElementById("loginPassword").value.trim();
 
-      // កំណត់លក្ខខណ្ឌផ្ទៀងផ្ទាត់អ៊ីម៉ែល (ផ្អែកលើអ៊ីម៉ែលរបស់អ្នក)
+      // កំណត់លក្ខខណ្ឌផ្ទៀងផ្ទាត់អ៊ីម៉ែល
       if (email === "moksambath@gmail.com") {
         document.getElementById("loginSection").classList.add("hidden");
         document.getElementById("dashboardSection").classList.remove("hidden");
@@ -22,8 +22,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (typeof lucide !== 'undefined') lucide.createIcons();
         
-        // កោះហៅទាញយកទិន្នន័យផ្សេងៗប្រសិនបើមាន
-        if (typeof fetchStudents === 'function') fetchStudents();
+        // កោះហៅទាញយកទិន្នន័យនិស្សិតមកបង្ហាញភ្លាមពេល Login ចូល
+        fetchStudents();
       } else {
         alert("អ៊ីម៉ែល ឬពាក្យសម្ងាត់មិនត្រឹមត្រូវ!");
       }
@@ -82,7 +82,49 @@ function setButtonLoading(button, isLoading, text, iconName = "save") {
   if (typeof lucide !== 'undefined') lucide.createIcons();
 }
 
-// 4. មុខងារបញ្ជូនទិន្នន័យបន្ថែមនិស្សិតថ្មីទៅកាន់ Server (API)
+// 4. មុខងារទាញយកទិន្នន័យនិស្សិតពី Server មកបង្ហាញក្នុងតារាង
+async function fetchStudents() {
+  const tbody = document.getElementById("studentList");
+  if (tbody) {
+    tbody.innerHTML = `<tr><td colspan="6" class="py-8 text-center text-slate-400">កំពុងទាញយកទិន្នន័យនិស្សិត...</td></tr>`;
+  }
+
+  try {
+    const res = await fetch(`${API_URL}?action=getStudents`);
+    const students = await res.json();
+    
+    if (!tbody) return;
+
+    if (!Array.isArray(students) || students.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="6" class="py-8 text-center text-slate-400">មិនទាន់មានទិន្នន័យនិស្សិតទេ</td></tr>`;
+      return;
+    }
+
+    // បង្ហាញទិន្នន័យចូលក្នុងតារាង HTML
+    tbody.innerHTML = students.map((s, index) => `
+      <tr class="hover:bg-slate-900/50 transition border-b border-slate-800/40">
+        <td class="py-3 px-4">${index + 1}</td>
+        <td class="py-3 px-4 font-mono text-indigo-400">${s.student_id || ''}</td>
+        <td class="py-3 px-4 font-bold text-white">${s.khmer_name || ''}</td>
+        <td class="py-3 px-4 text-slate-300">${s.latin_name || '-'}</td>
+        <td class="py-3 px-4">${s.gender || '-'}</td>
+        <td class="py-3 px-4 text-slate-400">${s.dob || '-'}</td>
+      </tr>
+    `).join('');
+
+    // បច្ចុប្បន្នភាពចំនួនសរុប (បើមាន Element បង្ហាញចំនួនសរុប)
+    const totalCountEl = document.getElementById("totalStudentsCount");
+    if (totalCountEl) totalCountEl.textContent = students.length;
+
+  } catch (err) {
+    console.error("Error fetching students:", err);
+    if (tbody) {
+      tbody.innerHTML = `<tr><td colspan="6" class="py-8 text-center text-rose-400">មិនអាចទាញយកទិន្នន័យពី Server បានទេ!</td></tr>`;
+    }
+  }
+}
+
+// 5. មុខងារបញ្ជូនទិន្នន័យបន្ថែមនិស្សិតថ្មីទៅកាន់ Server (API)
 async function handleAddStudent(e) {
   e.preventDefault();
   
@@ -122,23 +164,15 @@ async function handleAddStudent(e) {
       alert("បន្ថែមទិន្នន័យនិស្សិតថ្មីជោគជ័យ!");
       closeAddStudentModal();
       
-      // ប្រសិនបើអ្នកមានមុខងារ fetchStudents() សម្រាប់ទាញយកតារាងមកបង្ហាញសាថ្មី
-      if (typeof fetchStudents === 'function') {
-        fetchStudents();
-      }
+      // ទាញយកតារាងនិស្សិតមកបង្ហាញសាថ្មីភ្លាមៗ
+      fetchStudents();
     } else {
       alert(data?.message || "មានបញ្ហាក្នុងការបន្ថែមទិន្នន័យនិស្សិត!");
     }
   } catch (err) {
     console.error("Add Student Error:", err);
-    alert("មានបញ្ហាក្នុងการភ្ជាប់ទៅកាន់ Server!");
+    alert("មានបញ្ហាក្នុងការភ្ជាប់ទៅកាន់ Server!");
   } finally {
     setButtonLoading(submitBtn, false, "រក្សាទុក", "save");
   }
-}
-
-// មុខងារទាញយកទិន្នន័យនិស្សិតមកបង្ហាញក្នុងតារាង (ឧទាហរណ៍បំពេញបន្ថែម)
-function fetchStudents() {
-  // សរសេរកូដទាញយកទិន្នន័យពី Server មកដាក់ក្នុង id="studentList" របស់អ្នកនៅទីនេះ
-  console.log("Fetching students data...");
 }
