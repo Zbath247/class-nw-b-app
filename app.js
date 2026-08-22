@@ -204,39 +204,87 @@ function fetchLessons() {
     .catch(err => console.error("Lesson Error:", err));
 }
 
-// Add Lesson Handler
+// Helper: Convert File Object to Base64 String
+function fileToBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => {
+      // Get base64 string after 'data:*/*;base64,'
+      const base64String = reader.result.split(',')[1];
+      resolve(base64String);
+    };
+    reader.onerror = error => reject(error);
+  });
+}
+
+// Add Lesson Handler (Upload File from Computer as Base64 via POST)
 const addLessonForm = document.getElementById("addLessonForm");
 if (addLessonForm) {
-  addLessonForm.addEventListener("submit", function(e) {
+  addLessonForm.addEventListener("submit", async function(e) {
     e.preventDefault();
     const btn = document.getElementById("addLessonBtn");
+    
+    const fileInput = document.getElementById("lessonFileInput");
+    if (!fileInput || !fileInput.files || fileInput.files.length === 0) {
+      alert("សូមជ្រើសរើស File ឯកសារជាមុនសិន!");
+      return;
+    }
+
+    const file = fileInput.files[0];
+
     if (btn) {
-      btn.innerHTML = `<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i><span>កំពុងរក្សាទុក...</span>`;
+      btn.innerHTML = `<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i><span>កំពុង Upload និង រក្សាទុក...</span>`;
       btn.disabled = true;
       refreshIcons();
     }
 
-    const lessonId = "LES-" + Date.now();
-    const title = encodeURIComponent(document.getElementById("lessonTitle").value);
-    const desc = encodeURIComponent(document.getElementById("lessonDesc").value);
-    const fileUrl = encodeURIComponent(document.getElementById("fileUrl").value);
-    const classCode = encodeURIComponent(document.getElementById("classCode").value);
+    try {
+      const base64File = await fileToBase64(file);
+      const lessonId = "LES-" + Date.now();
+      const title = document.getElementById("lessonTitle").value.trim();
+      const desc = document.getElementById("lessonDesc").value.trim();
+      const classCode = document.getElementById("classCode").value.trim();
 
-    fetch(`${API_URL}?action=addLesson&lesson_id=${lessonId}&title=${title}&description=${desc}&file_url=${fileUrl}&class_code=${classCode}`)
-      .then(res => res.json())
-      .then(data => {
-        alert("បញ្ចូលមេរៀនជោគជ័យ!");
+      const payload = {
+        action: "addLesson",
+        lesson_id: lessonId,
+        title: title,
+        description: desc,
+        class_code: classCode,
+        file_name: file.name,
+        mime_type: file.type,
+        file_data: base64File
+      };
+
+      const res = await fetch(API_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(payload)
+      });
+
+      const data = await res.json();
+
+      if (data && data.status === "success") {
+        alert("បញ្ចូល និង Upload មេរៀនជោគជ័យ!");
         addLessonForm.reset();
         fetchLessons();
-      })
-      .catch(err => alert("មានបញ្ហាក្នុងការបញ្ចូលមេរៀន!"))
-      .finally(() => {
-        if (btn) {
-          btn.innerHTML = `<i data-lucide="save" class="w-4 h-4"></i><span>រក្សាទុកមេរៀន</span>`;
-          btn.disabled = false;
-          refreshIcons();
-        }
-      });
+      } else {
+        alert((data && data.message) ? data.message : "មានបញ្ហាក្នុងការបញ្ចូលមេរៀន!");
+      }
+
+    } catch (err) {
+      console.error("Upload Lesson Error:", err);
+      alert("មានបញ្ហាក្នុងការ Upload មេរៀន!");
+    } finally {
+      if (btn) {
+        btn.innerHTML = `<i data-lucide="save" class="w-4 h-4"></i><span>រក្សាទុកមេរៀន</span>`;
+        btn.disabled = false;
+        refreshIcons();
+      }
+    }
   });
 }
 
