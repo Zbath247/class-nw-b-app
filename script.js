@@ -13,6 +13,9 @@ const searchInput = document.querySelector("#search-input");
 // Fetch Students
 // ===============================
 async function getStudents() {
+  // ✅ Only run if table exists
+  if (!tableBody) return;
+
   try {
     const res = await fetch(`${API_URL}?action=students`);
     if (!res.ok) throw new Error(`HTTP error! Status: ${res.status}`);
@@ -22,7 +25,7 @@ async function getStudents() {
     console.error("Error fetching students:", err);
     tableBody.innerHTML = `
       <tr>
-        <td colspan="8" style="text-align:center;color:red;">
+        <td colspan="10" style="text-align:center;color:red;">
           ⚠️ Failed to load data. Please check API connection.
         </td>
       </tr>`;
@@ -33,6 +36,7 @@ async function getStudents() {
 // Render Students
 // ===============================
 function renderStudents(students) {
+  if (!tableBody) return;
   tableBody.innerHTML = "";
   students.forEach((s, index) => {
     const row = document.createElement("tr");
@@ -58,14 +62,16 @@ function renderStudents(students) {
 // ===============================
 // Search Students
 // ===============================
-searchInput.addEventListener("input", () => {
-  const query = searchInput.value.toLowerCase();
-  const rows = tableBody.querySelectorAll("tr");
-  rows.forEach(row => {
-    const name = row.children[1].textContent.toLowerCase();
-    row.style.display = name.includes(query) ? "" : "none";
+if (searchInput && tableBody) {
+  searchInput.addEventListener("input", () => {
+    const query = searchInput.value.toLowerCase();
+    const rows = tableBody.querySelectorAll("tr");
+    rows.forEach(row => {
+      const name = row.children[1].textContent.toLowerCase();
+      row.style.display = name.includes(query) ? "" : "none";
+    });
   });
-});
+}
 
 // ===============================
 // Add Student
@@ -119,6 +125,25 @@ async function deleteStudent(id) {
 }
 
 // ===============================
+// Dashboard Summary
+// ===============================
+async function loadDashboard() {
+  const totalStudentsEl = document.getElementById("total-students");
+  if (!totalStudentsEl) return; // ✅ Only run on Dashboard page
+
+  try {
+    const res = await fetch(`${API_URL}?action=students`);
+    const students = await res.json();
+    totalStudentsEl.textContent = students.length;
+  } catch (err) {
+    console.error("Error loading dashboard:", err);
+  }
+}
+
+// ===============================
 // Initialize
 // ===============================
-document.addEventListener("DOMContentLoaded", getStudents);
+document.addEventListener("DOMContentLoaded", () => {
+  getStudents();
+  loadDashboard();
+});
