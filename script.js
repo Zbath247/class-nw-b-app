@@ -1,5 +1,5 @@
 // API Configuration
-const API_URL = "https://script.google.com/macros/s/AKfycbwohS-KoptupMvspNZNHY54QQ4sTavAERSUPrhF_DrAagivphhoNHDD267Tli8si4wf/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbzx65_qABkeKqYUBzGGdsvrnSioekeMBfps5qH8a1rs30exPY9CpGWy5cDj0KY5ICM/exec";
 
 // Navigation
 document.querySelectorAll(".sidebar li").forEach(item => {
