@@ -1,40 +1,41 @@
 export default async function handler(req, res) {
-  res.setHeader('Access-Control-Allow-Credentials', true);
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
-  res.setHeader(
-    'Access-Control-Allow-Headers',
-    'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
-  );
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
   if (req.method === 'OPTIONS') {
-    res.status(200).end();
-    return;
+    return res.status(200).end();
   }
 
-  // 🔗 URL Google Apps Script របស់អ្នក
-  const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw54cEpJFju9PZHa1G5Cuaenmx8r8EfX3Mcdq2L9mVSIVLL6bn8aT7aeyldGTbDaohJ/exec";
+  // URL Web App របស់ Apps Script
+  const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw54cEpJFju9PZhA1G5cuaenmx8r8EfX3Mcdq2L9mVSIVLL6bn8aT7aeyldGTbDaohJ/exec";
 
   try {
-    const queryParams = new URLSearchParams(req.query).toString();
-    const fetchUrl = queryParams ? `${GOOGLE_SCRIPT_URL}?${queryParams}` : GOOGLE_SCRIPT_URL;
+    // រៀបចំ URL Parameters
+    const url = new URL(GOOGLE_SCRIPT_URL);
+    Object.keys(req.query).forEach(key => url.searchParams.append(key, req.query[key]));
 
-    const options = {
+    const fetchOptions = {
       method: req.method,
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      redirect: 'follow', // ដើរតាម Google Redirects (302)
     };
 
-    if (req.method === 'POST' && req.body) {
-      options.body = typeof req.body === 'string' ? req.body : JSON.stringify(req.body);
+    if (req.method === 'POST') {
+      fetchOptions.body = typeof req.body === 'object' ? JSON.stringify(req.body) : req.body;
+      fetchOptions.headers = { 'Content-Type': 'text/plain;charset=utf-8' };
     }
 
-    const response = await fetch(fetchUrl, options);
-    const data = await response.json();
+    const response = await fetch(url.toString(), fetchOptions);
+    const textData = await response.text();
 
-    return res.status(200).json(data);
+    try {
+      const jsonData = JSON.parse(textData);
+      return res.status(200).json(jsonData);
+    } catch (e) {
+      // បើ Google ឆ្លើយតបជា HTML Error ជំនួសឱ្យ JSON
+      return res.status(500).json({ status: "error", message: "Google Apps Script Response Error", raw: textData });
+    }
   } catch (error) {
-    return res.status(500).json({ error: 'Proxy Error', details: error.message });
+    return res.status(500).json({ status: "error", message: error.message });
   }
 }
