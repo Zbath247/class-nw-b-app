@@ -73,7 +73,7 @@
     <header class="bg-white/80 backdrop-blur-md sticky top-0 z-50 border-b border-slate-200/80">
       <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
         
-        <!-- ផ្នែកខាងឆ្វេង (ទទេរ ដើម្បីរក្សាតុល្យភាព Flex Center) -->
+        <!-- ផ្នែកខាងឆ្វេង -->
         <div class="w-24 hidden sm:block"></div>
 
         <!-- ផ្នែកកណ្តាល: Logo, ឈ្មោះសាកលវិទ្យាល័យ និង ឈ្មោះ User -->
@@ -83,7 +83,7 @@
             <h2 class="text-sm md:text-base font-bold text-slate-900 tracking-wide uppercase">DIGITAL UNIVERSITY OF CAMBODIA</h2>
           </div>
           
-          <!-- ឈ្មោះ USER នៅពីក្រោមឈ្មោះសាកលវិទ្យាល័យ -->
+          <!-- ឈ្មោះ USER -->
           <div class="flex items-center justify-center gap-2">
             <h1 id="userName" class="font-bold text-indigo-600 text-xs md:text-sm">...</h1>
             <span id="userRole" class="inline-block text-[9px] font-bold uppercase tracking-wider bg-indigo-100 text-indigo-700 px-2 py-0.2 rounded-full">...</span>
@@ -109,17 +109,29 @@
         </div>
 
         <form id="addLessonForm" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <!-- បន្ថែម Dropdown ជ្រើសរើសមុខវិជ្ជា -->
           <div>
-            <label class="block text-xs font-medium text-slate-600 mb-1">ចំណងជើងមេរៀន</label>
-            <input type="text" id="lessonTitle" required placeholder="ឧ. DA II - Chapter 1" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs focus:ring-2 focus:ring-indigo-500 outline-none">
+            <label class="block text-xs font-medium text-slate-600 mb-1">ជ្រើសរើសមុខវិជ្ជា</label>
+            <select id="lessonSubject" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs focus:ring-2 focus:ring-indigo-500 outline-none bg-white">
+              <option value="DA II">Database Administration II (DA II)</option>
+              <option value="CTN I">Container I (CTN I)</option>
+              <option value="CS IV">Cisco IV (CS IV)</option>
+              <option value="NA II">Network Administration II (NA II)</option>
+              <option value="CYB II">Cybersecurity II (CYB II)</option>
+            </select>
           </div>
 
           <div>
+            <label class="block text-xs font-medium text-slate-600 mb-1">ចំណងជើងមេរៀន</label>
+            <input type="text" id="lessonTitle" required placeholder="ឧ. Chapter 1 - Introduction" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs focus:ring-2 focus:ring-indigo-500 outline-none">
+          </div>
+
+          <div class="md:col-span-2">
             <label class="block text-xs font-medium text-slate-600 mb-1">កូដថ្នាក់</label>
             <input type="text" id="classCode" value="G1-NW-B" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs bg-slate-50 font-semibold text-slate-600">
           </div>
 
-          <!-- ជ្រើសរើស File ពី Computer (PDF, PPTX, DOCX) -->
+          <!-- ជ្រើសរើស File ពី Computer -->
           <div class="md:col-span-2">
             <label class="block text-xs font-medium text-slate-600 mb-1">ជ្រើសរើសឯកសារ (PDF, PPTX, DOCX)</label>
             <input type="file" id="lessonFileInput" accept=".pdf,.pptx,.ppt,.docx" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs focus:ring-2 focus:ring-indigo-500 outline-none bg-white">
@@ -210,12 +222,35 @@
         </div>
       </section>
 
-      <!-- Lessons Section -->
+      <!-- Lessons Section (បន្ថែម Filter Tabs) -->
       <section class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200/80">
         <div class="flex items-center gap-2 text-indigo-600 mb-4 pb-3 border-b border-slate-100">
           <i data-lucide="book-open" class="w-5 h-5"></i>
           <h2 class="font-bold text-slate-800 text-base">បញ្ជីមេរៀន និង ឯកសារសិក្សា</h2>
         </div>
+
+        <!-- Filter Buttons តាមមុខវិជ្ជា -->
+        <div class="flex flex-wrap gap-2 mb-5" id="subjectFilterContainer">
+          <button onclick="filterLessons('ALL')" class="subject-filter-btn active-filter bg-indigo-600 text-white px-3.5 py-1.5 rounded-xl text-xs font-semibold transition">
+            ទាំងអស់ (All)
+          </button>
+          <button onclick="filterLessons('DA II')" class="subject-filter-btn bg-slate-100 hover:bg-slate-200 text-slate-600 px-3.5 py-1.5 rounded-xl text-xs font-semibold transition">
+            DA II
+          </button>
+          <button onclick="filterLessons('CTN I')" class="subject-filter-btn bg-slate-100 hover:bg-slate-200 text-slate-600 px-3.5 py-1.5 rounded-xl text-xs font-semibold transition">
+            CTN I
+          </button>
+          <button onclick="filterLessons('CS IV')" class="subject-filter-btn bg-slate-100 hover:bg-slate-200 text-slate-600 px-3.5 py-1.5 rounded-xl text-xs font-semibold transition">
+            CS IV
+          </button>
+          <button onclick="filterLessons('NA II')" class="subject-filter-btn bg-slate-100 hover:bg-slate-200 text-slate-600 px-3.5 py-1.5 rounded-xl text-xs font-semibold transition">
+            NA II
+          </button>
+          <button onclick="filterLessons('CYB II')" class="subject-filter-btn bg-slate-100 hover:bg-slate-200 text-slate-600 px-3.5 py-1.5 rounded-xl text-xs font-semibold transition">
+            CYB II
+          </button>
+        </div>
+
         <div id="lessonList" class="space-y-3">
           <!-- JS Injected Data -->
         </div>
