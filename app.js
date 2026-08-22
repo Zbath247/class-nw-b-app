@@ -1,31 +1,43 @@
-// កំណត់តំណភ្ជាប់ API ទៅកាន់ Vercel Proxy របស់អ្នក
 const API_URL = "/api/proxy"; 
 
 document.addEventListener("DOMContentLoaded", () => {
   // 1. មុខងារ Login Form Handler
   const loginForm = document.getElementById("loginForm");
   if (loginForm) {
-    loginForm.addEventListener("submit", function(e) {
-      e.preventDefault(); // ទប់ស្កាត់ការ Refresh ទំព័រ
+    loginForm.addEventListener("submit", async function(e) {
+      e.preventDefault();
       
       const email = document.getElementById("loginEmail").value.trim();
       const password = document.getElementById("loginPassword").value.trim();
 
-      // កំណត់លក្ខខណ្ឌផ្ទៀងផ្ទាត់អ៊ីម៉ែល
-      if (email === "moksambath@gmail.com") {
-        document.getElementById("loginSection").classList.add("hidden");
-        document.getElementById("dashboardSection").classList.remove("hidden");
-        document.getElementById("adminPanel").classList.remove("hidden");
+      if (!email || !password) {
+        alert("សូមបំពេញអ៊ីម៉ែល និងពាក្យសម្ងាត់!");
+        return;
+      }
 
-        document.getElementById("userName").textContent = "Mok Sambath";
-        document.getElementById("userRole").textContent = "Admin";
+      try {
+        // ផ្ញើសំណើ Login ទៅកាន់ Backend ຜ່ານ Proxy
+        const res = await fetch(`${API_URL}?action=login&email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`);
+        const data = await res.json();
 
-        if (typeof lucide !== 'undefined') lucide.createIcons();
-        
-        // កោះហៅទាញយកទិន្នន័យនិស្សិតមកបង្ហាញភ្លាមពេល Login ចូល
-        fetchStudents();
-      } else {
-        alert("អ៊ីម៉ែល ឬពាក្យសម្ងាត់មិនត្រឹមត្រូវ!");
+        if (data.status === "success") {
+          document.getElementById("loginSection").classList.add("hidden");
+          document.getElementById("dashboardSection").classList.remove("hidden");
+          document.getElementById("adminPanel").classList.remove("hidden");
+
+          document.getElementById("userName").textContent = data.user.name || "Mok Sambath";
+          document.getElementById("userRole").textContent = data.user.role || "Admin";
+
+          if (typeof lucide !== 'undefined') lucide.createIcons();
+          
+          // ទាញយកទិន្នន័យទាំងអស់មកបង្ហាញក្នុង Dashboard
+          fetchAllData();
+        } else {
+          alert(data.message || "អ៊ីម៉ែល ឬពាក្យសម្ងាត់មិនត្រឹមត្រូវ!");
+        }
+      } catch (err) {
+        console.error("Login Error:", err);
+        alert("មានបញ្ហាក្នុងការភ្ជាប់ទៅកាន់ Server!");
       }
     });
   }
@@ -40,7 +52,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // 2. ចងភ្ជាប់ Event Listener ជាមួយ Form បន្ថែមនិស្សិតថ្មី
+  // ចងភ្ជាប់ Event Listener ជាមួយ Form បន្ថែមនិស្សិតថ្មី
   const addStudentForm = document.getElementById("addStudentForm");
   if (addStudentForm) {
     addStudentForm.addEventListener("submit", handleAddStudent);
@@ -55,13 +67,12 @@ function logout() {
   if (loginForm) loginForm.reset();
 }
 
-// 3. មុខងារបើក Modal បន្ថែមនិស្សិតថ្មី
+// មុខងារបើក/បិទ Modal បន្ថែមនិស្សិត
 function openAddStudentModal() {
   const modal = document.getElementById("addStudentModal");
   if (modal) modal.classList.remove("hidden");
 }
 
-// មុខងារបិទ Modal បន្ថែមនិស្សិត
 function closeAddStudentModal() {
   const modal = document.getElementById("addStudentModal");
   if (modal) modal.classList.add("hidden");
@@ -82,7 +93,13 @@ function setButtonLoading(button, isLoading, text, iconName = "save") {
   if (typeof lucide !== 'undefined') lucide.createIcons();
 }
 
-// 4. មុខងារទាញយកទិន្នន័យនិស្សិតពី Server មកបង្ហាញក្នុងតារាង
+// ប្រមូលផ្ដុំមុខងារទាញយកទិន្នន័យទាំងអស់
+function fetchAllData() {
+  fetchStudents();
+  // អ្នកអាចបន្ថែម fetchClasses(), fetchLessons() នៅទីនេះបន្ថែមទៀតបើត្រូវការ
+}
+
+// មុខងារទាញយកទិន្នន័យនិស្សិតពី Server មកបង្ហាញក្នុងតារាង
 async function fetchStudents() {
   const tbody = document.getElementById("studentList");
   if (tbody) {
@@ -100,7 +117,7 @@ async function fetchStudents() {
       return;
     }
 
-    // បង្ហាញទិន្នន័យចូលក្នុងតារាង HTML
+    // បង្ហាញទិន្នន័យចូលក្នុងតារាង HTML និងភ្ជាប់មុខងារលុប/កែប្រែបើមាន
     tbody.innerHTML = students.map((s, index) => `
       <tr class="hover:bg-slate-900/50 transition border-b border-slate-800/40">
         <td class="py-3 px-4">${index + 1}</td>
@@ -112,7 +129,6 @@ async function fetchStudents() {
       </tr>
     `).join('');
 
-    // បច្ចុប្បន្នភាពចំនួនសរុប (បើមាន Element បង្ហាញចំនួនសរុប)
     const totalCountEl = document.getElementById("totalStudentsCount");
     if (totalCountEl) totalCountEl.textContent = students.length;
 
@@ -124,7 +140,7 @@ async function fetchStudents() {
   }
 }
 
-// 5. មុខងារបញ្ជូនទិន្នន័យបន្ថែមនិស្សិតថ្មីទៅកាន់ Server (API)
+// មុខងារបញ្ជូនទិន្នន័យបន្ថែមនិស្សិតថ្មីទៅកាន់ Server (API)
 async function handleAddStudent(e) {
   e.preventDefault();
   
@@ -160,18 +176,16 @@ async function handleAddStudent(e) {
 
     const data = await res.json();
 
-    if (data?.status === "success" || data === true) {
+    if (data?.status === "success") {
       alert("បន្ថែមទិន្នន័យនិស្សិតថ្មីជោគជ័យ!");
       closeAddStudentModal();
-      
-      // ទាញយកតារាងនិស្សិតមកបង្ហាញសាថ្មីភ្លាមៗ
       fetchStudents();
     } else {
       alert(data?.message || "មានបញ្ហាក្នុងការបន្ថែមទិន្នន័យនិស្សិត!");
     }
   } catch (err) {
     console.error("Add Student Error:", err);
-    alert("មានបញ្ហាក្នុងការភ្ជាប់ទៅកាន់ Server!");
+    alert("មានបញ្ហាក្នុងการភ្ជាប់ទៅកាន់ Server!");
   } finally {
     setButtonLoading(submitBtn, false, "រក្សាទុក", "save");
   }
