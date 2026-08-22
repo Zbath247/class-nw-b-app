@@ -1,111 +1,151 @@
 <!DOCTYPE html>
-<html lang="km">
+<html lang="km" class="h-full bg-slate-950">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ប្រព័ន្ធគ្រប់គ្រងថ្នាក់រៀន G1-NW-B | DUC</title>
+  <title>ប្រព័ន្ធគ្រប់គ្រងថ្នាក់រៀន G1-NW-B | Digital University of Cambodia</title>
   
-  <!-- Fonts & Core Scripts -->
+  <!-- Google Fonts & Tailwind CSS -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:ital,wght@0,300..700;1,300..700&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Lucide Icons Vector Engine -->
   <script src="https://unpkg.com/lucide@latest"></script>
   
   <style>
-    body { font-family: 'Kantumruy Pro', sans-serif; }
+    body { 
+      font-family: 'Kantumruy Pro', sans-serif; 
+    }
     .glass-card {
-      background: rgba(255, 255, 255, 0.88);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border: 1px solid rgba(229, 231, 235, 0.8);
+      background: rgba(15, 23, 42, 0.75);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .glass-card-light {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(226, 232, 240, 0.8);
+    }
+    .gradient-border {
+      position: relative;
+    }
+    .gradient-border::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 1.5rem;
+      padding: 1px;
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.5), rgba(59, 130, 246, 0.1));
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      pointer-events: none;
     }
   </style>
 </head>
-<body class="bg-slate-900 min-h-screen text-slate-800 relative overflow-x-hidden antialiased">
+<body class="min-h-full text-slate-100 relative overflow-x-hidden antialiased selection:bg-indigo-500 selection:text-white">
 
-  <!-- Background Decorative Ambient Lighting -->
-  <div class="fixed top-0 -left-20 w-96 h-96 bg-indigo-600 rounded-full mix-blend-multiply filter blur-3xl opacity-30 pointer-events-none" aria-hidden="true"></div>
-  <div class="fixed bottom-0 right-0 w-96 h-96 bg-blue-500 rounded-full mix-blend-multiply filter blur-3xl opacity-30 pointer-events-none" aria-hidden="true"></div>
+  <!-- Ambient Dynamic Lighting Blobs -->
+  <div class="fixed -top-40 -left-40 w-[500px] h-[500px] bg-indigo-600/30 rounded-full blur-[120px] pointer-events-none" aria-hidden="true"></div>
+  <div class="fixed top-1/3 -right-40 w-[500px] h-[500px] bg-blue-600/20 rounded-full blur-[140px] pointer-events-none" aria-hidden="true"></div>
+  <div class="fixed -bottom-40 left-1/3 w-[500px] h-[500px] bg-purple-600/20 rounded-full blur-[140px] pointer-events-none" aria-hidden="true"></div>
 
   <!-- 1. AUTHENTICATION SECTION -->
   <section id="loginSection" aria-label="ការចូលប្រើប្រាស់ប្រព័ន្ធ" class="flex items-center justify-center min-h-screen p-4 relative z-10">
-    <div class="glass-card p-6 sm:p-8 rounded-3xl shadow-2xl w-full max-w-md border border-white/20">
+    <div class="glass-card gradient-border p-8 sm:p-10 rounded-3xl shadow-2xl w-full max-w-md relative overflow-hidden">
       
+      <!-- Top Accent Glow -->
+      <div class="absolute top-0 left-1/2 -translate-x-1/2 w-3/4 h-1 bg-gradient-to-r from-transparent via-indigo-500 to-transparent"></div>
+
       <header class="text-center mb-8">
-        <div class="inline-flex mb-3">
-          <img src="logo.png" alt="Digital University of Cambodia Logo" class="w-20 h-20 object-contain drop-shadow-md" loading="eager">
+        <div class="inline-flex p-3 bg-indigo-500/10 rounded-2xl border border-indigo-500/20 mb-4 shadow-inner">
+          <img src="logo.png" alt="Digital University of Cambodia Logo" class="w-20 h-20 object-contain drop-shadow-xl" loading="eager">
         </div>
-        <h1 class="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-blue-600 bg-clip-text text-transparent">សាកលវិទ្យាល័យឌីជីថលកម្ពុជា</h1>
-        <p class="text-xs font-bold text-indigo-900 tracking-wider uppercase mt-0.5">Digital University of Cambodia</p>
-        <p class="text-xs text-slate-500 font-medium mt-1">ប្រព័ន្ធគ្រប់គ្រងថ្នាក់រៀន G1-NW-B</p>
+        <h1 class="text-2xl font-black tracking-tight bg-gradient-to-r from-white via-slate-100 to-indigo-200 bg-clip-text text-transparent">សាកលវិទ្យាល័យឌីជីថលកម្ពុជា</h1>
+        <p class="text-xs font-bold text-indigo-400 tracking-wider uppercase mt-1">Digital University of Cambodia</p>
+        <span class="inline-block mt-3 px-3 py-1 bg-slate-800/80 border border-slate-700/60 rounded-full text-[11px] font-medium text-slate-300">
+          ប្រព័ន្ធគ្រប់គ្រងថ្នាក់រៀន G1-NW-B
+        </span>
       </header>
 
       <form id="loginForm" class="space-y-5" aria-label="ទម្រង់ចូលប្រព័ន្ធ">
         <div>
-          <label for="loginEmail" class="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-2">អ៊ីម៉ែល</label>
+          <label for="loginEmail" class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">អ៊ីម៉ែល</label>
           <div class="relative">
             <i data-lucide="mail" class="w-5 h-5 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" aria-hidden="true"></i>
-            <input type="email" id="loginEmail" required autocomplete="email" class="w-full pl-11 pr-4 py-3 rounded-xl border border-slate-200 bg-slate-50/50 text-sm focus:bg-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition" placeholder="example@gmail.com">
+            <input type="email" id="loginEmail" required autocomplete="email" class="w-full pl-11 pr-4 py-3 rounded-xl border border-slate-700/80 bg-slate-900/60 text-slate-100 text-sm placeholder-slate-500 focus:bg-slate-900 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition duration-150" placeholder="example@gmail.com">
           </div>
         </div>
 
         <div>
-          <label for="loginPassword" class="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-2">ពាក្យសម្ងាត់</label>
+          <label for="loginPassword" class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">ពាក្យសម្ងាត់</label>
           <div class="relative">
             <i data-lucide="lock" class="w-5 h-5 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" aria-hidden="true"></i>
-            <input type="password" id="loginPassword" required autocomplete="current-password" class="w-full pl-11 pr-4 py-3 rounded-xl border border-slate-200 bg-slate-50/50 text-sm focus:bg-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition" placeholder="••••••••">
+            <input type="password" id="loginPassword" required autocomplete="current-password" class="w-full pl-11 pr-4 py-3 rounded-xl border border-slate-700/80 bg-slate-900/60 text-slate-100 text-sm placeholder-slate-500 focus:bg-slate-900 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition duration-150" placeholder="••••••••">
           </div>
         </div>
 
-        <button type="submit" id="loginBtn" class="w-full py-3.5 px-4 bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-700 hover:to-blue-700 active:scale-[0.98] text-white font-semibold rounded-xl shadow-lg shadow-indigo-500/25 transition duration-200 flex items-center justify-center gap-2">
+        <button type="submit" id="loginBtn" class="w-full py-3.5 px-4 bg-gradient-to-r from-indigo-600 via-indigo-500 to-blue-600 hover:from-indigo-500 hover:to-blue-500 active:scale-[0.98] text-white font-semibold rounded-xl shadow-lg shadow-indigo-600/30 transition duration-200 flex items-center justify-center gap-2 text-sm">
           <span>ចូលប្រព័ន្ធ</span>
           <i data-lucide="arrow-right" class="w-4 h-4" aria-hidden="true"></i>
         </button>
       </form>
+
     </div>
   </section>
 
   <!-- 2. MAIN DASHBOARD SECTION -->
-  <div id="dashboardSection" class="hidden min-h-screen bg-slate-50 relative z-10 pb-12">
+  <div id="dashboardSection" class="hidden min-h-screen bg-slate-900 text-slate-800 relative z-10 pb-16">
     
-    <!-- Top Navigation Bar -->
-    <header class="bg-white/90 backdrop-blur-md sticky top-0 z-50 border-b border-slate-200/80">
-      <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
+    <!-- Navigation Header -->
+    <header class="bg-slate-900/80 backdrop-blur-md sticky top-0 z-50 border-b border-slate-800">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3.5 flex items-center justify-between gap-4">
         
-        <div class="flex items-center gap-2">
-          <img src="logo.png" alt="DUC Logo" class="w-8 h-8 object-contain">
-          <span class="text-xs md:text-sm font-bold text-slate-900 tracking-wide uppercase hidden sm:inline-block">Digital University of Cambodia</span>
-        </div>
-
-        <div class="flex flex-col items-center justify-center text-center">
-          <div class="flex items-center justify-center gap-2">
-            <h2 id="userName" class="font-bold text-indigo-600 text-xs md:text-sm">...</h2>
-            <span id="userRole" class="inline-block text-[9px] font-bold uppercase tracking-wider bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded-full">...</span>
+        <div class="flex items-center gap-3">
+          <div class="p-1.5 bg-indigo-500/10 rounded-xl border border-indigo-500/20">
+            <img src="logo.png" alt="DUC Logo" class="w-7 h-7 object-contain">
+          </div>
+          <div>
+            <span class="text-xs sm:text-sm font-bold text-white tracking-wide uppercase block">Digital University of Cambodia</span>
+            <span class="text-[10px] text-slate-400 block sm:hidden">G1-NW-B Management System</span>
           </div>
         </div>
 
-        <button id="logoutBtn" onclick="logout()" class="flex items-center gap-1.5 text-xs font-semibold text-rose-600 bg-rose-50 hover:bg-rose-100 px-3 py-1.5 rounded-xl transition border border-rose-100 active:scale-[0.98]">
-          <i data-lucide="log-out" class="w-4 h-4" aria-hidden="true"></i>
-          <span class="hidden sm:inline">ចាកចេញ</span>
-        </button>
+        <div class="flex items-center gap-3">
+          <div class="flex items-center gap-2.5 bg-slate-800/80 border border-slate-700/80 px-3 py-1.5 rounded-xl">
+            <div class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
+            <span id="userName" class="font-bold text-slate-200 text-xs sm:text-sm">...</span>
+            <span id="userRole" class="text-[9px] font-extrabold uppercase tracking-wider bg-indigo-500/20 border border-indigo-500/30 text-indigo-300 px-2 py-0.5 rounded-md">...</span>
+          </div>
+
+          <button id="logoutBtn" onclick="logout()" class="flex items-center gap-1.5 text-xs font-semibold text-rose-400 bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/20 px-3 py-2 rounded-xl transition active:scale-[0.98]">
+            <i data-lucide="log-out" class="w-4 h-4" aria-hidden="true"></i>
+            <span class="hidden sm:inline">ចាកចេញ</span>
+          </button>
+        </div>
 
       </div>
     </header>
 
-    <main class="max-w-6xl mx-auto px-4 mt-6 space-y-6">
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 mt-8 space-y-8">
 
-      <!-- Admin Panel Section -->
-      <section id="adminPanel" class="hidden glass-card p-6 rounded-2xl shadow-sm border border-slate-200" aria-label="ផ្ទាំងគ្រប់គ្រង Admin">
-        <div class="flex items-center gap-2 mb-4 text-indigo-600 border-b border-slate-100 pb-3">
-          <i data-lucide="folder-plus" class="w-5 h-5" aria-hidden="true"></i>
-          <h2 class="font-bold text-base text-slate-800">ផ្ទាំង Admin: បន្ថែមមេរៀន / ឯកសារសិក្សា</h2>
+      <!-- Admin Management Panel -->
+      <section id="adminPanel" class="hidden glass-card-light p-6 sm:p-8 rounded-3xl shadow-xl border border-slate-200" aria-label="ផ្ទាំងគ្រប់គ្រង Admin">
+        <div class="flex items-center gap-2.5 mb-6 text-indigo-600 border-b border-slate-200/80 pb-4">
+          <div class="p-2 bg-indigo-50 rounded-xl">
+            <i data-lucide="folder-plus" class="w-5 h-5 text-indigo-600" aria-hidden="true"></i>
+          </div>
+          <h2 class="font-bold text-lg text-slate-900">ផ្ទាំង Admin: បន្ថែមមេរៀន / ឯកសារសិក្សា</h2>
         </div>
 
-        <form id="addLessonForm" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <form id="addLessonForm" class="grid grid-cols-1 md:grid-cols-2 gap-5">
           <div>
-            <label for="lessonSubject" class="block text-xs font-medium text-slate-600 mb-1">ជ្រើសរើសមុខវិជ្ជា</label>
-            <select id="lessonSubject" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs focus:ring-2 focus:ring-indigo-500 outline-none bg-white transition">
+            <label for="lessonSubject" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">ជ្រើសរើសមុខវិជ្ជា</label>
+            <select id="lessonSubject" class="w-full px-4 py-3 rounded-xl border border-slate-300 bg-white text-xs font-semibold text-slate-800 focus:ring-2 focus:ring-indigo-500 outline-none transition">
               <option value="DA II">Database Administration II (DA II)</option>
               <option value="CTN I">Container I (CTN I)</option>
               <option value="CS IV">Cisco IV (CS IV)</option>
@@ -115,27 +155,27 @@
           </div>
 
           <div>
-            <label for="lessonTitle" class="block text-xs font-medium text-slate-600 mb-1">ចំណងជើងមេរៀន</label>
-            <input type="text" id="lessonTitle" required placeholder="ឧ. Chapter 1 - Introduction" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs focus:ring-2 focus:ring-indigo-500 outline-none transition">
+            <label for="lessonTitle" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">ចំណងជើងមេរៀន</label>
+            <input type="text" id="lessonTitle" required placeholder="ឧ. Chapter 1 - Introduction" class="w-full px-4 py-3 rounded-xl border border-slate-300 bg-white text-xs text-slate-800 placeholder-slate-400 focus:ring-2 focus:ring-indigo-500 outline-none transition">
           </div>
 
           <div class="md:col-span-2">
-            <label for="classCode" class="block text-xs font-medium text-slate-600 mb-1">កូដថ្នាក់</label>
-            <input type="text" id="classCode" value="G1-NW-B" required readonly class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs bg-slate-100 font-semibold text-slate-600 cursor-not-allowed">
+            <label for="classCode" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">កូដថ្នាក់</label>
+            <input type="text" id="classCode" value="G1-NW-B" required readonly class="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-100 text-xs font-bold text-slate-500 cursor-not-allowed">
           </div>
 
           <div class="md:col-span-2">
-            <label for="lessonFileInput" class="block text-xs font-medium text-slate-600 mb-1">ជ្រើសរើសឯកសារ (PDF, PPTX, DOCX)</label>
-            <input type="file" id="lessonFileInput" accept=".pdf,.pptx,.ppt,.docx" required class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-xs focus:ring-2 focus:ring-indigo-500 outline-none bg-white file:mr-4 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 transition">
+            <label for="lessonFileInput" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">ជ្រើសរើសឯកសារ (PDF, PPTX, DOCX)</label>
+            <input type="file" id="lessonFileInput" accept=".pdf,.pptx,.ppt,.docx" required class="w-full px-4 py-2.5 rounded-xl border border-slate-300 bg-white text-xs text-slate-600 focus:ring-2 focus:ring-indigo-500 outline-none file:mr-4 file:py-1.5 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 transition cursor-pointer">
           </div>
 
           <div class="md:col-span-2">
-            <label for="lessonDesc" class="block text-xs font-medium text-slate-600 mb-1">ការពិពណ៌នាបន្ថែម</label>
-            <textarea id="lessonDesc" rows="2" placeholder="ការពិពណ៌នាសង្ខេបអំពីមេរៀន..." class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs focus:ring-2 focus:ring-indigo-500 outline-none transition"></textarea>
+            <label for="lessonDesc" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">ការពិពណ៌នាបន្ថែម</label>
+            <textarea id="lessonDesc" rows="3" placeholder="ការពិពណ៌នាសង្ខេបអំពីមេរៀន..." class="w-full px-4 py-3 rounded-xl border border-slate-300 bg-white text-xs text-slate-800 placeholder-slate-400 focus:ring-2 focus:ring-indigo-500 outline-none transition"></textarea>
           </div>
 
-          <div class="md:col-span-2">
-            <button type="submit" id="addLessonBtn" class="w-full py-3 bg-indigo-600 hover:bg-indigo-700 active:scale-[0.99] text-white font-semibold rounded-xl text-xs shadow-md transition flex items-center justify-center gap-2">
+          <div class="md:col-span-2 pt-2">
+            <button type="submit" id="addLessonBtn" class="w-full py-3.5 bg-indigo-600 hover:bg-indigo-700 active:scale-[0.99] text-white font-bold rounded-xl text-xs shadow-md shadow-indigo-600/20 transition flex items-center justify-center gap-2">
               <i data-lucide="save" class="w-4 h-4" aria-hidden="true"></i>
               <span>រក្សាទុកមេរៀន</span>
             </button>
@@ -143,110 +183,115 @@
         </form>
       </section>
 
-      <!-- Dashboard Overview Stats -->
-      <section aria-label="ទិន្នន័យសង្ខេប" class="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm flex items-center gap-3">
-          <div class="p-3 bg-indigo-50 text-indigo-600 rounded-xl">
-            <i data-lucide="book-open" class="w-5 h-5" aria-hidden="true"></i>
+      <!-- System Metric Cards -->
+      <section aria-label="ទិន្នន័យសង្ខេប" class="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+        <div class="glass-card-light p-5 rounded-2xl shadow-sm flex items-center gap-4">
+          <div class="p-3.5 bg-indigo-50 border border-indigo-100 text-indigo-600 rounded-2xl">
+            <i data-lucide="book-open" class="w-6 h-6" aria-hidden="true"></i>
           </div>
           <div>
-            <p class="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">មុខវិជ្ជាសរុប</p>
-            <h3 id="statTotalClasses" class="text-lg font-bold text-slate-800">5</h3>
+            <p class="text-[11px] font-bold text-slate-600 uppercase tracking-wider">មុខវិជ្ជាសរុប</p>
+            <h3 id="statTotalClasses" class="text-xl font-extrabold text-slate-900 mt-0.5">5</h3>
           </div>
         </div>
 
-        <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm flex items-center gap-3">
-          <div class="p-3 bg-blue-50 text-blue-600 rounded-xl">
-            <i data-lucide="clock" class="w-5 h-5" aria-hidden="true"></i>
+        <div class="glass-card-light p-5 rounded-2xl shadow-sm flex items-center gap-4">
+          <div class="p-3.5 bg-blue-50 border border-blue-100 text-blue-600 rounded-2xl">
+            <i data-lucide="clock" class="w-6 h-6" aria-hidden="true"></i>
           </div>
           <div>
-            <p class="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">ម៉ោងសិក្សា/សប្តាហ៍</p>
-            <h3 id="statTotalSessions" class="text-lg font-bold text-slate-800">0 Sessions</h3>
+            <p class="text-[11px] font-bold text-slate-600 uppercase tracking-wider">ម៉ោងសិក្សា/សប្តាហ៍</p>
+            <h3 id="statTotalSessions" class="text-xl font-extrabold text-slate-900 mt-0.5">0 Sessions</h3>
           </div>
         </div>
 
-        <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm flex items-center gap-3">
-          <div class="p-3 bg-emerald-50 text-emerald-600 rounded-xl">
-            <i data-lucide="file-text" class="w-5 h-5" aria-hidden="true"></i>
+        <div class="glass-card-light p-5 rounded-2xl shadow-sm flex items-center gap-4">
+          <div class="p-3.5 bg-emerald-50 border border-emerald-100 text-emerald-600 rounded-2xl">
+            <i data-lucide="file-text" class="w-6 h-6" aria-hidden="true"></i>
           </div>
           <div>
-            <p class="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">ឯកសារមេរៀន</p>
-            <h3 id="statTotalLessons" class="text-lg font-bold text-slate-800">0</h3>
+            <p class="text-[11px] font-bold text-slate-600 uppercase tracking-wider">ឯកសារមេរៀន</p>
+            <h3 id="statTotalLessons" class="text-xl font-extrabold text-slate-900 mt-0.5">0</h3>
           </div>
         </div>
 
-        <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm flex items-center gap-3">
-          <div class="p-3 bg-amber-50 text-amber-600 rounded-xl">
-            <i data-lucide="graduation-cap" class="w-5 h-5" aria-hidden="true"></i>
+        <div class="glass-card-light p-5 rounded-2xl shadow-sm flex items-center gap-4">
+          <div class="p-3.5 bg-amber-50 border border-amber-100 text-amber-600 rounded-2xl">
+            <i data-lucide="graduation-cap" class="w-6 h-6" aria-hidden="true"></i>
           </div>
           <div>
-            <p class="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">កូដថ្នាក់</p>
-            <h3 class="text-base font-bold text-slate-800">G1-NW-B</h3>
+            <p class="text-[11px] font-bold text-slate-600 uppercase tracking-wider">កូដថ្នាក់</p>
+            <h3 class="text-base font-extrabold text-slate-900 mt-0.5">G1-NW-B</h3>
           </div>
         </div>
       </section>
 
-      <!-- Schedules Table Section -->
-      <section aria-label="កាលវិភាគសិក្សា" class="bg-white rounded-2xl shadow-sm border border-slate-200/80 overflow-hidden">
-        <div class="p-5 border-b border-slate-100 flex items-center gap-2 text-indigo-600">
-          <i data-lucide="calendar" class="w-5 h-5" aria-hidden="true"></i>
-          <h2 class="font-bold text-slate-800 text-base">កាលវិភាគសិក្សា (ថ្នាក់ G1-NW-B)</h2>
+      <!-- Class Schedules Table -->
+      <section aria-label="កាលវិភាគសិក្សា" class="glass-card-light rounded-3xl shadow-sm overflow-hidden">
+        <div class="p-6 border-b border-slate-200/80 flex items-center gap-3">
+          <div class="p-2 bg-indigo-50 rounded-xl text-indigo-600">
+            <i data-lucide="calendar" class="w-5 h-5" aria-hidden="true"></i>
+          </div>
+          <h2 class="font-bold text-slate-900 text-base">កាលវិភាគសិក្សា (ថ្នាក់ G1-NW-B)</h2>
         </div>
         <div class="overflow-x-auto">
           <table class="w-full text-left border-collapse">
             <thead>
-              <tr class="bg-slate-50 text-[11px] font-bold uppercase tracking-wider text-slate-500 border-b border-slate-100">
-                <th scope="col" class="p-3.5 pl-5">ថ្ងៃ</th>
-                <th scope="col" class="p-3.5">ម៉ោង</th>
-                <th scope="col" class="p-3.5">មុខវិជ្ជា</th>
-                <th scope="col" class="p-3.5">បន្ទប់</th>
-                <th scope="col" class="p-3.5 pr-5">គ្រូបង្រៀន</th>
+              <tr class="bg-slate-100/70 text-[11px] font-extrabold uppercase tracking-wider text-slate-600 border-b border-slate-200/80">
+                <th scope="col" class="py-4 px-6">ថ្ងៃ</th>
+                <th scope="col" class="py-4 px-4">ម៉ោង</th>
+                <th scope="col" class="py-4 px-4">មុខវិជ្ជា</th>
+                <th scope="col" class="py-4 px-4">បន្ទប់</th>
+                <th scope="col" class="py-4 px-6 text-right">គ្រូបង្រៀន</th>
               </tr>
             </thead>
-            <tbody id="scheduleList" class="divide-y divide-slate-100 text-xs text-slate-700">
-              <!-- Dynamically Rendered via JS -->
+            <tbody id="scheduleList" class="divide-y divide-slate-200/60 text-xs text-slate-700">
+              <!-- JS Dynamic Injections -->
             </tbody>
           </table>
         </div>
       </section>
 
-      <!-- Lessons List Section -->
-      <section aria-label="បញ្ជីមេរៀន" class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200/80">
-        <div class="flex items-center gap-2 text-indigo-600 mb-4 pb-3 border-b border-slate-100">
-          <i data-lucide="book-open" class="w-5 h-5" aria-hidden="true"></i>
-          <h2 class="font-bold text-slate-800 text-base">បញ្ជីមេរៀន និង ឯកសារសិក្សា</h2>
+      <!-- Lessons Repository & Filtering -->
+      <section aria-label="បញ្ជីមេរៀន" class="glass-card-light p-6 sm:p-8 rounded-3xl shadow-sm">
+        <div class="flex items-center gap-3 mb-6 pb-4 border-b border-slate-200/80">
+          <div class="p-2 bg-indigo-50 rounded-xl text-indigo-600">
+            <i data-lucide="book-open" class="w-5 h-5" aria-hidden="true"></i>
+          </div>
+          <h2 class="font-bold text-slate-900 text-base">បញ្ជីមេរៀន និង ឯកសារសិក្សា</h2>
         </div>
 
-        <!-- Filter Category Tabs -->
-        <div class="flex flex-wrap gap-2 mb-5" id="subjectFilterContainer">
-          <button type="button" onclick="filterLessons('ALL', this)" class="subject-filter-btn bg-indigo-600 text-white px-3.5 py-1.5 rounded-xl text-xs font-semibold transition">
+        <!-- Subject Filter Buttons -->
+        <div class="flex flex-wrap gap-2 mb-6" id="subjectFilterContainer">
+          <button type="button" onclick="filterLessons('ALL', this)" class="subject-filter-btn active-filter bg-indigo-600 text-white px-4 py-2 rounded-xl text-xs font-bold transition shadow-sm shadow-indigo-600/20">
             ទាំងអស់ (All)
           </button>
-          <button type="button" onclick="filterLessons('DA II', this)" class="subject-filter-btn bg-slate-100 hover:bg-slate-200 text-slate-600 px-3.5 py-1.5 rounded-xl text-xs font-semibold transition">
+          <button type="button" onclick="filterLessons('DA II', this)" class="subject-filter-btn bg-slate-100 hover:bg-slate-200 text-slate-600 px-4 py-2 rounded-xl text-xs font-bold transition">
             DA II
           </button>
-          <button type="button" onclick="filterLessons('CTN I', this)" class="subject-filter-btn bg-slate-100 hover:bg-slate-200 text-slate-600 px-3.5 py-1.5 rounded-xl text-xs font-semibold transition">
+          <button type="button" onclick="filterLessons('CTN I', this)" class="subject-filter-btn bg-slate-100 hover:bg-slate-200 text-slate-600 px-4 py-2 rounded-xl text-xs font-bold transition">
             CTN I
           </button>
-          <button type="button" onclick="filterLessons('CS IV', this)" class="subject-filter-btn bg-slate-100 hover:bg-slate-200 text-slate-600 px-3.5 py-1.5 rounded-xl text-xs font-semibold transition">
+          <button type="button" onclick="filterLessons('CS IV', this)" class="subject-filter-btn bg-slate-100 hover:bg-slate-200 text-slate-600 px-4 py-2 rounded-xl text-xs font-bold transition">
             CS IV
           </button>
-          <button type="button" onclick="filterLessons('NA II', this)" class="subject-filter-btn bg-slate-100 hover:bg-slate-200 text-slate-600 px-3.5 py-1.5 rounded-xl text-xs font-semibold transition">
+          <button type="button" onclick="filterLessons('NA II', this)" class="subject-filter-btn bg-slate-100 hover:bg-slate-200 text-slate-600 px-4 py-2 rounded-xl text-xs font-bold transition">
             NA II
           </button>
-          <button type="button" onclick="filterLessons('CYB II', this)" class="subject-filter-btn bg-slate-100 hover:bg-slate-200 text-slate-600 px-3.5 py-1.5 rounded-xl text-xs font-semibold transition">
+          <button type="button" onclick="filterLessons('CYB II', this)" class="subject-filter-btn bg-slate-100 hover:bg-slate-200 text-slate-600 px-4 py-2 rounded-xl text-xs font-bold transition">
             CYB II
           </button>
         </div>
 
         <div id="lessonList" class="space-y-3">
-          <!-- Dynamically Rendered via JS -->
+          <!-- JS Dynamic Injections -->
         </div>
       </section>
 
     </main>
   </div>
 
+  <!-- JavaScript Module Bundle -->
   <script src="app.js" defer></script>
 </body>
 </html>
