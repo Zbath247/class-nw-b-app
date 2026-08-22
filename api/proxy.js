@@ -16,7 +16,7 @@ export default async function handler(req, res) {
     return res.status(200).end();
   }
 
-  const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxXegy82CqqVPCoGwYx0w678AB8P7UrZkAF-IVD5K4sEUXbAWMSyIn59vYGa9RmDmrQ/exec";
+  const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbza7fEBkq3WejAnCCkc1UqUIo11CUbT5_j1UWM36S2A9OOdogQZfN57NXPQtcuRBI5q/exec";
 
   try {
     if (req.method === 'POST') {
