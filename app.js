@@ -16,7 +16,6 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       try {
-        // ផ្ញើសំណើ Login ទៅកាន់ Backend ຜ່ານ Proxy
         const res = await fetch(`${API_URL}?action=login&email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`);
         const data = await res.json();
 
@@ -30,7 +29,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
           if (typeof lucide !== 'undefined') lucide.createIcons();
           
-          // ទាញយកទិន្នន័យទាំងអស់មកបង្ហាញក្នុង Dashboard
+          // ទាញយកទិន្នន័យទាំងអស់មកបង្ហាញពេល Login ចូល
           fetchAllData();
         } else {
           alert(data.message || "អ៊ីម៉ែល ឬពាក្យសម្ងាត់មិនត្រឹមត្រូវ!");
@@ -52,7 +51,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // ចងភ្ជាប់ Event Listener ជាមួយ Form បន្ថែមនិស្សិតថ្មី
   const addStudentForm = document.getElementById("addStudentForm");
   if (addStudentForm) {
     addStudentForm.addEventListener("submit", handleAddStudent);
@@ -93,13 +91,15 @@ function setButtonLoading(button, isLoading, text, iconName = "save") {
   if (typeof lucide !== 'undefined') lucide.createIcons();
 }
 
-// ប្រមូលផ្ដុំមុខងារទាញយកទិន្នន័យទាំងអស់
+// ប្រមូលផ្ដុំទាញយកទិន្នន័យទាំងអស់
 function fetchAllData() {
   fetchStudents();
-  // អ្នកអាចបន្ថែម fetchClasses(), fetchLessons() នៅទីនេះបន្ថែមទៀតបើត្រូវការ
+  fetchClasses();
+  fetchLessons();
+  fetchSchedules();
 }
 
-// មុខងារទាញយកទិន្នន័យនិស្សិតពី Server មកបង្ហាញក្នុងតារាង
+// 1. មុខងារទាញយកទិន្នន័យនិស្សិត
 async function fetchStudents() {
   const tbody = document.getElementById("studentList");
   if (tbody) {
@@ -117,7 +117,6 @@ async function fetchStudents() {
       return;
     }
 
-    // បង្ហាញទិន្នន័យចូលក្នុងតារាង HTML និងភ្ជាប់មុខងារលុប/កែប្រែបើមាន
     tbody.innerHTML = students.map((s, index) => `
       <tr class="hover:bg-slate-900/50 transition border-b border-slate-800/40">
         <td class="py-3 px-4">${index + 1}</td>
@@ -140,7 +139,42 @@ async function fetchStudents() {
   }
 }
 
-// មុខងារបញ្ជូនទិន្នន័យបន្ថែមនិស្សិតថ្មីទៅកាន់ Server (API)
+// 2. មុខងារទាញយកទិន្នន័យថ្នាក់រៀន (Classes)
+async function fetchClasses() {
+  try {
+    const res = await fetch(`${API_URL}?action=getClasses`);
+    const classes = await res.json();
+    console.log("Classes fetched:", classes);
+    
+    // ប្រសិនបើអ្នកมี Container សម្រាប់បង្ហាញ Classes អាចដាក់កូដ Render បន្ថែមទីនេះ
+  } catch (err) {
+    console.error("Error fetching classes:", err);
+  }
+}
+
+// 3. មុខងារទាញយកទិន្នន័យមេរៀន (Lessons)
+async function fetchLessons() {
+  try {
+    const res = await fetch(`${API_URL}?action=getLessons`);
+    const lessons = await res.json();
+    console.log("Lessons fetched:", lessons);
+  } catch (err) {
+    console.error("Error fetching lessons:", err);
+  }
+}
+
+// 4. មុខងារទាញយកទិន្នន័យកាលវិភាគសិក្សា (Schedules)
+async function fetchSchedules() {
+  try {
+    const res = await fetch(`${API_URL}?action=getSchedules`);
+    const schedules = await res.json();
+    console.log("Schedules fetched:", schedules);
+  } catch (err) {
+    console.error("Error fetching schedules:", err);
+  }
+}
+
+// 5. មុខងារបន្ថែមនិស្សិតថ្មី
 async function handleAddStudent(e) {
   e.preventDefault();
   
@@ -185,7 +219,7 @@ async function handleAddStudent(e) {
     }
   } catch (err) {
     console.error("Add Student Error:", err);
-    alert("មានបញ្ហាក្នុងการភ្ជាប់ទៅកាន់ Server!");
+    alert("មានបញ្ហាក្នុងការភ្ជាប់ទៅកាន់ Server!");
   } finally {
     setButtonLoading(submitBtn, false, "រក្សាទុក", "save");
   }
