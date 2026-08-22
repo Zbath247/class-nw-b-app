@@ -1,6 +1,8 @@
 const API_URL = "/api/proxy";
 
 let currentUser = null;
+let allLessons = []; // រក្សាទុកទិន្នន័យមេរៀនដើមទាំងអស់
+let currentFilter = "ALL"; // Category Filter
 
 // Check user status on load
 document.addEventListener("DOMContentLoaded", () => {
@@ -59,7 +61,7 @@ if (loginForm) {
       })
       .catch(err => {
         console.error("Login error:", err);
-        alert("មានបញ្ហាក្នុងការភ្ជាប់ទៅកាន់ Server! សូមពិនិត្យមើល permissions លើ Apps Script (Who has access: Anyone)។");
+        alert("មានបញ្ហាក្នុងការភ្ជាប់ទៅកាន់ Server!");
       })
       .finally(() => {
         if (btn) {
@@ -121,7 +123,6 @@ function fetchSchedules() {
         return;
       }
 
-      // Calculate total sessions and unique subjects
       const totalSessions = data.length;
       const uniqueSubjects = new Set(data.map(item => item.subject ? item.subject.trim() : '')).size;
       updateScheduleStats(uniqueSubjects, totalSessions);
@@ -156,52 +157,91 @@ function updateScheduleStats(totalClasses, totalSessions) {
   if (statSessions) statSessions.innerText = `${totalSessions} Sessions`;
 }
 
-// Fetch Lessons & Update Lesson Stat Card
+// Fetch Lessons & Store Data
 function fetchLessons() {
-  const lessonListDiv = document.getElementById("lessonList");
   const statLessons = document.getElementById("statTotalLessons");
-  if (!lessonListDiv) return;
 
   fetch(`${API_URL}?action=getLessons`)
     .then(res => res.json())
     .then(data => {
-      lessonListDiv.innerHTML = "";
-
-      const lessonCount = Array.isArray(data) ? data.length : 0;
-      if (statLessons) statLessons.innerText = lessonCount;
-
-      if (!data || !Array.isArray(data) || data.length === 0) {
-        lessonListDiv.innerHTML = "<p class='text-slate-400 text-xs text-center py-6'>មិនទាន់មានមេរៀននៅឡើយទេ។</p>";
-        return;
-      }
-
-      data.forEach(item => {
-        const isAdmin = currentUser && currentUser.role === "admin";
-        
-        lessonListDiv.innerHTML += `
-          <div class="p-4 rounded-xl border border-slate-200/70 bg-slate-50/50 hover:bg-white hover:shadow-md transition flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-            <div class="space-y-1">
-              <span class="bg-indigo-50 text-indigo-600 border border-indigo-100 text-[10px] font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider">${item.class_code || 'G1-NW-B'}</span>
-              <h3 class="font-bold text-sm text-slate-800 mt-1">${item.title || ''}</h3>
-              <p class="text-xs text-slate-500 line-clamp-2">${item.description || "គ្មានការពិពណ៌នា"}</p>
-            </div>
-            <div class="flex items-center gap-2 w-full md:w-auto">
-              <a href="${item.file_url || '#'}" target="_blank" class="flex-1 md:flex-initial bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2.5 rounded-xl text-xs font-semibold flex items-center justify-center gap-2 transition shadow-sm shadow-emerald-600/20 whitespace-nowrap">
-                <i data-lucide="download-cloud" class="w-4 h-4"></i>
-                <span>មើល / Download File</span>
-              </a>
-              ${isAdmin ? `
-                <button onclick="deleteLesson('${item.lesson_id}')" class="p-2.5 bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-100 rounded-xl transition" title="លុបមេរៀន">
-                  <i data-lucide="trash-2" class="w-4 h-4"></i>
-                </button>
-              ` : ''}
-            </div>
-          </div>
-        `;
-      });
-      refreshIcons();
+      allLessons = Array.isArray(data) ? data : [];
+      if (statLessons) statLessons.innerText = allLessons.length;
+      renderLessonsByFilter();
     })
     .catch(err => console.error("Lesson Error:", err));
+}
+
+// Filter Function
+function filterLessons(subject) {
+  currentFilter = subject;
+
+  // Update Active UI Tab Buttons
+  const buttons = document.querySelectorAll('.subject-filter-btn');
+  buttons.forEach(btn => {
+    btn.classList.remove('bg-indigo-600', 'text-white');
+    btn.classList.add('bg-slate-100', 'text-slate-600', 'hover:bg-slate-200');
+  });
+
+  if (event && event.currentTarget) {
+    event.currentTarget.classList.remove('bg-slate-100', 'text-slate-600', 'hover:bg-slate-200');
+    event.currentTarget.classList.add('bg-indigo-600', 'text-white');
+  }
+
+  renderLessonsByFilter();
+}
+
+// Helper to extract Drive File ID and convert to Mobile Friendly Preview Link
+function getMobilePreviewLink(url) {
+  if (!url) return '#';
+  const match = url.match(/[-\w]{25,}/);
+  return match ? `https://drive.google.com/file/d/${match[0]}/preview` : url;
+}
+
+// Render Lessons List
+function renderLessonsByFilter() {
+  const lessonListDiv = document.getElementById("lessonList");
+  if (!lessonListDiv) return;
+
+  lessonListDiv.innerHTML = "";
+
+  let filtered = allLessons;
+  if (currentFilter !== "ALL") {
+    filtered = allLessons.filter(item => 
+      item.title && item.title.toUpperCase().includes(currentFilter.toUpperCase())
+    );
+  }
+
+  if (filtered.length === 0) {
+    lessonListDiv.innerHTML = "<p class='text-slate-400 text-xs text-center py-6 bg-slate-50 rounded-xl border border-dashed border-slate-200'>មិនទាន់មានមេរៀនសម្រាប់មុខវិជ្ជានេះនៅឡើយទេ។</p>";
+    return;
+  }
+
+  filtered.forEach(item => {
+    const isAdmin = currentUser && currentUser.role === "admin";
+    const previewUrl = getMobilePreviewLink(item.file_url);
+
+    lessonListDiv.innerHTML += `
+      <div class="p-4 rounded-xl border border-slate-200/70 bg-slate-50/50 hover:bg-white hover:shadow-md transition flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <div class="space-y-1">
+          <span class="bg-indigo-50 text-indigo-600 border border-indigo-100 text-[10px] font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider">${item.class_code || 'G1-NW-B'}</span>
+          <h3 class="font-bold text-sm text-slate-800 mt-1">${item.title || ''}</h3>
+          <p class="text-xs text-slate-500 line-clamp-2">${item.description || "គ្មានការពិពណ៌នា"}</p>
+        </div>
+        <div class="flex items-center gap-2 w-full md:w-auto">
+          <a href="${previewUrl}" target="_blank" class="flex-1 md:flex-initial bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2.5 rounded-xl text-xs font-semibold flex items-center justify-center gap-2 transition shadow-sm shadow-emerald-600/20 whitespace-nowrap">
+            <i data-lucide="eye" class="w-4 h-4"></i>
+            <span>មើល / Download File</span>
+          </a>
+          ${isAdmin ? `
+            <button onclick="deleteLesson('${item.lesson_id}')" class="p-2.5 bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-100 rounded-xl transition" title="លុបមេរៀន">
+              <i data-lucide="trash-2" class="w-4 h-4"></i>
+            </button>
+          ` : ''}
+        </div>
+      </div>
+    `;
+  });
+  refreshIcons();
 }
 
 // Helper: Convert File Object to Base64 String
@@ -210,7 +250,6 @@ function fileToBase64(file) {
     const reader = new FileReader();
     reader.readAsDataURL(file);
     reader.onload = () => {
-      // Get base64 string after 'data:*/*;base64,'
       const base64String = reader.result.split(',')[1];
       resolve(base64String);
     };
@@ -218,7 +257,7 @@ function fileToBase64(file) {
   });
 }
 
-// Add Lesson Handler (Upload File from Computer as Base64 via POST)
+// Add Lesson Handler
 const addLessonForm = document.getElementById("addLessonForm");
 if (addLessonForm) {
   addLessonForm.addEventListener("submit", async function(e) {
@@ -242,14 +281,21 @@ if (addLessonForm) {
     try {
       const base64File = await fileToBase64(file);
       const lessonId = "LES-" + Date.now();
-      const title = document.getElementById("lessonTitle").value.trim();
+      
+      const subjectSelect = document.getElementById("lessonSubject");
+      const rawTitle = document.getElementById("lessonTitle").value.trim();
+      const subjectPrefix = subjectSelect ? subjectSelect.value : "";
+      
+      // បញ្ចូលឈ្មោះមុខវិជ្ជាទៅក្នុង Title (ឧទាហរណ៍៖ "DA II - Chapter 1")
+      const fullTitle = subjectPrefix ? `${subjectPrefix} - ${rawTitle}` : rawTitle;
+
       const desc = document.getElementById("lessonDesc").value.trim();
       const classCode = document.getElementById("classCode").value.trim();
 
       const payload = {
         action: "addLesson",
         lesson_id: lessonId,
-        title: title,
+        title: fullTitle,
         description: desc,
         class_code: classCode,
         file_name: file.name,
