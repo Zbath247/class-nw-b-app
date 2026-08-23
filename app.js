@@ -426,35 +426,45 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 function createBottomNavigationBar() {
-    // ពិនិត្យមើលថាតើមាន Bottom Nav រួចហ្សីនៅ ដើម្បីការពារការបង្កើតត្រួតគ្នា
     if (document.getElementById("customBottomNav")) return;
 
-    // បង្កើត Element សម្រាប់ Bottom Nav
     const bottomNav = document.createElement("div");
     bottomNav.id = "customBottomNav";
     bottomNav.className = "custom-bottom-nav";
 
+    // [UPDATED] ប្រើប្រាស់ Lucide Icons ជំនួសឱ្យ Emoji ដើម្បីភាពស្អាតបែប Premium និងដូរ switchNavTab មក switchTab វិញ
     bottomNav.innerHTML = `
-        <a href="#dashboard" class="nav-link-item active" onclick="switchNavTab('home', event)">
-            <span class="nav-icon">🏠</span>
+        <a href="#dashboard" class="nav-link-item active" onclick="switchTab('home', event)">
+            <i data-lucide="home" class="w-5 h-5 mb-1"></i>
             <span>ទំព័រដើម</span>
         </a>
-        <a href="#lessons" class="nav-link-item" onclick="switchNavTab('lessons', event)">
-            <span class="nav-icon">📚</span>
+        <a href="#lessons" class="nav-link-item" onclick="switchTab('lessons', event)">
+            <i data-lucide="book-open" class="w-5 h-5 mb-1"></i>
             <span>មេរៀន</span>
         </a>
-        <a href="#add" class="nav-link-item" onclick="switchNavTab('add', event)">
-            <span class="nav-center-btn">+</span>
+        <a href="#add" class="nav-link-item" onclick="switchTab('add', event)">
+            <span class="nav-center-btn">
+                <i data-lucide="plus" class="w-6 h-6"></i>
+            </span>
         </a>
-        <a href="#schedule" class="nav-link-item" onclick="switchNavTab('schedule', event)">
-            <span class="nav-icon">📅</span>
+        <a href="#schedule" class="nav-link-item" onclick="switchTab('schedule', event)">
+            <i data-lucide="calendar" class="w-5 h-5 mb-1"></i>
             <span>កាលវិភាគ</span>
         </a>
-        <a href="#profile" class="nav-link-item" onclick="switchNavTab('profile', event)">
-            <span class="nav-icon">👤</span>
+        <a href="#profile" class="nav-link-item" onclick="switchTab('profile', event)">
+            <i data-lucide="user" class="w-5 h-5 mb-1"></i>
             <span>គណនី</span>
         </a>
     `;
+
+    document.body.appendChild(bottomNav);
+    document.body.style.paddingBottom = "75px";
+
+    // ហៅទាញ Lucide Icons ឱ្យរត់ចេញជារូបស្អាត
+    if (window.lucide) {
+        lucide.createIcons();
+    }
+}
 
     // បញ្ចូលវាទៅក្នុង body របស់ HTML
     document.body.appendChild(bottomNav);
