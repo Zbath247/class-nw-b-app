@@ -985,9 +985,9 @@ async function handleProfileImageUpload(event) {
         avatarFallback.classList.add('hidden');
       }
 
-      showToast("បាន Upload និងរក្សាទុករូប Profile ក្នុង Google Sheet ជោគជ័យ!");
+      showToast("Upload​ image to Profile ជោគជ័យ!");
     } else {
-      showToast((data && data.message) ? data.message : "មានបញ្ហាក្នុងការ Upload រូបភាព!", "error");
+      showToast((data && data.message) ? data.message : "failed Upload រូបភាព!", "error");
     }
   } catch (err) {
     console.error("Avatar upload error:", err);
