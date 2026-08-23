@@ -942,43 +942,57 @@
     }
 
     // Handle Upload Avatar Image Locally
-    async function handleProfileImageUpload(event) {
-      const file = event.target.files[0];
-      if (!file) return;
+   async function handleProfileImageUpload(event) {
+  const file = event.target.files[0];
+  if (!file) return;
 
-      if (!file.type.startsWith('image/')) {
-        showToast("សូមជ្រើសរើសឯកសារារូបភាព (Image) ប៉ុណ្ណោះ!", "error");
-        return;
-      }
+  if (!file.type.startsWith('image/')) {
+    showToast("សូមជ្រើសរើសឯកសាររូបភាព (Image) ប៉ុណ្ណោះ!", "error");
+    return;
+  }
 
-      try {
-        const base64String = await fileToBase64(file);
-        
-        if (currentUser) {
-          currentUser.avatar = base64String;
-          localStorage.setItem("duc_current_user", JSON.stringify(currentUser));
+  try {
+    showToast("กำลัง Upload រូបភាពទៅកាន់ Google Drive...", "success");
+    const base64Full = await fileToBase64(file);
+    const base64File = base64Full.split(',')[1];
 
-          // Save to user avatars lookup in localStorage
-          let savedAvatars = JSON.parse(localStorage.getItem("duc_user_avatars") || "{}");
-          if (currentUser.email) {
-            savedAvatars[currentUser.email] = base64String;
-            localStorage.setItem("duc_user_avatars", JSON.stringify(savedAvatars));
-          }
-        }
+    const payload = {
+      action: "updateProfileImage",
+      email: currentUser.email,
+      file_name: file.name,
+      mime_type: file.type,
+      file_data: base64File
+    };
 
-        // Update UI instantly inside Modal
-        const avatarImg = document.getElementById('modalAvatarImg');
-        const avatarFallback = document.getElementById('modalAvatarFallback');
-        avatarImg.src = base64String;
-        avatarImg.classList.remove('hidden');
-        avatarFallback.classList.add('hidden');
+    const res = await fetch(API_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    });
 
-        showToast("បានផ្លាស់ប្ដូររូប Profile ជោគជ័យ!");
-      } catch (err) {
-        console.error("Avatar upload error:", err);
-        showToast("មានបញ្ហាក្នុងការផ្ទុករូបភាព!", "error");
-      }
+    const data = await res.json();
+
+    if (data && data.status === "success") {
+      // ផ្លាស់ប្ដូររូបភាពក្នុង State និង localStorage
+      currentUser.avatar = data.avatar_url;
+      localStorage.setItem("duc_current_user", JSON.stringify(currentUser));
+
+      //  अपडेट UI ក្នុង Modal ភ្លាមៗ
+      const avatarImg = document.getElementById('modalAvatarImg');
+      const avatarFallback = document.getElementById('modalAvatarFallback');
+      avatarImg.src = data.avatar_url;
+      avatarImg.classList.remove('hidden');
+      avatarFallback.classList.add('hidden');
+
+      showToast("បាន Upload និងរក្សាទុករូប Profile ក្នុង Google Sheet ជោគជ័យ!");
+    } else {
+      showToast((data && data.message) ? data.message : "មានបញ្ហាក្នុងការ Upload រូបភាព!", "error");
     }
+  } catch (err) {
+    console.error("Avatar upload error:", err);
+    showToast("មានបញ្ហាក្នុងការភ្ជាប់ទៅកាន់ Server!", "error");
+  }
+}
   </script>
 </body>
 </html>
