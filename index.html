@@ -942,7 +942,7 @@
     }
 
     // Handle Upload Avatar Image Locally
-   async function handleProfileImageUpload(event) {
+async function handleProfileImageUpload(event) {
   const file = event.target.files[0];
   if (!file) return;
 
@@ -952,16 +952,13 @@
   }
 
   try {
-    showToast("กำลัง Upload រូបភាពទៅកាន់ Google Drive...", "success");
-    const base64Full = await fileToBase64(file);
-    const base64File = base64Full.split(',')[1];
+    showToast("กำลัง Upload រូបភាព...", "success");
+    const base64Full = await fileToBase64(file); // បានទម្រង់ data:image/jpeg;base64,...
 
     const payload = {
       action: "updateProfileImage",
       email: currentUser.email,
-      file_name: file.name,
-      mime_type: file.type,
-      file_data: base64File
+      file_data: base64Full // ផ្ញើទាំងមូលចូលទៅកាន់ Sheet តែម្តង
     };
 
     const res = await fetch(API_URL, {
@@ -977,12 +974,16 @@
       currentUser.avatar = data.avatar_url;
       localStorage.setItem("duc_current_user", JSON.stringify(currentUser));
 
-      //  अपडेट UI ក្នុង Modal ភ្លាមៗ
+      // អាប់ដេត UI ក្នុង Modal ភ្លាមៗ
       const avatarImg = document.getElementById('modalAvatarImg');
       const avatarFallback = document.getElementById('modalAvatarFallback');
-      avatarImg.src = data.avatar_url;
-      avatarImg.classList.remove('hidden');
-      avatarFallback.classList.add('hidden');
+      if (avatarImg) {
+        avatarImg.src = data.avatar_url;
+        avatarImg.classList.remove('hidden');
+      }
+      if (avatarFallback) {
+        avatarFallback.classList.add('hidden');
+      }
 
       showToast("បាន Upload និងរក្សាទុករូប Profile ក្នុង Google Sheet ជោគជ័យ!");
     } else {
@@ -992,6 +993,16 @@
     console.error("Avatar upload error:", err);
     showToast("មានបញ្ហាក្នុងការភ្ជាប់ទៅកាន់ Server!", "error");
   }
+}
+
+// មុខងារជំនួយសម្រាប់បម្លែង File ទៅជា Base64 (ប្រសិនបើក្នុងកូដរបស់អ្នកមិនទាន់មាន)
+function fileToBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = error => reject(error);
+  });
 }
   </script>
 </body>
