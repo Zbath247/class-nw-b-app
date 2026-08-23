@@ -80,7 +80,7 @@
 
 <body class="bg-slate-950 min-h-screen text-slate-100 relative overflow-x-hidden selection:bg-indigo-500 selection:text-white pb-20">
 
-  <!-- Profile Pop-up Modal (មានតែ ១ ត្រឹមត្រូវ) -->
+  <!-- Profile Pop-up Modal -->
   <div id="profileModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center hidden opacity-0 transition-opacity duration-300">
     <div class="bg-[#0b1329] border border-blue-500/30 rounded-2xl p-6 w-11/12 max-w-md shadow-2xl relative transform scale-95 transition-transform duration-300" id="profileModalContent">
       
@@ -89,16 +89,29 @@
         <i data-lucide="x" class="w-6 h-6"></i>
       </button>
 
-      <!-- Modal Header / Profile Info -->
+      <!-- Modal Header / Profile Info with Upload Image Feature -->
       <div class="flex flex-col items-center text-center mt-2">
-        <div class="w-20 h-20 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center text-white text-2xl font-bold shadow-lg mb-3 shadow-blue-500/30">
-          <i data-lucide="user" class="w-10 h-10"></i>
+        <div class="relative group cursor-pointer" onclick="document.getElementById('profileImageInput').click()" title="ចុចเพื่อเปลี่ยนរូបភាព Profile">
+          <div id="modalAvatarContainer" class="w-24 h-24 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center text-white text-2xl font-bold shadow-lg mb-3 shadow-blue-500/30 overflow-hidden border-2 border-blue-400/40">
+            <span id="modalAvatarFallback">
+              <i data-lucide="user" class="w-12 h-12"></i>
+            </span>
+            <img id="modalAvatarImg" src="" alt="Profile Image" class="w-full h-full object-cover hidden">
+          </div>
+          <!-- Overlay Camera Icon on Hover -->
+          <div class="absolute inset-0 bg-black/50 rounded-full flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 mb-3">
+            <i data-lucide="camera" class="w-6 h-6 text-white mb-0.5"></i>
+            <span class="text-[9px] text-white font-medium">ប្ដូររូប</span>
+          </div>
         </div>
+
+        <!-- Hidden File Input for Avatar -->
+        <input type="file" id="profileImageInput" accept="image/*" class="hidden" onchange="handleProfileImageUpload(event)">
         
-        <h3 id="modalUserName" class="text-xl font-bold text-white tracking-wide">KONG SEAT</h3>
+        <h3 id="modalUserName" class="text-xl font-bold text-white tracking-wide">MOK SAMBATH</h3>
         
         <span id="modalUserRole" class="mt-2 px-3 py-1 rounded-full text-xs font-semibold bg-blue-500/20 text-blue-400 border border-blue-500/30 uppercase tracking-wider">
-          USER
+          ADMIN
         </span>
       </div>
 
@@ -130,7 +143,7 @@
     </div>
   </div>
 
-  <!-- Bottom Navigation Bar (Lucide Icons Premium Style) -->
+  <!-- Bottom Navigation Bar -->
   <div class="custom-bottom-nav">
     <a href="#" class="nav-link-item active" onclick="switchTab('home', event)">
       <i data-lucide="home" class="w-5 h-5 mb-1"></i>
@@ -500,6 +513,13 @@
           .then(data => {
             if (data && data.status === "success") {
               currentUser = data.user;
+              
+              // Load saved custom profile avatar from localStorage if available
+              const savedAvatars = JSON.parse(localStorage.getItem("duc_user_avatars") || "{}");
+              if (currentUser.email && savedAvatars[currentUser.email]) {
+                currentUser.avatar = savedAvatars[currentUser.email];
+              }
+
               localStorage.setItem("duc_current_user", JSON.stringify(currentUser));
               showToast("ចូលប្រព័ន្ធដោយជោគជ័យ!");
               openDashboard(currentUser);
@@ -703,7 +723,7 @@
       return new Promise((resolve, reject) => {
         const reader = new FileReader();
         reader.readAsDataURL(file);
-        reader.onload = () => resolve(reader.result.split(',')[1]);
+        reader.onload = () => resolve(reader.result);
         reader.onerror = error => reject(error);
       });
     }
@@ -728,7 +748,8 @@
         }
 
         try {
-          const base64File = await fileToBase64(file);
+          const base64Full = await fileToBase64(file);
+          const base64File = base64Full.split(',')[1];
           const lessonId = "LES-" + Date.now();
           const subjectSelect = document.getElementById("lessonSubject");
           const rawTitle = document.getElementById("lessonTitle").value.trim();
@@ -841,7 +862,6 @@
       refreshIcons();
     }
 
-    // [UPDATED] Function សម្រាប់จัดการការចុចប្តូរ Tab លើ Bottom Navigation
     function switchTab(tabName, event) {
       if (event) event.preventDefault();
 
@@ -865,23 +885,33 @@
         const elem = document.getElementById("adminPanel");
         if (elem) elem.scrollIntoView({ behavior: 'smooth', block: 'start' });
       } else if (tabName === 'profile') {
-        openProfileModal(); // ហៅមុខងារបើក Modal គណនីត្រឹមត្រូវ
+        openProfileModal();
       }
     }
 
-    // [ADDED] Function បើក Profile Modal
     function openProfileModal() {
       const modal = document.getElementById('profileModal');
       if (!modal) return;
       
       const modalContent = document.getElementById('profileModalContent');
       
-      // បំពេញឈ្មោះ និង Role តាម User បច្ចុប្បន្ន
       if (currentUser) {
         const nameElem = document.getElementById('modalUserName');
         const roleElem = document.getElementById('modalUserRole');
-        if (nameElem) nameElem.textContent = currentUser.name || "KONG SEAT";
-        if (roleElem) roleElem.textContent = currentUser.role || "USER";
+        if (nameElem) nameElem.textContent = currentUser.name || "MOK SAMBATH";
+        if (roleElem) roleElem.textContent = currentUser.role || "ADMIN";
+
+        // Display Avatar Image if available
+        const avatarImg = document.getElementById('modalAvatarImg');
+        const avatarFallback = document.getElementById('modalAvatarFallback');
+        if (currentUser.avatar) {
+          avatarImg.src = currentUser.avatar;
+          avatarImg.classList.remove('hidden');
+          avatarFallback.classList.add('hidden');
+        } else {
+          avatarImg.classList.add('hidden');
+          avatarFallback.classList.remove('hidden');
+        }
       }
 
       modal.classList.remove('hidden');
@@ -895,7 +925,6 @@
       refreshIcons();
     }
 
-    // [ADDED] Function បិទ Profile Modal
     function closeProfileModal() {
       const modal = document.getElementById('profileModal');
       const modalContent = document.getElementById('profileModalContent');
@@ -910,6 +939,45 @@
       setTimeout(() => {
         modal.classList.add('hidden');
       }, 300);
+    }
+
+    // Handle Upload Avatar Image Locally
+    async function handleProfileImageUpload(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      if (!file.type.startsWith('image/')) {
+        showToast("សូមជ្រើសរើសឯកសារារូបភាព (Image) ប៉ុណ្ណោះ!", "error");
+        return;
+      }
+
+      try {
+        const base64String = await fileToBase64(file);
+        
+        if (currentUser) {
+          currentUser.avatar = base64String;
+          localStorage.setItem("duc_current_user", JSON.stringify(currentUser));
+
+          // Save to user avatars lookup in localStorage
+          let savedAvatars = JSON.parse(localStorage.getItem("duc_user_avatars") || "{}");
+          if (currentUser.email) {
+            savedAvatars[currentUser.email] = base64String;
+            localStorage.setItem("duc_user_avatars", JSON.stringify(savedAvatars));
+          }
+        }
+
+        // Update UI instantly inside Modal
+        const avatarImg = document.getElementById('modalAvatarImg');
+        const avatarFallback = document.getElementById('modalAvatarFallback');
+        avatarImg.src = base64String;
+        avatarImg.classList.remove('hidden');
+        avatarFallback.classList.add('hidden');
+
+        showToast("បានផ្លាស់ប្ដូររូប Profile ជោគជ័យ!");
+      } catch (err) {
+        console.error("Avatar upload error:", err);
+        showToast("មានបញ្ហាក្នុងការផ្ទុករូបភាព!", "error");
+      }
     }
   </script>
 </body>
