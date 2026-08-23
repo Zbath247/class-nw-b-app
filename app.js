@@ -1,9 +1,9 @@
 const API_URL = "/api/proxy";
 
 let currentUser = null;
-let allLessons = []; 
-let currentFilter = "ALL"; 
-let searchQuery = "";
+let allLessons = []; // រក្សាទុកទិន្នន័យមេរៀនដើមទាំងអស់
+let currentFilter = "ALL"; // Category Filter
+let allStudents = []; // រក្សាទុកទិន្នន័យនិស្សិតទាំងអស់សម្រាប់ធ្វើ Search
 
 // Check user status on load
 document.addEventListener("DOMContentLoaded", () => {
@@ -27,7 +27,7 @@ function refreshIcons() {
   }, 50);
 }
 
-// Login Handler
+// Login Handler using GET Parameters
 const loginForm = document.getElementById("loginForm");
 if (loginForm) {
   loginForm.addEventListener("submit", function(e) {
@@ -41,6 +41,7 @@ if (loginForm) {
 
     const emailInput = document.getElementById("loginEmail");
     const passwordInput = document.getElementById("loginPassword");
+
     const email = emailInput ? encodeURIComponent(emailInput.value.trim()) : "";
     const password = passwordInput ? encodeURIComponent(passwordInput.value.trim()) : "";
 
@@ -99,8 +100,8 @@ function showDashboard() {
 
   fetchSchedules();
   fetchLessons();
-  fetchStudents();
   refreshIcons();
+  fetchStudents();
 }
 
 function logout() {
@@ -108,30 +109,57 @@ function logout() {
   location.reload();
 }
 
-// Fetch Schedules & Stats
+// Fetch Schedules & Update Dashboard Stats
 function fetchSchedules() {
+  const scheduleTbody = document.getElementById("scheduleList");
+  if (!scheduleTbody) return;
+
   fetch(`${API_URL}?action=getSchedules`)
     .then(res => res.json())
     .then(data => {
+      scheduleTbody.innerHTML = "";
+
       if (!data || !Array.isArray(data) || data.length === 0) {
+        scheduleTbody.innerHTML = `<tr><td colspan="5" class="p-8 text-center text-slate-400 font-medium">មិនទាន់មានកាលវិភាគនៅឡើយទេ។</td></tr>`;
         updateScheduleStats(0, 0);
         return;
       }
+
       const totalSessions = data.length;
       const uniqueSubjects = new Set(data.map(item => item.subject ? item.subject.trim() : '')).size;
       updateScheduleStats(uniqueSubjects, totalSessions);
+
+      data.forEach(item => {
+        scheduleTbody.innerHTML += `
+          <tr class="hover:bg-indigo-50/30 transition border-b border-slate-100/80">
+            <td class="p-3.5 pl-5 font-bold text-indigo-600 flex items-center gap-1.5">
+              <i data-lucide="calendar-days" class="w-4 h-4 text-indigo-400"></i>
+              ${item.day || ''}
+            </td>
+            <td class="p-3.5 text-slate-600 font-medium">${item.time || ''}</td>
+            <td class="p-3.5 font-semibold text-slate-800">${item.subject || ''}</td>
+            <td class="p-3.5">
+              <span class="bg-slate-100 text-slate-600 border border-slate-200 px-2.5 py-1 rounded-lg text-[11px] font-semibold">${item.room || ''}</span>
+            </td>
+            <td class="p-3.5 pr-5 text-slate-600 font-medium">${item.teacher || ''}</td>
+          </tr>
+        `;
+      });
+      refreshIcons();
     })
     .catch(err => console.error("Schedule Error:", err));
 }
 
+// Helper to Update Schedule Stat Cards
 function updateScheduleStats(totalClasses, totalSessions) {
   const statClasses = document.getElementById("statTotalClasses");
   const statSessions = document.getElementById("statTotalSessions");
+
   if (statClasses) statClasses.innerText = totalClasses;
-  if (statSessions) statSessions.innerText = totalSessions;
+  if (statSessions) statSessions.innerText = `${totalSessions} Sessions`;
 }
 
-// Fetch Lessons
+// Fetch Lessons & Store Data
 function fetchLessons() {
   const statLessons = document.getElementById("statTotalLessons");
 
@@ -145,60 +173,33 @@ function fetchLessons() {
     .catch(err => console.error("Lesson Error:", err));
 }
 
-// Filter Lessons by Category Tab
+// Filter Function
 function filterLessons(subject) {
   currentFilter = subject;
+
+  // Update Active UI Tab Buttons
   const buttons = document.querySelectorAll('.subject-filter-btn');
   buttons.forEach(btn => {
-    btn.classList.remove('bg-indigo-600', 'text-white', 'shadow-sm');
-    btn.classList.add('bg-slate-900', 'text-slate-400', 'border', 'border-slate-800');
+    btn.classList.remove('bg-indigo-600', 'text-white');
+    btn.classList.add('bg-slate-100', 'text-slate-600', 'hover:bg-slate-200');
   });
 
   if (event && event.currentTarget) {
-    event.currentTarget.classList.remove('bg-slate-900', 'text-slate-400', 'border', 'border-slate-800');
-    event.currentTarget.classList.add('bg-indigo-600', 'text-white', 'shadow-sm');
+    event.currentTarget.classList.remove('bg-slate-100', 'text-slate-600', 'hover:bg-slate-200');
+    event.currentTarget.classList.add('bg-indigo-600', 'text-white');
   }
 
   renderLessonsByFilter();
 }
 
-// Instant Search Handler
-function handleLessonSearch(query) {
-  searchQuery = query.trim().toLowerCase();
-  renderLessonsByFilter();
-}
-
-// Helper: Convert Google Drive Link to Preview Link
+// Helper to extract Drive File ID and convert to Mobile Friendly Preview Link
 function getMobilePreviewLink(url) {
   if (!url) return '#';
   const match = url.match(/[-\w]{25,}/);
   return match ? `https://drive.google.com/file/d/${match[0]}/preview` : url;
 }
 
-// Open In-App Preview Modal
-function openPreviewModal(url, title) {
-  const modal = document.getElementById("previewModal");
-  const iframe = document.getElementById("previewIframe");
-  const modalTitle = document.getElementById("modalTitle");
-
-  if (modal && iframe) {
-    iframe.src = getMobilePreviewLink(url);
-    if (modalTitle) modalTitle.innerHTML = `<i data-lucide="file-text" class="w-4 h-4 text-indigo-400"></i> ${title}`;
-    modal.classList.remove("hidden");
-    refreshIcons();
-  }
-}
-
-function closePreviewModal() {
-  const modal = document.getElementById("previewModal");
-  const iframe = document.getElementById("previewIframe");
-  if (modal && iframe) {
-    iframe.src = "";
-    modal.classList.add("hidden");
-  }
-}
-
-// Render Filtered & Searched Lessons
+// Render Lessons List
 function renderLessonsByFilter() {
   const lessonListDiv = document.getElementById("lessonList");
   if (!lessonListDiv) return;
@@ -206,48 +207,35 @@ function renderLessonsByFilter() {
   lessonListDiv.innerHTML = "";
 
   let filtered = allLessons;
-
-  // Filter by Subject Category
   if (currentFilter !== "ALL") {
-    filtered = filtered.filter(item => 
+    filtered = allLessons.filter(item => 
       item.title && item.title.toUpperCase().includes(currentFilter.toUpperCase())
     );
   }
 
-  // Filter by Instant Search Query
-  if (searchQuery !== "") {
-    filtered = filtered.filter(item => 
-      (item.title && item.title.toLowerCase().includes(searchQuery)) ||
-      (item.description && item.description.toLowerCase().includes(searchQuery))
-    );
-  }
-
   if (filtered.length === 0) {
-    lessonListDiv.innerHTML = `<div class="col-span-full py-8 text-center text-slate-500 text-xs bg-slate-900/40 rounded-2xl border border-slate-800 border-dashed">រកមិនឃើញមេរៀនដែលត្រូវស្វែងរកទេ</div>`;
+    lessonListDiv.innerHTML = "<p class='text-slate-400 text-xs text-center py-6 bg-slate-50 rounded-xl border border-dashed border-slate-200'>មិនទាន់មានមេរៀនសម្រាប់មុខវិជ្ជានេះនៅឡើយទេ។</p>";
     return;
   }
 
   filtered.forEach(item => {
     const isAdmin = currentUser && currentUser.role === "admin";
-    const previewUrl = item.file_url || '#';
+    const previewUrl = getMobilePreviewLink(item.file_url);
 
     lessonListDiv.innerHTML += `
-      <div class="p-5 rounded-2xl border border-slate-800 bg-slate-900/60 hover:bg-slate-900 transition flex flex-col justify-between gap-4 shadow-sm">
-        <div class="space-y-1.5">
-          <span class="bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 text-[10px] font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider">${item.class_code || 'G1-NW-B'}</span>
-          <h4 class="font-bold text-sm text-white mt-1">${item.title || ''}</h4>
-          <p class="text-xs text-slate-400 line-clamp-2">${item.description || "គ្មានការពិពណ៌នា"}</p>
+      <div class="p-4 rounded-xl border border-slate-200/70 bg-slate-50/50 hover:bg-white hover:shadow-md transition flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <div class="space-y-1">
+          <span class="bg-indigo-50 text-indigo-600 border border-indigo-100 text-[10px] font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider">${item.class_code || 'G1-NW-B'}</span>
+          <h3 class="font-bold text-sm text-slate-800 mt-1">${item.title || ''}</h3>
+          <p class="text-xs text-slate-500 line-clamp-2">${item.description || "គ្មានការពិពណ៌នា"}</p>
         </div>
-        <div class="flex items-center gap-2 pt-2 border-t border-slate-800/80">
-          <button onclick="openPreviewModal('${previewUrl}', '${escapeHtml(item.title || '')}')" class="flex-1 bg-indigo-600 hover:bg-indigo-500 text-white px-3 py-2 rounded-xl text-xs font-semibold flex items-center justify-center gap-2 transition shadow-sm shadow-indigo-600/20">
+        <div class="flex items-center gap-2 w-full md:w-auto">
+          <a href="${previewUrl}" target="_blank" class="flex-1 md:flex-initial bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2.5 rounded-xl text-xs font-semibold flex items-center justify-center gap-2 transition shadow-sm shadow-emerald-600/20 whitespace-nowrap">
             <i data-lucide="eye" class="w-4 h-4"></i>
-            <span>មើលមេរៀន</span>
-          </button>
-          <a href="${previewUrl}" target="_blank" class="p-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl transition" title="ទាញយក / Download">
-            <i data-lucide="download" class="w-4 h-4"></i>
+            <span>មើល / Download File</span>
           </a>
           ${isAdmin ? `
-            <button onclick="deleteLesson('${item.lesson_id}')" class="p-2.5 bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/20 rounded-xl transition" title="លុបមេរៀន">
+            <button onclick="deleteLesson('${item.lesson_id}')" class="p-2.5 bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-100 rounded-xl transition" title="លុបមេរៀន">
               <i data-lucide="trash-2" class="w-4 h-4"></i>
             </button>
           ` : ''}
@@ -258,34 +246,34 @@ function renderLessonsByFilter() {
   refreshIcons();
 }
 
-function escapeHtml(text) {
-  return text.replace(/"/g, '&quot;').replace(/'/g, '&#39;');
-}
-
-// Helper: Convert File to Base64
+// Helper: Convert File Object to Base64 String
 function fileToBase64(file) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.readAsDataURL(file);
-    reader.onload = () => resolve(reader.result.split(',')[1]);
+    reader.onload = () => {
+      const base64String = reader.result.split(',')[1];
+      resolve(base64String);
+    };
     reader.onerror = error => reject(error);
   });
 }
 
-// Add Lesson Form Handler
+// Add Lesson Handler
 const addLessonForm = document.getElementById("addLessonForm");
 if (addLessonForm) {
   addLessonForm.addEventListener("submit", async function(e) {
     e.preventDefault();
     const btn = document.getElementById("addLessonBtn");
-    const fileInput = document.getElementById("lessonFileInput");
     
+    const fileInput = document.getElementById("lessonFileInput");
     if (!fileInput || !fileInput.files || fileInput.files.length === 0) {
       alert("សូមជ្រើសរើស File ឯកសារជាមុនសិន!");
       return;
     }
 
     const file = fileInput.files[0];
+
     if (btn) {
       btn.innerHTML = `<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i><span>កំពុង Upload និង រក្សាទុក...</span>`;
       btn.disabled = true;
@@ -295,10 +283,13 @@ if (addLessonForm) {
     try {
       const base64File = await fileToBase64(file);
       const lessonId = "LES-" + Date.now();
+      
       const subjectSelect = document.getElementById("lessonSubject");
       const rawTitle = document.getElementById("lessonTitle").value.trim();
       const subjectPrefix = subjectSelect ? subjectSelect.value : "";
+      
       const fullTitle = subjectPrefix ? `${subjectPrefix} - ${rawTitle}` : rawTitle;
+
       const desc = document.getElementById("lessonDesc").value.trim();
       const classCode = document.getElementById("classCode").value.trim();
 
@@ -315,11 +306,14 @@ if (addLessonForm) {
 
       const res = await fetch(API_URL, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json"
+        },
         body: JSON.stringify(payload)
       });
 
       const data = await res.json();
+
       if (data && data.status === "success") {
         alert("បញ្ចូល និង Upload មេរៀនជោគជ័យ!");
         addLessonForm.reset();
@@ -327,12 +321,13 @@ if (addLessonForm) {
       } else {
         alert((data && data.message) ? data.message : "មានបញ្ហាក្នុងការបញ្ចូលមេរៀន!");
       }
+
     } catch (err) {
       console.error("Upload Lesson Error:", err);
       alert("មានបញ្ហាក្នុងការ Upload មេរៀន!");
     } finally {
       if (btn) {
-        btn.innerHTML = `<i data-lucide="upload-cloud" class="w-4 h-4"></i><span>Upload និង រក្សាទុកមេរៀន</span>`;
+        btn.innerHTML = `<i data-lucide="save" class="w-4 h-4"></i><span>រក្សាទុកមេរៀន</span>`;
         btn.disabled = false;
         refreshIcons();
       }
@@ -346,7 +341,7 @@ function deleteLesson(lessonId) {
   if (confirm("តើអ្នកប្រាកដជាចង់លុបមេរៀននេះមែនទេ?")) {
     fetch(`${API_URL}?action=deleteLesson&lesson_id=${encodeURIComponent(lessonId)}`)
       .then(res => res.json())
-      .then(() => {
+      .then(data => {
         alert("លុបមេរៀនជោគជ័យ!");
         fetchLessons();
       })
@@ -357,7 +352,7 @@ function deleteLesson(lessonId) {
   }
 }
 
-// Fetch Students
+// 5. មុខងារទាញយក និងបង្ហាញបញ្ជីឈ្មោះនិស្សិត (Students)
 function fetchStudents() {
   const studentListTbody = document.getElementById("studentList");
   const totalStudentsBadge = document.getElementById("totalStudentsCountBadge");
@@ -366,31 +361,8 @@ function fetchStudents() {
   fetch(`${API_URL}?action=getStudents`)
     .then(res => res.json())
     .then(data => {
-      studentListTbody.innerHTML = "";
-
-      if (!data || !Array.isArray(data) || data.length === 0) {
-        studentListTbody.innerHTML = `<tr><td colspan="6" class="py-8 text-center text-slate-500 font-medium">មិនទាន់មានទិន្នន័យនិស្សិតនៅឡើយទេ។</td></tr>`;
-        if (totalStudentsBadge) totalStudentsBadge.innerText = "សរុប ០ នាក់";
-        return;
-      }
-
-      if (totalStudentsBadge) {
-        totalStudentsBadge.innerText = `សរុប ${data.length} នាក់`;
-      }
-
-      data.forEach((student, index) => {
-        studentListTbody.innerHTML += `
-          <tr class="hover:bg-slate-900/60 transition border-b border-slate-800/40">
-            <td class="py-3.5 px-4 text-slate-500">${index + 1}</td>
-            <td class="py-3.5 px-4 font-mono text-indigo-400 font-medium">${student.student_id || ''}</td>
-            <td class="py-3.5 px-4 font-bold text-white">${student.khmer_name || ''}</td>
-            <td class="py-3.5 px-4 text-slate-300">${student.latin_name || '-'}</td>
-            <td class="py-3.5 px-4">${student.gender || '-'}</td>
-            <td class="py-3.5 px-4 text-slate-400">${student.dob || '-'}</td>
-          </tr>
-        `;
-      });
-      refreshIcons();
+      allStudents = Array.isArray(data) ? data : [];
+      renderStudents(allStudents);
     })
     .catch(err => {
       console.error("Student Error:", err);
@@ -398,4 +370,57 @@ function fetchStudents() {
         studentListTbody.innerHTML = `<tr><td colspan="6" class="py-8 text-center text-rose-400 font-medium">មិនអាចទាញយកទិន្នន័យនិស្សិតបានទេ!</td></tr>`;
       }
     });
+}
+
+// មុខងារ Render បញ្ជីនិស្សិត និងគាំទ្រការ Filter/Search
+function renderStudents(students) {
+  const studentListTbody = document.getElementById("studentList");
+  const totalStudentsBadge = document.getElementById("totalStudentsCountBadge");
+  if (!studentListTbody) return;
+
+  studentListTbody.innerHTML = "";
+
+  if (students.length === 0) {
+    studentListTbody.innerHTML = `<tr><td colspan="6" class="py-8 text-center text-slate-400 font-medium">មិនមានទិន្នន័យនិស្សិតដែលត្រូវស្វែងរកទេ។</td></tr>`;
+    if (totalStudentsBadge) totalStudentsBadge.innerText = "សរុប ០ នាក់";
+    return;
+  }
+
+  if (totalStudentsBadge) {
+    totalStudentsBadge.innerText = `សរុប ${students.length} នាក់`;
+  }
+
+  students.forEach((student, index) => {
+    studentListTbody.innerHTML += `
+      <tr class="hover:bg-indigo-50/30 transition border-b border-slate-100/80">
+        <td class="py-3.5 px-4 text-slate-500 font-medium">${index + 1}</td>
+        <td class="py-3.5 px-4 font-mono text-indigo-600 font-semibold">${student.student_id || ''}</td>
+        <td class="py-3.5 px-4 font-bold text-slate-800 flex items-center gap-2">
+          <div class="w-7 h-7 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center text-xs font-bold">
+            ${(student.khmer_name || 'N').charAt(0)}
+          </div>
+          ${student.khmer_name || ''}
+        </td>
+        <td class="py-3.5 px-4 text-slate-600 font-medium">${student.latin_name || '-'}</td>
+        <td class="py-3.5 px-4">
+          <span class="px-2 py-0.5 rounded-full text-[11px] font-semibold ${student.gender === 'ស្រី' ? 'bg-pink-50 text-pink-600' : 'bg-blue-50 text-blue-600'}">
+            ${student.gender || '-'}
+          </span>
+        </td>
+        <td class="py-3.5 px-4 text-slate-500">${student.dob || '-'}</td>
+      </tr>
+    `;
+  });
+  refreshIcons();
+}
+
+// មុខងារស្វែងរកឈ្មោះនិស្សិត (អាចយកទៅភ្ជាប់ជាមួយ Input Search របស់អ្នក)
+function searchStudents(keyword) {
+  const term = keyword.toLowerCase().trim();
+  const filtered = allStudents.filter(s => 
+    (s.khmer_name && s.khmer_name.toLowerCase().includes(term)) ||
+    (s.latin_name && s.latin_name.toLowerCase().includes(term)) ||
+    (s.student_id && s.student_id.toLowerCase().includes(term))
+  );
+  renderStudents(filtered);
 }
