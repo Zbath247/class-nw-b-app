@@ -4,6 +4,8 @@ let currentUser = null;
 let allLessons = []; // រក្សាទុកទិន្នន័យមេរៀនដើមទាំងអស់
 let currentFilter = "ALL"; // Category Filter
 let allStudents = []; // រក្សាទុកទិន្នន័យនិស្សិតទាំងអស់សម្រាប់ធ្វើ Search
+let allClasses = []; // [ADDED] រក្សាទុកទិន្នន័យ Classes
+let allSchedules = []; // [ADDED] រក្សាទុកទិន្នន័យ Schedules
 
 // Check user status on load
 document.addEventListener("DOMContentLoaded", () => {
@@ -74,6 +76,7 @@ if (loginForm) {
   });
 }
 
+// [UPDATED] មុខងារបង្ហាញ Dashboard និងទាញយកទិន្នន័យ Tab ទាំង ៥ ព្រមគ្នា
 function showDashboard() {
   const loginSection = document.getElementById("loginSection");
   const dashboardSection = document.getElementById("dashboardSection");
@@ -98,10 +101,38 @@ function showDashboard() {
     }
   }
 
-  fetchSchedules();
-  fetchLessons();
+  // ហៅទាញយកទិន្នន័យទាំងអស់ពី Tab ទាំង ៥ ព្រមគ្នាតែម្តង
+  fetchAllDataTogether();
   refreshIcons();
-  fetchStudents();
+}
+
+// [ADDED] មុខងារទាញយកទិន្នន័យ Tab ទាំង ៥ ព្រមគ្នា
+function fetchAllDataTogether() {
+  fetch(`${API_URL}?action=getAllData`)
+    .then(res => res.json())
+    .then(data => {
+      // 1. จัดการទិន្នន័យ Lessons
+      allLessons = Array.isArray(data.lessons) ? data.lessons : [];
+      const statLessons = document.getElementById("statTotalLessons");
+      if (statLessons) statLessons.innerText = allLessons.length;
+      renderLessonsByFilter();
+
+      // 2. จัดការទិន្នន័យ Schedules
+      allSchedules = Array.isArray(data.schedules) ? data.schedules : [];
+      renderSchedulesData(allSchedules);
+
+      // 3. จัดការទិន្នន័យ Students
+      allStudents = Array.isArray(data.students) ? data.students : [];
+      renderStudents(allStudents);
+
+      // 4. จัดการទិន្នន័យ Classes (អាចយកទៅប្រើប្រាស់បន្តបើចាំបាច់)
+      allClasses = Array.isArray(data.classes) ? data.classes : [];
+
+      console.log("ទាញយកទិន្នន័យ Tab ទាំង ៥ បានជោគជ័យ:", data);
+    })
+    .catch(err => {
+      console.error("Error fetching all data:", err);
+    });
 }
 
 function logout() {
@@ -109,45 +140,40 @@ function logout() {
   location.reload();
 }
 
-// Fetch Schedules & Update Dashboard Stats
-function fetchSchedules() {
+// [UPDATED] Render Schedules & Update Stats
+function renderSchedulesData(data) {
   const scheduleTbody = document.getElementById("scheduleList");
   if (!scheduleTbody) return;
 
-  fetch(`${API_URL}?action=getSchedules`)
-    .then(res => res.json())
-    .then(data => {
-      scheduleTbody.innerHTML = "";
+  scheduleTbody.innerHTML = "";
 
-      if (!data || !Array.isArray(data) || data.length === 0) {
-        scheduleTbody.innerHTML = `<tr><td colspan="5" class="p-8 text-center text-slate-400 font-medium">មិនទាន់មានកាលវិភាគនៅឡើយទេ។</td></tr>`;
-        updateScheduleStats(0, 0);
-        return;
-      }
+  if (!data || data.length === 0) {
+    scheduleTbody.innerHTML = `<tr><td colspan="5" class="p-8 text-center text-slate-400 font-medium">មិនទាន់មានកាលវិភាគនៅឡើយទេ។</td></tr>`;
+    updateScheduleStats(0, 0);
+    return;
+  }
 
-      const totalSessions = data.length;
-      const uniqueSubjects = new Set(data.map(item => item.subject ? item.subject.trim() : '')).size;
-      updateScheduleStats(uniqueSubjects, totalSessions);
+  const totalSessions = data.length;
+  const uniqueSubjects = new Set(data.map(item => item.subject ? item.subject.trim() : '')).size;
+  updateScheduleStats(uniqueSubjects, totalSessions);
 
-      data.forEach(item => {
-        scheduleTbody.innerHTML += `
-          <tr class="hover:bg-indigo-50/30 transition border-b border-slate-100/80">
-            <td class="p-3.5 pl-5 font-bold text-indigo-600 flex items-center gap-1.5">
-              <i data-lucide="calendar-days" class="w-4 h-4 text-indigo-400"></i>
-              ${item.day || ''}
-            </td>
-            <td class="p-3.5 text-slate-600 font-medium">${item.time || ''}</td>
-            <td class="p-3.5 font-semibold text-slate-800">${item.subject || ''}</td>
-            <td class="p-3.5">
-              <span class="bg-slate-100 text-slate-600 border border-slate-200 px-2.5 py-1 rounded-lg text-[11px] font-semibold">${item.room || ''}</span>
-            </td>
-            <td class="p-3.5 pr-5 text-slate-600 font-medium">${item.teacher || ''}</td>
-          </tr>
-        `;
-      });
-      refreshIcons();
-    })
-    .catch(err => console.error("Schedule Error:", err));
+  data.forEach(item => {
+    scheduleTbody.innerHTML += `
+      <tr class="hover:bg-indigo-50/30 transition border-b border-slate-100/80">
+        <td class="p-3.5 pl-5 font-bold text-indigo-600 flex items-center gap-1.5">
+          <i data-lucide="calendar-days" class="w-4 h-4 text-indigo-400"></i>
+          ${item.day || ''}
+        </td>
+        <td class="p-3.5 text-slate-600 font-medium">${item.time || ''}</td>
+        <td class="p-3.5 font-semibold text-slate-800">${item.subject || ''}</td>
+        <td class="p-3.5">
+          <span class="bg-slate-100 text-slate-600 border border-slate-200 px-2.5 py-1 rounded-lg text-[11px] font-semibold">${item.room || ''}</span>
+        </td>
+        <td class="p-3.5 pr-5 text-slate-600 font-medium">${item.teacher || ''}</td>
+      </tr>
+    `;
+  });
+  refreshIcons();
 }
 
 // Helper to Update Schedule Stat Cards
@@ -157,20 +183,6 @@ function updateScheduleStats(totalClasses, totalSessions) {
 
   if (statClasses) statClasses.innerText = totalClasses;
   if (statSessions) statSessions.innerText = `${totalSessions} Sessions`;
-}
-
-// Fetch Lessons & Store Data
-function fetchLessons() {
-  const statLessons = document.getElementById("statTotalLessons");
-
-  fetch(`${API_URL}?action=getLessons`)
-    .then(res => res.json())
-    .then(data => {
-      allLessons = Array.isArray(data) ? data : [];
-      if (statLessons) statLessons.innerText = allLessons.length;
-      renderLessonsByFilter();
-    })
-    .catch(err => console.error("Lesson Error:", err));
 }
 
 // Filter Function
@@ -317,7 +329,7 @@ if (addLessonForm) {
       if (data && data.status === "success") {
         alert("បញ្ចូល និង Upload មេរៀនជោគជ័យ!");
         addLessonForm.reset();
-        fetchLessons();
+        fetchAllDataTogether(); // ទាញយកទិន្នន័យអាប់ដេតថ្មី
       } else {
         alert((data && data.message) ? data.message : "មានបញ្ហាក្នុងការបញ្ចូលមេរៀន!");
       }
@@ -343,33 +355,13 @@ function deleteLesson(lessonId) {
       .then(res => res.json())
       .then(data => {
         alert("លុបមេរៀនជោគជ័យ!");
-        fetchLessons();
+        fetchAllDataTogether(); // ទាញយកទិន្នន័យអាប់ដេតថ្មី
       })
       .catch(err => {
         console.error("Delete Lesson Error:", err);
         alert("មានបញ្ហាក្នុងការលុបមេរៀន!");
       });
   }
-}
-
-// 5. មុខងារទាញយក និងបង្ហាញបញ្ជីឈ្មោះនិស្សិត (Students)
-function fetchStudents() {
-  const studentListTbody = document.getElementById("studentList");
-  const totalStudentsBadge = document.getElementById("totalStudentsCountBadge");
-  if (!studentListTbody) return;
-
-  fetch(`${API_URL}?action=getStudents`)
-    .then(res => res.json())
-    .then(data => {
-      allStudents = Array.isArray(data) ? data : [];
-      renderStudents(allStudents);
-    })
-    .catch(err => {
-      console.error("Student Error:", err);
-      if (studentListTbody) {
-        studentListTbody.innerHTML = `<tr><td colspan="6" class="py-8 text-center text-rose-400 font-medium">មិនអាចទាញយកទិន្នន័យនិស្សិតបានទេ!</td></tr>`;
-      }
-    });
 }
 
 // មុខងារ Render បញ្ជីនិស្សិត និងគាំទ្រការ Filter/Search
@@ -414,7 +406,7 @@ function renderStudents(students) {
   refreshIcons();
 }
 
-// មុខងារស្វែងរកឈ្មោះនិស្សិត (អាចយកទៅភ្ជាប់ជាមួយ Input Search របស់អ្នក)
+// មុខងារស្វែងរកឈ្មោះនិស្សិត
 function searchStudents(keyword) {
   const term = keyword.toLowerCase().trim();
   const filtered = allStudents.filter(s => 
