@@ -100,6 +100,7 @@ function showDashboard() {
   fetchSchedules();
   fetchLessons();
   refreshIcons();
+  fetchStudents();
 }
 
 function logout() {
@@ -349,4 +350,50 @@ function deleteLesson(lessonId) {
         alert("មានបញ្ហាក្នុងការលុបមេរៀន!");
       });
   }
+}
+
+// 5. មុខងារទាញយក និងបង្ហាញបញ្ជីឈ្មោះនិស្សិត (Students)
+function fetchStudents() {
+  const studentListTbody = document.getElementById("studentList");
+  const totalStudentsBadge = document.getElementById("totalStudentsCountBadge");
+  if (!studentListTbody) return;
+
+  fetch(`${API_URL}?action=getStudents`)
+    .then(res => res.json())
+    .then(data => {
+      studentListTbody.innerHTML = "";
+
+      if (!data || !Array.isArray(data) || data.length === 0) {
+        studentListTbody.innerHTML = `<tr><td colspan="6" class="py-8 text-center text-slate-400 font-medium">មិនទាន់មានទិន្នន័យនិស្សិតនៅឡើយទេ។</td></tr>`;
+        if (totalStudentsBadge) totalStudentsBadge.innerText = "សរុប ០ នាក់";
+        return;
+      }
+
+      // បង្ហាញចំនួនសរុបនៅលើ Badge
+      const totalStudents = data.length;
+      if (totalStudentsBadge) {
+        totalStudentsBadge.innerText = `សរុប ${totalStudents} នាក់`;
+      }
+
+      // រៀបចំទិន្នន័យដាក់ចូលក្នុងตារាង
+      data.forEach((student, index) => {
+        studentListTbody.innerHTML += `
+          <tr class="hover:bg-slate-900/50 transition border-b border-slate-800/40">
+            <td class="py-3.5 px-4">${index + 1}</td>
+            <td class="py-3.5 px-4 font-mono text-indigo-400">${student.student_id || ''}</td>
+            <td class="py-3.5 px-4 font-bold text-white">${student.khmer_name || ''}</td>
+            <td class="py-3.5 px-4 text-slate-300">${student.latin_name || '-'}</td>
+            <td class="py-3.5 px-4">${student.gender || '-'}</td>
+            <td class="py-3.5 px-4 text-slate-400">${student.dob || '-'}</td>
+          </tr>
+        `;
+      });
+      refreshIcons();
+    })
+    .catch(err => {
+      console.error("Student Error:", err);
+      if (studentListTbody) {
+        studentListTbody.innerHTML = `<tr><td colspan="6" class="py-8 text-center text-rose-400 font-medium">មិនអាចទាញយកទិន្នន័យនិស្សិតបានទេ!</td></tr>`;
+      }
+    });
 }
