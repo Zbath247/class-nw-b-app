@@ -110,6 +110,59 @@
   </a>
 </div>
 
+  <!-- Profile Pop-up Modal -->
+<div id="profileModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center hidden opacity-0 transition-opacity duration-300">
+  <div class="bg-[#0b1329] border border-blue-500/30 rounded-2xl p-6 w-11/12 max-w-md shadow-2xl relative transform scale-95 transition-transform duration-300" id="profileModalContent">
+    
+    <!-- Close Button -->
+    <button onclick="closeProfileModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors">
+      <i data-lucide="x" class="w-6 h-6"></i>
+    </button>
+
+    <!-- Modal Header / Profile Info -->
+    <div class="flex flex-col items-center text-center mt-2">
+      <!-- User Avatar / Icon -->
+      <div class="w-20 h-20 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center text-white text-2xl font-bold shadow-lg mb-3 shadow-blue-500/30">
+        <i data-lucide="user" class="w-10 h-10"></i>
+      </div>
+      
+      <!-- Name -->
+      <h3 id="modalUserName" class="text-xl font-bold text-white tracking-wide">KONG SEAT</h3>
+      
+      <!-- Role Badge (Admin ឬ User) -->
+      <span id="modalUserRole" class="mt-2 px-3 py-1 rounded-full text-xs font-semibold bg-blue-500/20 text-blue-400 border border-blue-500/30 uppercase tracking-wider">
+        USER
+      </span>
+    </div>
+
+    <!-- Additional Details -->
+    <div class="mt-6 space-y-3 border-t border-gray-800 pt-4 text-sm text-gray-300">
+      <div class="flex justify-between">
+        <span class="text-gray-400">ថ្នាក់រៀន៖</span>
+        <span class="font-medium text-white">G1-NW-B</span>
+      </div>
+      <div class="flex justify-between">
+        <span class="text-gray-400">គ្រឹះស្ថាន៖</span>
+        <span class="font-medium text-white">Digital University of Cambodia</span>
+      </div>
+      <div class="flex justify-between">
+        <span class="text-gray-400">ស្ថានភាព៖</span>
+        <span class="text-emerald-400 font-medium flex items-center gap-1.5">
+          <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> កំពុងតភ្ជាប់ (Active)
+        </span>
+      </div>
+    </div>
+
+    <!-- Footer Actions -->
+    <div class="mt-6 flex gap-3">
+      <button onclick="closeProfileModal()" class="w-full py-2.5 rounded-xl bg-gray-800 hover:bg-gray-700 text-white font-medium transition-colors text-sm">
+        បិទ (Close)
+      </button>
+    </div>
+
+  </div>
+</div>
+
   <!-- Background Animated Premium Blobs -->
   <div class="fixed top-0 left-1/4 w-96 h-96 bg-indigo-600/20 rounded-full blur-3xl pointer-events-none"></div>
   <div class="fixed bottom-0 right-10 w-96 h-96 bg-blue-600/20 rounded-full blur-3xl pointer-events-none"></div>
