@@ -264,5 +264,45 @@
     // Initialize Lucide Icons
     lucide.createIcons();
   </script>
+
+  <!-- Student List Section -->
+<section class="glass-card-dark p-6 sm:p-8 rounded-3xl mt-8">
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 pb-4 border-b border-slate-800">
+    <div class="flex items-center gap-3">
+      <div class="p-2 bg-indigo-500/10 rounded-xl border border-indigo-500/20 text-indigo-400">
+        <i data-lucide="users" class="w-5 h-5"></i>
+      </div>
+      <div>
+        <h2 class="font-bold text-white text-base">បញ្ជីឈ្មោះនិស្សិតថ្នាក់ G1-NW-B</h2>
+        <p class="text-xs text-slate-400 mt-0.5">ជំនាញ បណ្តាញកុំព្យូទ័រ និងប្រព័ន្ធសុវត្ថិភាព</p>
+      </div>
+    </div>
+    <span id="totalStudentsCountBadge" class="bg-indigo-500/10 text-indigo-300 border border-indigo-500/20 px-3 py-1.5 rounded-xl text-xs font-bold w-fit">
+      កំពុងផ្ទុក...
+    </span>
+  </div>
+
+  <div class="overflow-x-auto">
+    <table class="w-full text-left border-collapse">
+      <thead>
+        <tr class="bg-slate-900/80 text-[11px] font-extrabold uppercase tracking-wider text-slate-400 border-b border-slate-800">
+          <th class="py-3.5 px-4 rounded-l-xl">#</th>
+          <th class="py-3.5 px-4">អត្តលេខ</th>
+          <th class="py-3.5 px-4">គោត្តនាម-នាម</th>
+          <th class="py-3.5 px-4">ឈ្មោះឡាតាំង</th>
+          <th class="py-3.5 px-4">ភេទ</th>
+          <th class="py-3.5 px-4 rounded-r-xl">ថ្ងៃខែឆ្នាំកំណើត</th>
+        </tr>
+      </thead>
+      <tbody id="studentList" class="divide-y divide-slate-800/60 text-xs text-slate-300">
+        <tr>
+          <td colspan="6" class="py-8 text-center text-slate-400 font-medium">
+            កំពុងទាញយកទិន្នន័យនិស្សិត...
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
 </body>
 </html>
