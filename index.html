@@ -32,188 +32,128 @@
     }
 
     /* Bottom Navigation Bar សម្រាប់ Dark Theme */
-.custom-bottom-nav {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  height: 65px;
-  background-color: #0b1329;
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.5);
-  z-index: 9999;
-}
+    .custom-bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 65px;
+      background-color: #0b1329;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.5);
+      z-index: 9999;
+    }
 
-.nav-link-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-decoration: none;
-  color: #8a99ad;
-  font-size: 12px;
-  font-family: 'Kantumruy Pro', sans-serif, Arial;
-  transition: color 0.3s ease;
-}
+    .nav-link-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-decoration: none;
+      color: #8a99ad;
+      font-size: 12px;
+      font-family: 'Kantumruy Pro', sans-serif, Arial;
+      transition: color 0.3s ease;
+    }
 
-.nav-link-item:hover,
-.nav-link-item.active {
-  color: #3b82f6;
-}
+    .nav-link-item:hover,
+    .nav-link-item.active {
+      color: #3b82f6;
+    }
 
-.nav-icon {
-  font-size: 20px;
-  margin-bottom: 3px;
-}
-
-.nav-center-btn {
-  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
-  color: white;
-  border-radius: 50%;
-  width: 42px;
-  height: 42px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 24px;
-  box-shadow: 0 4px 10px rgba(59, 130, 246, 0.4);
-  margin-bottom: 5px;
-}
+    .nav-center-btn {
+      background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+      color: white;
+      border-radius: 50%;
+      width: 42px;
+      height: 42px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      box-shadow: 0 4px 10px rgba(59, 130, 246, 0.4);
+      margin-bottom: 5px;
+    }
   </style>
 </head>
 
-  
-<body class="bg-slate-950 min-h-screen text-slate-100 relative overflow-x-hidden selection:bg-indigo-500 selection:text-white">
+<body class="bg-slate-950 min-h-screen text-slate-100 relative overflow-x-hidden selection:bg-indigo-500 selection:text-white pb-20">
 
-  <!-- Profile Pop-up Modal -->
-<div id="profileModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center hidden opacity-0 transition-opacity duration-300">
-  <div class="bg-[#0b1329] border border-blue-500/30 rounded-2xl p-6 w-11/12 max-w-md shadow-2xl relative transform scale-95 transition-transform duration-300" id="profileModalContent">
-    
-    <!-- Close Button -->
-    <button onclick="closeProfileModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors">
-      <i data-lucide="x" class="w-6 h-6"></i>
-    </button>
-
-    <!-- Modal Header / Profile Info -->
-    <div class="flex flex-col items-center text-center mt-2">
-      <div class="w-20 h-20 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center text-white text-2xl font-bold shadow-lg mb-3 shadow-blue-500/30">
-        <i data-lucide="user" class="w-10 h-10"></i>
-      </div>
+  <!-- Profile Pop-up Modal (មានតែ ១ ត្រឹមត្រូវ) -->
+  <div id="profileModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center hidden opacity-0 transition-opacity duration-300">
+    <div class="bg-[#0b1329] border border-blue-500/30 rounded-2xl p-6 w-11/12 max-w-md shadow-2xl relative transform scale-95 transition-transform duration-300" id="profileModalContent">
       
-      <h3 id="modalUserName" class="text-xl font-bold text-white tracking-wide">KONG SEAT</h3>
-      
-      <span id="modalUserRole" class="mt-2 px-3 py-1 rounded-full text-xs font-semibold bg-blue-500/20 text-blue-400 border border-blue-500/30 uppercase tracking-wider">
-        USER
-      </span>
-    </div>
+      <!-- Close Button -->
+      <button onclick="closeProfileModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors">
+        <i data-lucide="x" class="w-6 h-6"></i>
+      </button>
 
-    <!-- Additional Details -->
-    <div class="mt-6 space-y-3 border-t border-gray-800 pt-4 text-sm text-gray-300">
-      <div class="flex justify-between">
-        <span class="text-gray-400">ថ្នាក់រៀន៖</span>
-        <span class="font-medium text-white">G1-NW-B</span>
-      </div>
-      <div class="flex justify-between">
-        <span class="text-gray-400">គ្រឹះស្ថាន៖</span>
-        <span class="font-medium text-white">Digital University of Cambodia</span>
-      </div>
-      <div class="flex justify-between">
-        <span class="text-gray-400">ស្ថានភាព៖</span>
-        <span class="text-emerald-400 font-medium flex items-center gap-1.5">
-          <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> កំពុងតភ្ជាប់ (Active)
+      <!-- Modal Header / Profile Info -->
+      <div class="flex flex-col items-center text-center mt-2">
+        <div class="w-20 h-20 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center text-white text-2xl font-bold shadow-lg mb-3 shadow-blue-500/30">
+          <i data-lucide="user" class="w-10 h-10"></i>
+        </div>
+        
+        <h3 id="modalUserName" class="text-xl font-bold text-white tracking-wide">KONG SEAT</h3>
+        
+        <span id="modalUserRole" class="mt-2 px-3 py-1 rounded-full text-xs font-semibold bg-blue-500/20 text-blue-400 border border-blue-500/30 uppercase tracking-wider">
+          USER
         </span>
       </div>
-    </div>
 
-    <!-- Footer Actions -->
-    <div class="mt-6 flex gap-3">
-      <button onclick="closeProfileModal()" class="w-full py-2.5 rounded-xl bg-gray-800 hover:bg-gray-700 text-white font-medium transition-colors text-sm">
-        បិទ (Close)
-      </button>
-    </div>
-
-  </div>
-</div>
-
- <!-- Bottom Navigation Bar (Lucide Icons Premium Style) -->
-<div class="custom-bottom-nav">
-  <a href="#" class="nav-link-item active" onclick="switchTab('home', event)">
-    <i data-lucide="home" class="w-5 h-5 mb-1"></i>
-    <span>ទំព័រដើម</span>
-  </a>
-  <a href="#" class="nav-link-item" onclick="switchTab('lessons', event)">
-    <i data-lucide="book-open" class="w-5 h-5 mb-1"></i>
-    <span>មេរៀន</span>
-  </a>
-  <a href="#" class="nav-link-item" onclick="switchTab('add', event)">
-    <span class="nav-center-btn">
-      <i data-lucide="plus" class="w-6 h-6"></i>
-    </span>
-  </a>
-  <a href="#" class="nav-link-item" onclick="switchTab('schedule', event)">
-    <i data-lucide="calendar" class="w-5 h-5 mb-1"></i>
-    <span>កាលវិភាគ</span>
-  </a>
-  <a href="#" class="nav-link-item" onclick="switchTab('profile', event)">
-    <i data-lucide="user" class="w-5 h-5 mb-1"></i>
-    <span>គណនី</span>
-  </a>
-</div>
-
-  <!-- Profile Pop-up Modal -->
-<div id="profileModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center hidden opacity-0 transition-opacity duration-300">
-  <div class="bg-[#0b1329] border border-blue-500/30 rounded-2xl p-6 w-11/12 max-w-md shadow-2xl relative transform scale-95 transition-transform duration-300" id="profileModalContent">
-    
-    <!-- Close Button -->
-    <button onclick="closeProfileModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors">
-      <i data-lucide="x" class="w-6 h-6"></i>
-    </button>
-
-    <!-- Modal Header / Profile Info -->
-    <div class="flex flex-col items-center text-center mt-2">
-      <!-- User Avatar / Icon -->
-      <div class="w-20 h-20 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center text-white text-2xl font-bold shadow-lg mb-3 shadow-blue-500/30">
-        <i data-lucide="user" class="w-10 h-10"></i>
+      <!-- Additional Details -->
+      <div class="mt-6 space-y-3 border-t border-gray-800 pt-4 text-sm text-gray-300">
+        <div class="flex justify-between">
+          <span class="text-gray-400">ថ្នាក់រៀន៖</span>
+          <span class="font-medium text-white">G1-NW-B</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-gray-400">គ្រឹះស្ថាន៖</span>
+          <span class="font-medium text-white">Digital University of Cambodia</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-gray-400">ស្ថានភាព៖</span>
+          <span class="text-emerald-400 font-medium flex items-center gap-1.5">
+            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> កំពុងតភ្ជាប់ (Active)
+          </span>
+        </div>
       </div>
-      
-      <!-- Name -->
-      <h3 id="modalUserName" class="text-xl font-bold text-white tracking-wide">KONG SEAT</h3>
-      
-      <!-- Role Badge (Admin ឬ User) -->
-      <span id="modalUserRole" class="mt-2 px-3 py-1 rounded-full text-xs font-semibold bg-blue-500/20 text-blue-400 border border-blue-500/30 uppercase tracking-wider">
-        USER
+
+      <!-- Footer Actions -->
+      <div class="mt-6 flex gap-3">
+        <button onclick="closeProfileModal()" class="w-full py-2.5 rounded-xl bg-gray-800 hover:bg-gray-700 text-white font-medium transition-colors text-sm">
+          បិទ (Close)
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Bottom Navigation Bar (Lucide Icons Premium Style) -->
+  <div class="custom-bottom-nav">
+    <a href="#" class="nav-link-item active" onclick="switchTab('home', event)">
+      <i data-lucide="home" class="w-5 h-5 mb-1"></i>
+      <span>ទំព័រដើម</span>
+    </a>
+    <a href="#" class="nav-link-item" onclick="switchTab('lessons', event)">
+      <i data-lucide="book-open" class="w-5 h-5 mb-1"></i>
+      <span>មេរៀន</span>
+    </a>
+    <a href="#" class="nav-link-item" onclick="switchTab('add', event)">
+      <span class="nav-center-btn">
+        <i data-lucide="plus" class="w-6 h-6"></i>
       </span>
-    </div>
-
-    <!-- Additional Details -->
-    <div class="mt-6 space-y-3 border-t border-gray-800 pt-4 text-sm text-gray-300">
-      <div class="flex justify-between">
-        <span class="text-gray-400">ថ្នាក់រៀន៖</span>
-        <span class="font-medium text-white">G1-NW-B</span>
-      </div>
-      <div class="flex justify-between">
-        <span class="text-gray-400">គ្រឹះស្ថាន៖</span>
-        <span class="font-medium text-white">Digital University of Cambodia</span>
-      </div>
-      <div class="flex justify-between">
-        <span class="text-gray-400">ស្ថានភាព៖</span>
-        <span class="text-emerald-400 font-medium flex items-center gap-1.5">
-          <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> កំពុងតភ្ជាប់ (Active)
-        </span>
-      </div>
-    </div>
-
-    <!-- Footer Actions -->
-    <div class="mt-6 flex gap-3">
-      <button onclick="closeProfileModal()" class="w-full py-2.5 rounded-xl bg-gray-800 hover:bg-gray-700 text-white font-medium transition-colors text-sm">
-        បិទ (Close)
-      </button>
-    </div>
-
+    </a>
+    <a href="#" class="nav-link-item" onclick="switchTab('schedule', event)">
+      <i data-lucide="calendar" class="w-5 h-5 mb-1"></i>
+      <span>កាលវិភាគ</span>
+    </a>
+    <a href="#" class="nav-link-item" onclick="switchTab('profile', event)">
+      <i data-lucide="user" class="w-5 h-5 mb-1"></i>
+      <span>គណនី</span>
+    </a>
   </div>
-</div>
 
   <!-- Background Animated Premium Blobs -->
   <div class="fixed top-0 left-1/4 w-96 h-96 bg-indigo-600/20 rounded-full blur-3xl pointer-events-none"></div>
@@ -276,7 +216,6 @@
     <header class="bg-slate-900/90 backdrop-blur-xl sticky top-0 z-50 border-b border-slate-800 shadow-lg">
       <div class="max-w-6xl mx-auto px-4 py-3 flex flex-col md:flex-row items-center justify-between gap-3">
         
-        <!-- Left: Logo & University Name -->
         <div class="flex items-center gap-3 w-full md:w-auto justify-between md:justify-start">
           <div class="flex items-center gap-2.5">
             <div class="w-10 h-10 bg-slate-900 rounded-xl p-1 flex items-center justify-center shadow-md border border-amber-500/30 shrink-0">
@@ -289,7 +228,6 @@
           </div>
         </div>
 
-        <!-- Right: User Info & Logout Button -->
         <div class="flex items-center justify-between md:justify-end w-full md:w-auto gap-4 border-t border-slate-800/80 md:border-t-0 pt-2 md:pt-0">
           <div class="text-left md:text-right">
             <h1 class="font-bold text-indigo-300 text-xs md:text-sm" id="userNameDisplay">...</h1>
@@ -310,7 +248,7 @@
 
     <main class="max-w-6xl mx-auto px-4 mt-8 space-y-8">
 
-      <!-- Admin Panel Form (Visible only for admin) -->
+      <!-- Admin Panel Form -->
       <section id="adminPanel" class="hidden glass-card p-6 sm:p-8 rounded-3xl shadow-xl border border-indigo-500/30">
         <div class="flex items-center justify-between mb-6 text-indigo-400 border-b border-slate-800 pb-4">
           <div class="flex items-center gap-3">
@@ -428,9 +366,7 @@
                 <th class="p-4 pr-6">គ្រូបង្រៀន</th>
               </tr>
             </thead>
-            <tbody id="scheduleList" class="divide-y divide-slate-800/60 text-xs text-slate-300">
-              <!-- JS Injected Data -->
-            </tbody>
+            <tbody id="scheduleList" class="divide-y divide-slate-800/60 text-xs text-slate-300"></tbody>
           </table>
         </div>
       </section>
@@ -447,31 +383,16 @@
           <span class="text-xs text-slate-400" id="lessonCountBadge">បង្ហាញ 0 ឯកសារ</span>
         </div>
 
-        <!-- Filter Buttons -->
         <div class="flex flex-wrap gap-2 mb-6" id="subjectFilterContainer">
-          <button onclick="filterLessons('ALL')" class="subject-filter-btn active-filter bg-indigo-600 text-white px-4 py-2 rounded-xl text-xs font-semibold shadow-lg shadow-indigo-600/20 transition">
-            ទាំងអស់ (All)
-          </button>
-          <button onclick="filterLessons('DA II')" class="subject-filter-btn bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-800 px-4 py-2 rounded-xl text-xs font-semibold transition">
-            DA II
-          </button>
-          <button onclick="filterLessons('CTN I')" class="subject-filter-btn bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-800 px-4 py-2 rounded-xl text-xs font-semibold transition">
-            CTN I
-          </button>
-          <button onclick="filterLessons('CS IV')" class="subject-filter-btn bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-800 px-4 py-2 rounded-xl text-xs font-semibold transition">
-            CS IV
-          </button>
-          <button onclick="filterLessons('NA II')" class="subject-filter-btn bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-800 px-4 py-2 rounded-xl text-xs font-semibold transition">
-            NA II
-          </button>
-          <button onclick="filterLessons('CYB II')" class="subject-filter-btn bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-800 px-4 py-2 rounded-xl text-xs font-semibold transition">
-            CYB II
-          </button>
+          <button onclick="filterLessons('ALL')" class="subject-filter-btn active-filter bg-indigo-600 text-white px-4 py-2 rounded-xl text-xs font-semibold shadow-lg shadow-indigo-600/20 transition">ទាំងអស់ (All)</button>
+          <button onclick="filterLessons('DA II')" class="subject-filter-btn bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-800 px-4 py-2 rounded-xl text-xs font-semibold transition">DA II</button>
+          <button onclick="filterLessons('CTN I')" class="subject-filter-btn bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-800 px-4 py-2 rounded-xl text-xs font-semibold transition">CTN I</button>
+          <button onclick="filterLessons('CS IV')" class="subject-filter-btn bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-800 px-4 py-2 rounded-xl text-xs font-semibold transition">CS IV</button>
+          <button onclick="filterLessons('NA II')" class="subject-filter-btn bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-800 px-4 py-2 rounded-xl text-xs font-semibold transition">NA II</button>
+          <button onclick="filterLessons('CYB II')" class="subject-filter-btn bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-800 px-4 py-2 rounded-xl text-xs font-semibold transition">CYB II</button>
         </div>
 
-        <div id="lessonList" class="space-y-3">
-          <!-- JS Injected Data -->
-        </div>
+        <div id="lessonList" class="space-y-3"></div>
       </section>
 
       <!-- Student List Section -->
@@ -483,12 +404,10 @@
             </div>
             <div>
               <h2 class="font-bold text-white text-base">បញ្ជីឈ្មោះនិស្សិតថ្នាក់ G1-NW-B</h2>
-              <p class="text-xs text-slate-400 mt-0.5">ជំនាញ បណ្តាញកុំព្យូទ័រ និងប្រព័ន្ធសុវត្ថិភាព (Network Engineering & Systems Administration)</p>
+              <p class="text-xs text-slate-400 mt-0.5">ជំនាញ បណ្តាញកុំព្យូទ័រ និងប្រព័ន្ធសុវត្ថិភាព</p>
             </div>
           </div>
-          <span id="totalStudentsCountBadge" class="bg-indigo-500/10 text-indigo-300 border border-indigo-500/20 px-3.5 py-2 rounded-xl text-xs font-bold w-fit shadow-sm">
-            និស្សិតសរុប: 0 នាក់
-          </span>
+          <span id="totalStudentsCountBadge" class="bg-indigo-500/10 text-indigo-300 border border-indigo-500/20 px-3.5 py-2 rounded-xl text-xs font-bold w-fit shadow-sm">និស្សិតសរុប: 0 នាក់</span>
         </div>
 
         <div class="overflow-x-auto">
@@ -503,9 +422,7 @@
                 <th class="py-3.5 px-4 rounded-r-xl">ថ្ងៃខែឆ្នាំកំណើត</th>
               </tr>
             </thead>
-            <tbody id="studentList" class="divide-y divide-slate-800/60 text-xs text-slate-300">
-              <!-- JS Injected Data -->
-            </tbody>
+            <tbody id="studentList" class="divide-y divide-slate-800/60 text-xs text-slate-300"></tbody>
           </table>
         </div>
       </section>
@@ -593,7 +510,7 @@
           })
           .catch(err => {
             console.error("Login error:", err);
-            showToast("មានបញ្ហាក្នុងการភ្ជាប់ទៅកាន់ Server!", "error");
+            showToast("មានបញ្ហាក្នុងការភ្ជាប់ទៅកាន់ Server!", "error");
           })
           .finally(() => {
             if (btn) {
@@ -845,11 +762,11 @@
             document.getElementById("classCode").value = "G1-NW-B";
             fetchAllDataTogether(); 
           } else {
-            showToast((data && data.message) ? data.message : "មានបញ្ហាក្នុងการបញ្ចូលមេរៀន!", "error");
+            showToast((data && data.message) ? data.message : "មានបញ្ហាក្នុងការបញ្ចូលមេរៀន!", "error");
           }
         } catch (err) {
           console.error("Upload Lesson Error:", err);
-          showToast("មានបញ្ហាក្នុងการ Upload មេរៀន!", "error");
+          showToast("មានបញ្ហាក្នុងការ Upload មេរៀន!", "error");
         } finally {
           if (btn) {
             btn.innerHTML = `<i data-lucide="save" class="w-4 h-4"></i><span>រក្សាទុក និងបង្ហោះមេរៀន</span>`;
@@ -896,7 +813,6 @@
       if (statTotalStudents) statTotalStudents.innerText = `${students.length} នាក់`;
 
       students.forEach((student, index) => {
-        // ផ្ទៀងផ្ទាត់ជាមួយ currentUser ដែលកំពុង Login ជាក់ស្តែង (ឆែកតាម email ឬ ឈ្មោះឡាតាំង)
         const isUserSelf = currentUser && (
           (currentUser.email && student.student_id && currentUser.email.toLowerCase().includes(student.student_id.toLowerCase())) ||
           (currentUser.name && student.latin_name && student.latin_name.toLowerCase().includes(currentUser.name.toLowerCase()))
@@ -925,38 +841,76 @@
       refreshIcons();
     }
 
-    // Function សម្រាប់จัดการការចុចប្តូរ Tab លើ Bottom Navigation
-function switchTab(tabName, event) {
-    if (event) event.preventDefault();
+    // [UPDATED] Function សម្រាប់จัดการការចុចប្តូរ Tab លើ Bottom Navigation
+    function switchTab(tabName, event) {
+      if (event) event.preventDefault();
 
-    // ដក active class ចេញពីគ្រប់ tab ទាំងអស់
-    document.querySelectorAll('.nav-link-item').forEach(item => {
+      document.querySelectorAll('.nav-link-item').forEach(item => {
         item.classList.remove('active');
-    });
+      });
 
-    // បន្ថែម active class ទៅកាន់ tab ដែលទើបចុច
-    if (event && event.currentTarget) {
+      if (event && event.currentTarget) {
         event.currentTarget.classList.add('active');
-    }
+      }
 
-    console.log("Switched to bottom nav tab: ", tabName);
-    
-    // មុខងារ Scroll ទៅកាន់ផ្នែកនីមួយៗតាម id
-    if (tabName === 'home') {
+      if (tabName === 'home') {
         window.scrollTo({ top: 0, behavior: 'smooth' });
-    } else if (tabName === 'lessons') {
+      } else if (tabName === 'lessons') {
         const elem = document.getElementById("lessonList");
         if (elem) elem.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    } else if (tabName === 'schedule') {
+      } else if (tabName === 'schedule') {
         const elem = document.getElementById("scheduleList");
         if (elem) elem.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    } else if (tabName === 'add') {
+      } else if (tabName === 'add') {
         const elem = document.getElementById("adminPanel");
         if (elem) elem.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    } else if (tabName === 'profile') {
-        window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+      } else if (tabName === 'profile') {
+        openProfileModal(); // ហៅមុខងារបើក Modal គណនីត្រឹមត្រូវ
+      }
     }
-}
+
+    // [ADDED] Function បើក Profile Modal
+    function openProfileModal() {
+      const modal = document.getElementById('profileModal');
+      if (!modal) return;
+      
+      const modalContent = document.getElementById('profileModalContent');
+      
+      // បំពេញឈ្មោះ និង Role តាម User បច្ចុប្បន្ន
+      if (currentUser) {
+        const nameElem = document.getElementById('modalUserName');
+        const roleElem = document.getElementById('modalUserRole');
+        if (nameElem) nameElem.textContent = currentUser.name || "KONG SEAT";
+        if (roleElem) roleElem.textContent = currentUser.role || "USER";
+      }
+
+      modal.classList.remove('hidden');
+      setTimeout(() => {
+        modal.classList.remove('opacity-0');
+        if (modalContent) {
+          modalContent.classList.remove('scale-95');
+          modalContent.classList.add('scale-100');
+        }
+      }, 10);
+      refreshIcons();
+    }
+
+    // [ADDED] Function បិទ Profile Modal
+    function closeProfileModal() {
+      const modal = document.getElementById('profileModal');
+      const modalContent = document.getElementById('profileModalContent');
+      if (!modal) return;
+      
+      modal.classList.add('opacity-0');
+      if (modalContent) {
+        modalContent.classList.remove('scale-100');
+        modalContent.classList.add('scale-95');
+      }
+      
+      setTimeout(() => {
+        modal.classList.add('hidden');
+      }, 300);
+    }
   </script>
 </body>
 </html>
