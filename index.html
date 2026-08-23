@@ -85,25 +85,27 @@
 </head>
 <body class="bg-slate-950 min-h-screen text-slate-100 relative overflow-x-hidden selection:bg-indigo-500 selection:text-white">
 
-  <!-- Bottom Navigation Bar -->
+ <!-- Bottom Navigation Bar (Lucide Icons Premium Style) -->
 <div class="custom-bottom-nav">
-  <a href="#" class="nav-link-item active" onclick="switchTab('home')">
-    <span class="nav-icon">🏠</span>
+  <a href="#" class="nav-link-item active" onclick="switchTab('home', event)">
+    <i data-lucide="home" class="w-5 h-5 mb-1"></i>
     <span>ទំព័រដើម</span>
   </a>
-  <a href="#" class="nav-link-item" onclick="switchTab('lessons')">
-    <span class="nav-icon">📚</span>
+  <a href="#" class="nav-link-item" onclick="switchTab('lessons', event)">
+    <i data-lucide="book-open" class="w-5 h-5 mb-1"></i>
     <span>មេរៀន</span>
   </a>
-  <a href="#" class="nav-link-item" onclick="switchTab('add')">
-    <span class="nav-center-btn">+</span>
+  <a href="#" class="nav-link-item" onclick="switchTab('add', event)">
+    <span class="nav-center-btn">
+      <i data-lucide="plus" class="w-6 h-6"></i>
+    </span>
   </a>
-  <a href="#" class="nav-link-item" onclick="switchTab('schedule')">
-    <span class="nav-icon">📅</span>
+  <a href="#" class="nav-link-item" onclick="switchTab('schedule', event)">
+    <i data-lucide="calendar" class="w-5 h-5 mb-1"></i>
     <span>កាលវិភាគ</span>
   </a>
-  <a href="#" class="nav-link-item" onclick="switchTab('profile')">
-    <span class="nav-icon">👤</span>
+  <a href="#" class="nav-link-item" onclick="switchTab('profile', event)">
+    <i data-lucide="user" class="w-5 h-5 mb-1"></i>
     <span>គណនី</span>
   </a>
 </div>
