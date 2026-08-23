@@ -111,21 +111,21 @@ function fetchAllDataTogether() {
   fetch(`${API_URL}?action=getAllData`)
     .then(res => res.json())
     .then(data => {
-      // 1. จัดการទិន្នន័យ Lessons
+      // 1. ទិន្នន័យ Lessons
       allLessons = Array.isArray(data.lessons) ? data.lessons : [];
       const statLessons = document.getElementById("statTotalLessons");
       if (statLessons) statLessons.innerText = allLessons.length;
       renderLessonsByFilter();
 
-      // 2. จัดការទិន្នន័យ Schedules
+      // 2. ការទិន្នន័យ Schedules
       allSchedules = Array.isArray(data.schedules) ? data.schedules : [];
       renderSchedulesData(allSchedules);
 
-      // 3. จัดការទិន្នន័យ Students
+      // 3. ការទិន្នន័យ Students
       allStudents = Array.isArray(data.students) ? data.students : [];
       renderStudents(allStudents);
 
-      // 4. จัดการទិន្នន័យ Classes (អាចយកទៅប្រើប្រាស់បន្តបើចាំបាច់)
+      // 4. ទិន្នន័យ Classes (អាចយកទៅប្រើប្រាស់បន្តបើចាំបាច់)
       allClasses = Array.isArray(data.classes) ? data.classes : [];
 
       console.log("ទាញយកទិន្នន័យ Tab ទាំង ៥ បានជោគជ័យ:", data);
