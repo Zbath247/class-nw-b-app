@@ -495,3 +495,50 @@ function switchTab(tabName, event) {
         window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
     }
 }
+
+// Function បើក Profile Modal
+function openProfileModal() {
+    const modal = document.getElementById('profileModal');
+    const modalContent = document.getElementById('profileModalContent');
+    
+    // ទីកន្លែងសម្រាប់ទាញយក Role ឬ Name ពី Header មកបង្ហាញក្នុង Modal ស្វ័យប្រវត្តិ
+    const currentRoleBadge = document.querySelector('.user-role-badge, .uppercase'); // ปรับ selector តាមកូដពិត
+    const currentName = document.querySelector('.font-bold, h3, span'); 
+
+    // បើចង់ឱ្យវាអានតាមទិន្នន័យពិតរបស់អ្នក (ឧទាហរណ៍ Admin ឬ User)
+    // ឧបមាថាវាអានពី UI ខាងលើ
+    const roleText = document.body.innerText.includes('ADMIN') ? 'ADMIN' : 'USER';
+    
+    document.getElementById('modalUserRole').innerText = roleText;
+    
+    // បង្ហាញ Modal ជាមួយ Animation ស្អាត
+    modal.classList.remove('hidden');
+    setTimeout(() => {
+        modal.classList.remove('opacity-0');
+        modalContent.classList.remove('scale-95');
+        modalContent.classList.add('scale-100');
+    }, 10);
+
+    // Refresh Icons ក្នុង Modal បើមានប្រើ Lucide
+    if (window.lucide) lucide.createIcons();
+}
+
+// Function បិទ Profile Modal
+function closeProfileModal() {
+    const modal = document.getElementById('profileModal');
+    const modalContent = document.getElementById('profileModalContent');
+    
+    modal.classList.add('opacity-0');
+    modalContent.classList.remove('scale-100');
+    modalContent.classList.add('scale-95');
+    
+    setTimeout(() => {
+        modal.classList.add('hidden');
+    }, 300); // រង់ចាំឱ្យ Animation ចប់សិនាំលាក់
+}
+
+// កែសម្រួលកូដក្នុង switchTab ត្រង់កន្លែង tabName === 'profile'
+// (យកកូដនេះទៅជំនួសកន្លែងពិនិត្យ profile ក្នុង function switchTab)
+if (tabName === 'profile') {
+    openProfileModal();
+}
