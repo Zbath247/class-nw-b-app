@@ -1,272 +1,352 @@
-const API_URL = "/api/proxy"; 
+const API_URL = "/api/proxy";
 
+let currentUser = null;
+let allLessons = []; // រក្សាទុកទិន្នន័យមេរៀនដើមទាំងអស់
+let currentFilter = "ALL"; // Category Filter
+
+// Check user status on load
 document.addEventListener("DOMContentLoaded", () => {
-  // 1. មុខងារ Login Form Handler
-  const loginForm = document.getElementById("loginForm");
-  if (loginForm) {
-    loginForm.addEventListener("submit", async function(e) {
-      e.preventDefault();
-      
-      const email = document.getElementById("loginEmail").value.trim();
-      const password = document.getElementById("loginPassword").value.trim();
-
-      if (!email || !password) {
-        alert("សូមបំពេញអ៊ីម៉ែល និងពាក្យសម្ងាត់!");
-        return;
-      }
-
-      try {
-        const res = await fetch(`${API_URL}?action=login&email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`);
-        const data = await res.json();
-
-        if (data.status === "success") {
-          document.getElementById("loginSection").classList.add("hidden");
-          document.getElementById("dashboardSection").classList.remove("hidden");
-          document.getElementById("adminPanel").classList.remove("hidden");
-
-          document.getElementById("userName").textContent = data.user.name || "Mok Sambath";
-          document.getElementById("userRole").textContent = data.user.role || "Admin";
-
-          if (typeof lucide !== 'undefined') lucide.createIcons();
-          
-          // ទាញយកទិន្នន័យទាំងអស់មកបង្ហាញក្នុង Dashboard
-          fetchAllData();
-        } else {
-          alert(data.message || "អ៊ីម៉ែល ឬពាក្យសម្ងាត់មិនត្រឹមត្រូវ!");
-        }
-      } catch (err) {
-        console.error("Login Error:", err);
-        alert("មានបញ្ហាក្នុងការភ្ជាប់ទៅកាន់ Server!");
-      }
-    });
-  }
-
-  // មុខងារបង្ហាញ/លាក់ Password ពេល Login
-  const togglePasswordBtn = document.getElementById("togglePasswordBtn");
-  const loginPassword = document.getElementById("loginPassword");
-  if (togglePasswordBtn && loginPassword) {
-    togglePasswordBtn.addEventListener("click", () => {
-      const type = loginPassword.getAttribute("type") === "password" ? "text" : "password";
-      loginPassword.setAttribute("type", type);
-    });
-  }
-
-  // ចងភ្ជាប់ Event Listener ជាមួយ Form បន្ថែមនិស្សិតថ្មី
-  const addStudentForm = document.getElementById("addStudentForm");
-  if (addStudentForm) {
-    addStudentForm.addEventListener("submit", handleAddStudent);
+  const savedUser = localStorage.getItem("user");
+  if (savedUser) {
+    try {
+      currentUser = JSON.parse(savedUser);
+      showDashboard();
+    } catch (e) {
+      localStorage.removeItem("user");
+    }
   }
 });
 
-// មុខងារ Logout ចេញពីប្រព័ន្ធ
-function logout() {
-  document.getElementById("dashboardSection").classList.add("hidden");
-  document.getElementById("loginSection").classList.remove("hidden");
-  const loginForm = document.getElementById("loginForm");
-  if (loginForm) loginForm.reset();
+// Helper for Lucide Icons
+function refreshIcons() {
+  setTimeout(() => {
+    if (window.lucide) {
+      lucide.createIcons();
+    }
+  }, 50);
 }
 
-// មុខងារបើក/បិទ Modal បន្ថែមនិស្សិត
-function openAddStudentModal() {
-  const modal = document.getElementById("addStudentModal");
-  if (modal) modal.classList.remove("hidden");
+// Login Handler using GET Parameters
+const loginForm = document.getElementById("loginForm");
+if (loginForm) {
+  loginForm.addEventListener("submit", function(e) {
+    e.preventDefault();
+    const btn = document.getElementById("loginBtn");
+    if (btn) {
+      btn.innerHTML = `<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i><span>កំពុងផ្ទៀងផ្ទាត់...</span>`;
+      btn.disabled = true;
+      refreshIcons();
+    }
+
+    const emailInput = document.getElementById("loginEmail");
+    const passwordInput = document.getElementById("loginPassword");
+
+    const email = emailInput ? encodeURIComponent(emailInput.value.trim()) : "";
+    const password = passwordInput ? encodeURIComponent(passwordInput.value.trim()) : "";
+
+    fetch(`${API_URL}?action=login&email=${email}&password=${password}`)
+      .then(res => {
+        if (!res.ok) throw new Error(`Server status: ${res.status}`);
+        return res.json();
+      })
+      .then(data => {
+        if (data && data.status === "success") {
+          currentUser = data.user;
+          localStorage.setItem("user", JSON.stringify(currentUser));
+          showDashboard();
+        } else {
+          const errorMsg = (data && data.message) ? data.message : "អ៊ីម៉ែល ឬពាក្យសម្ងាត់មិនត្រឹមត្រូវ!";
+          alert(errorMsg);
+        }
+      })
+      .catch(err => {
+        console.error("Login error:", err);
+        alert("មានបញ្ហាក្នុងការភ្ជាប់ទៅកាន់ Server!");
+      })
+      .finally(() => {
+        if (btn) {
+          btn.innerHTML = `<span>ចូលប្រព័ន្ធ</span><i data-lucide="arrow-right" class="w-4 h-4"></i>`;
+          btn.disabled = false;
+          refreshIcons();
+        }
+      });
+  });
 }
 
-function closeAddStudentModal() {
-  const modal = document.getElementById("addStudentModal");
-  if (modal) modal.classList.add("hidden");
-  const form = document.getElementById("addStudentForm");
-  if (form) form.reset();
-}
+function showDashboard() {
+  const loginSection = document.getElementById("loginSection");
+  const dashboardSection = document.getElementById("dashboardSection");
 
-// មុខងារជំនួយសម្រាប់បង្ហាញ Loading នៅលើប៊ូតុង
-function setButtonLoading(button, isLoading, text, iconName = "save") {
-  if (!button) return;
-  if (isLoading) {
-    button.disabled = true;
-    button.innerHTML = `<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i> <span>${text}</span>`;
-  } else {
-    button.disabled = false;
-    button.innerHTML = `<i data-lucide="${iconName}" class="w-4 h-4"></i> <span>${text}</span>`;
+  if (loginSection) loginSection.classList.add("hidden");
+  if (dashboardSection) dashboardSection.classList.remove("hidden");
+
+  if (currentUser) {
+    const userName = document.getElementById("userName");
+    const userRole = document.getElementById("userRole");
+    const adminPanel = document.getElementById("adminPanel");
+
+    if (userName) userName.innerText = currentUser.name || "អ្នកប្រើប្រាស់";
+    if (userRole) userRole.innerText = currentUser.role || "សិស្ស";
+
+    if (adminPanel) {
+      if (currentUser.role === "admin") {
+        adminPanel.classList.remove("hidden");
+      } else {
+        adminPanel.classList.add("hidden");
+      }
+    }
   }
-  if (typeof lucide !== 'undefined') lucide.createIcons();
-}
 
-// ប្រមូលផ្ដុំមុខងារទាញយកទិន្នន័យទាំងអស់
-function fetchAllData() {
-  fetchStudents();
-  fetchClasses();
-  fetchLessons();
   fetchSchedules();
+  fetchLessons();
+  refreshIcons();
 }
 
-// 1. មុខងារទាញយក និងបង្ហាញទិន្នន័យនិស្សិត
-async function fetchStudents() {
-  const tbody = document.getElementById("studentList");
-  if (tbody) {
-    tbody.innerHTML = `<tr><td colspan="6" class="py-8 text-center text-slate-400">កំពុងទាញយកទិន្នន័យនិស្សិត...</td></tr>`;
-  }
-
-  try {
-    const res = await fetch(`${API_URL}?action=getStudents`);
-    const students = await res.json();
-    
-    if (!tbody) return;
-
-    if (!Array.isArray(students) || students.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="6" class="py-8 text-center text-slate-400">មិនទាន់មានទិន្នន័យនិស្សិតទេ</td></tr>`;
-      return;
-    }
-
-    tbody.innerHTML = students.map((s, index) => `
-      <tr class="hover:bg-slate-900/50 transition border-b border-slate-800/40">
-        <td class="py-3 px-4">${index + 1}</td>
-        <td class="py-3 px-4 font-mono text-indigo-400">${s.student_id || ''}</td>
-        <td class="py-3 px-4 font-bold text-white">${s.khmer_name || ''}</td>
-        <td class="py-3 px-4 text-slate-300">${s.latin_name || '-'}</td>
-        <td class="py-3 px-4">${s.gender || '-'}</td>
-        <td class="py-3 px-4 text-slate-400">${s.dob || '-'}</td>
-      </tr>
-    `).join('');
-
-    const totalCountEl = document.getElementById("totalStudentsCount");
-    if (totalCountEl) totalCountEl.textContent = students.length;
-
-  } catch (err) {
-    console.error("Error fetching students:", err);
-    if (tbody) {
-      tbody.innerHTML = `<tr><td colspan="6" class="py-8 text-center text-rose-400">មិនអាចទាញយកទិន្នន័យពី Server បានទេ!</td></tr>`;
-    }
-  }
+function logout() {
+  localStorage.removeItem("user");
+  location.reload();
 }
 
-// 2. មុខងារទាញយក និងបង្ហាញទិន្នន័យថ្នាក់រៀន (Classes)
-async function fetchClasses() {
-  try {
-    const res = await fetch(`${API_URL}?action=getClasses`);
-    const classes = await res.json();
-    
-    const classContainer = document.getElementById("classList");
-    if (classContainer && Array.isArray(classes)) {
-      classContainer.innerHTML = classes.map(c => `
-        <div class="p-3 bg-slate-800/50 rounded-lg border border-slate-700/50 mb-2">
-          <div class="font-bold text-white">${c.class_name}</div>
-          <div class="text-sm text-indigo-400">កូដថ្នាក់៖ ${c.class_code} | គ្រូបង្រៀន៖ ${c.teacher_name}</div>
-        </div>
-      `).join('');
-    }
-  } catch (err) {
-    console.error("Error fetching classes:", err);
-  }
+// Fetch Schedules & Update Dashboard Stats
+function fetchSchedules() {
+  const scheduleTbody = document.getElementById("scheduleList");
+  if (!scheduleTbody) return;
+
+  fetch(`${API_URL}?action=getSchedules`)
+    .then(res => res.json())
+    .then(data => {
+      scheduleTbody.innerHTML = "";
+
+      if (!data || !Array.isArray(data) || data.length === 0) {
+        scheduleTbody.innerHTML = `<tr><td colspan="5" class="p-8 text-center text-slate-400 font-medium">មិនទាន់មានកាលវិភាគនៅឡើយទេ។</td></tr>`;
+        updateScheduleStats(0, 0);
+        return;
+      }
+
+      const totalSessions = data.length;
+      const uniqueSubjects = new Set(data.map(item => item.subject ? item.subject.trim() : '')).size;
+      updateScheduleStats(uniqueSubjects, totalSessions);
+
+      data.forEach(item => {
+        scheduleTbody.innerHTML += `
+          <tr class="hover:bg-indigo-50/30 transition border-b border-slate-100/80">
+            <td class="p-3.5 pl-5 font-bold text-indigo-600 flex items-center gap-1.5">
+              <i data-lucide="calendar-days" class="w-4 h-4 text-indigo-400"></i>
+              ${item.day || ''}
+            </td>
+            <td class="p-3.5 text-slate-600 font-medium">${item.time || ''}</td>
+            <td class="p-3.5 font-semibold text-slate-800">${item.subject || ''}</td>
+            <td class="p-3.5">
+              <span class="bg-slate-100 text-slate-600 border border-slate-200 px-2.5 py-1 rounded-lg text-[11px] font-semibold">${item.room || ''}</span>
+            </td>
+            <td class="p-3.5 pr-5 text-slate-600 font-medium">${item.teacher || ''}</td>
+          </tr>
+        `;
+      });
+      refreshIcons();
+    })
+    .catch(err => console.error("Schedule Error:", err));
 }
 
-// 3. មុខងារទាញយក និងបង្ហាញទិន្នន័យមេរៀន (Lessons) ព្រមទាំងរាប់ចំនួនសរុបដាក់លើ Dashboard
-async function fetchLessons() {
-  try {
-    const res = await fetch(`${API_URL}?action=getLessons`);
-    const lessons = await res.json();
-    
-    // 🧮 កូដរាប់ចំនួនឯកសារមេរៀនសរុប ដាក់ចូលទៅកាន់កាត Summary
-    const totalLessonsEl = document.getElementById("totalLessonsCount");
-    if (totalLessonsEl && Array.isArray(lessons)) {
-      totalLessonsEl.textContent = lessons.length;
-    }
+// Helper to Update Schedule Stat Cards
+function updateScheduleStats(totalClasses, totalSessions) {
+  const statClasses = document.getElementById("statTotalClasses");
+  const statSessions = document.getElementById("statTotalSessions");
 
-    const lessonContainer = document.getElementById("lessonList");
-    if (lessonContainer && Array.isArray(lessons)) {
-      lessonContainer.innerHTML = lessons.map(l => `
-        <div class="p-4 bg-slate-800/50 rounded-lg border border-slate-700/50 mb-3">
-          <h4 class="font-bold text-white">${l.title}</h4>
-          <p class="text-sm text-slate-300 mt-1">${l.description || ''}</p>
-          <div class="mt-2">
-            <a href="${l.file_url}" target="_blank" class="text-indigo-400 hover:underline text-sm flex items-center gap-1">
-              <i data-lucide="external-link" class="w-3.5 h-3.5"></i> មើលឯកសារមេរៀន
-            </a>
-          </div>
-        </div>
-      `).join('');
-      if (typeof lucide !== 'undefined') lucide.createIcons();
-    }
-  } catch (err) {
-    console.error("Error fetching lessons:", err);
-  }
+  if (statClasses) statClasses.innerText = totalClasses;
+  if (statSessions) statSessions.innerText = `${totalSessions} Sessions`;
 }
 
-// 4. មុខងារទាញយក និងបង្ហាញទិន្នន័យកាលវិភាគសិក្សា (Schedules) ព្រមទាំងរាប់ចំនួន Sessions
-async function fetchSchedules() {
-  try {
-    const res = await fetch(`${API_URL}?action=getSchedules`);
-    const schedules = await res.json();
-    
-    // 🧮 កូដរាប់ចំនួន Sessions សរុប ដាក់ចូលទៅកាន់កាត Summary
-    const totalSessionsEl = document.getElementById("totalSessionsCount");
-    if (totalSessionsEl && Array.isArray(schedules)) {
-      totalSessionsEl.textContent = `${schedules.length} Sessions`;
-    }
+// Fetch Lessons & Store Data
+function fetchLessons() {
+  const statLessons = document.getElementById("statTotalLessons");
 
-    const scheduleContainer = document.getElementById("scheduleList");
-    if (scheduleContainer && Array.isArray(schedules)) {
-      scheduleContainer.innerHTML = schedules.map(sch => `
-        <tr class="hover:bg-slate-900/50 transition border-b border-slate-800/40">
-          <td class="py-3 px-4 text-slate-300">${sch.day || ''}</td>
-          <td class="py-3 px-4 text-slate-300">${sch.time || ''}</td>
-          <td class="py-3 px-4 font-bold text-white">${sch.subject || ''}</td>
-          <td class="py-3 px-4 text-indigo-400">${sch.room || ''}</td>
-        </tr>
-      `).join('');
-    }
-  } catch (err) {
-    console.error("Error fetching schedules:", err);
-  }
+  fetch(`${API_URL}?action=getLessons`)
+    .then(res => res.json())
+    .then(data => {
+      allLessons = Array.isArray(data) ? data : [];
+      if (statLessons) statLessons.innerText = allLessons.length;
+      renderLessonsByFilter();
+    })
+    .catch(err => console.error("Lesson Error:", err));
 }
 
-// 5. មុខងារបន្ថែមនិស្សិតថ្មី
-async function handleAddStudent(e) {
-  e.preventDefault();
-  
-  const studentId = document.getElementById("newStudentId")?.value.trim();
-  const khmerName = document.getElementById("newKhmerName")?.value.trim();
-  const latinName = document.getElementById("newLatinName")?.value.trim();
-  const gender = document.getElementById("newGender")?.value.trim();
-  const dob = document.getElementById("newDob")?.value.trim();
+// Filter Function
+function filterLessons(subject) {
+  currentFilter = subject;
 
-  if (!studentId || !khmerName) {
-    alert("សូមបំពេញអត្តលេខ និងឈ្មោះខ្មែរឱ្យបានត្រឹមត្រូវ!");
+  // Update Active UI Tab Buttons
+  const buttons = document.querySelectorAll('.subject-filter-btn');
+  buttons.forEach(btn => {
+    btn.classList.remove('bg-indigo-600', 'text-white');
+    btn.classList.add('bg-slate-100', 'text-slate-600', 'hover:bg-slate-200');
+  });
+
+  if (event && event.currentTarget) {
+    event.currentTarget.classList.remove('bg-slate-100', 'text-slate-600', 'hover:bg-slate-200');
+    event.currentTarget.classList.add('bg-indigo-600', 'text-white');
+  }
+
+  renderLessonsByFilter();
+}
+
+// Helper to extract Drive File ID and convert to Mobile Friendly Preview Link
+function getMobilePreviewLink(url) {
+  if (!url) return '#';
+  const match = url.match(/[-\w]{25,}/);
+  return match ? `https://drive.google.com/file/d/${match[0]}/preview` : url;
+}
+
+// Render Lessons List
+function renderLessonsByFilter() {
+  const lessonListDiv = document.getElementById("lessonList");
+  if (!lessonListDiv) return;
+
+  lessonListDiv.innerHTML = "";
+
+  let filtered = allLessons;
+  if (currentFilter !== "ALL") {
+    filtered = allLessons.filter(item => 
+      item.title && item.title.toUpperCase().includes(currentFilter.toUpperCase())
+    );
+  }
+
+  if (filtered.length === 0) {
+    lessonListDiv.innerHTML = "<p class='text-slate-400 text-xs text-center py-6 bg-slate-50 rounded-xl border border-dashed border-slate-200'>មិនទាន់មានមេរៀនសម្រាប់មុខវិជ្ជានេះនៅឡើយទេ។</p>";
     return;
   }
 
-  const submitBtn = document.getElementById("saveStudentBtn");
-  setButtonLoading(submitBtn, true, "កំពុងរក្សាទុក...");
+  filtered.forEach(item => {
+    const isAdmin = currentUser && currentUser.role === "admin";
+    const previewUrl = getMobilePreviewLink(item.file_url);
 
-  try {
-    const payload = {
-      action: "addStudent",
-      student_id: studentId,
-      khmer_name: khmerName,
-      latin_name: latinName,
-      gender: gender,
-      dob: dob
+    lessonListDiv.innerHTML += `
+      <div class="p-4 rounded-xl border border-slate-200/70 bg-slate-50/50 hover:bg-white hover:shadow-md transition flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <div class="space-y-1">
+          <span class="bg-indigo-50 text-indigo-600 border border-indigo-100 text-[10px] font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider">${item.class_code || 'G1-NW-B'}</span>
+          <h3 class="font-bold text-sm text-slate-800 mt-1">${item.title || ''}</h3>
+          <p class="text-xs text-slate-500 line-clamp-2">${item.description || "គ្មានការពិពណ៌នា"}</p>
+        </div>
+        <div class="flex items-center gap-2 w-full md:w-auto">
+          <a href="${previewUrl}" target="_blank" class="flex-1 md:flex-initial bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2.5 rounded-xl text-xs font-semibold flex items-center justify-center gap-2 transition shadow-sm shadow-emerald-600/20 whitespace-nowrap">
+            <i data-lucide="eye" class="w-4 h-4"></i>
+            <span>មើល / Download File</span>
+          </a>
+          ${isAdmin ? `
+            <button onclick="deleteLesson('${item.lesson_id}')" class="p-2.5 bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-100 rounded-xl transition" title="លុបមេរៀន">
+              <i data-lucide="trash-2" class="w-4 h-4"></i>
+            </button>
+          ` : ''}
+        </div>
+      </div>
+    `;
+  });
+  refreshIcons();
+}
+
+// Helper: Convert File Object to Base64 String
+function fileToBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => {
+      const base64String = reader.result.split(',')[1];
+      resolve(base64String);
     };
+    reader.onerror = error => reject(error);
+  });
+}
 
-    const res = await fetch(API_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload)
-    });
-
-    const data = await res.json();
-
-    if (data?.status === "success") {
-      alert("បន្ថែមទិន្នន័យនិស្សិតថ្មីជោគជ័យ!");
-      closeAddStudentModal();
-      fetchStudents();
-    } else {
-      alert(data?.message || "មានបញ្ហាក្នុងការបន្ថែមទិន្នន័យនិស្សិត!");
+// Add Lesson Handler
+const addLessonForm = document.getElementById("addLessonForm");
+if (addLessonForm) {
+  addLessonForm.addEventListener("submit", async function(e) {
+    e.preventDefault();
+    const btn = document.getElementById("addLessonBtn");
+    
+    const fileInput = document.getElementById("lessonFileInput");
+    if (!fileInput || !fileInput.files || fileInput.files.length === 0) {
+      alert("សូមជ្រើសរើស File ឯកសារជាមុនសិន!");
+      return;
     }
-  } catch (err) {
-    console.error("Add Student Error:", err);
-    alert("មានបញ្ហាក្នុងការភ្ជាប់ទៅកាន់ Server!");
-  } finally {
-    setButtonLoading(submitBtn, false, "រក្សាទុក", "save");
+
+    const file = fileInput.files[0];
+
+    if (btn) {
+      btn.innerHTML = `<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i><span>កំពុង Upload និង រក្សាទុក...</span>`;
+      btn.disabled = true;
+      refreshIcons();
+    }
+
+    try {
+      const base64File = await fileToBase64(file);
+      const lessonId = "LES-" + Date.now();
+      
+      const subjectSelect = document.getElementById("lessonSubject");
+      const rawTitle = document.getElementById("lessonTitle").value.trim();
+      const subjectPrefix = subjectSelect ? subjectSelect.value : "";
+      
+      // បញ្ចូលឈ្មោះមុខវិជ្ជាទៅក្នុង Title (ឧទាហរណ៍៖ "DA II - Chapter 1")
+      const fullTitle = subjectPrefix ? `${subjectPrefix} - ${rawTitle}` : rawTitle;
+
+      const desc = document.getElementById("lessonDesc").value.trim();
+      const classCode = document.getElementById("classCode").value.trim();
+
+      const payload = {
+        action: "addLesson",
+        lesson_id: lessonId,
+        title: fullTitle,
+        description: desc,
+        class_code: classCode,
+        file_name: file.name,
+        mime_type: file.type,
+        file_data: base64File
+      };
+
+      const res = await fetch(API_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(payload)
+      });
+
+      const data = await res.json();
+
+      if (data && data.status === "success") {
+        alert("បញ្ចូល និង Upload មេរៀនជោគជ័យ!");
+        addLessonForm.reset();
+        fetchLessons();
+      } else {
+        alert((data && data.message) ? data.message : "មានបញ្ហាក្នុងការបញ្ចូលមេរៀន!");
+      }
+
+    } catch (err) {
+      console.error("Upload Lesson Error:", err);
+      alert("មានបញ្ហាក្នុងការ Upload មេរៀន!");
+    } finally {
+      if (btn) {
+        btn.innerHTML = `<i data-lucide="save" class="w-4 h-4"></i><span>រក្សាទុកមេរៀន</span>`;
+        btn.disabled = false;
+        refreshIcons();
+      }
+    }
+  });
+}
+
+// Delete Lesson Handler
+function deleteLesson(lessonId) {
+  if (!lessonId) return;
+  if (confirm("តើអ្នកប្រាកដជាចង់លុបមេរៀននេះមែនទេ?")) {
+    fetch(`${API_URL}?action=deleteLesson&lesson_id=${encodeURIComponent(lessonId)}`)
+      .then(res => res.json())
+      .then(data => {
+        alert("លុបមេរៀនជោគជ័យ!");
+        fetchLessons();
+      })
+      .catch(err => {
+        console.error("Delete Lesson Error:", err);
+        alert("មានបញ្ហាក្នុងការលុបមេរៀន!");
+      });
   }
 }
