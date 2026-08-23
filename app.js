@@ -146,7 +146,6 @@ async function fetchClasses() {
     const res = await fetch(`${API_URL}?action=getClasses`);
     const classes = await res.json();
     
-    // បើអ្នកមាន ID Container សម្រាប់បង្ហាញ Classes (ឧ. classList) អាចកែសម្រួលទីនេះ
     const classContainer = document.getElementById("classList");
     if (classContainer && Array.isArray(classes)) {
       classContainer.innerHTML = classes.map(c => `
@@ -161,13 +160,18 @@ async function fetchClasses() {
   }
 }
 
-// 3. មុខងារទាញយក និងបង្ហាញទិន្នន័យមេរៀន (Lessons)
+// 3. មុខងារទាញយក និងបង្ហាញទិន្នន័យមេរៀន (Lessons) ព្រមទាំងរាប់ចំនួនសរុបដាក់លើ Dashboard
 async function fetchLessons() {
   try {
     const res = await fetch(`${API_URL}?action=getLessons`);
     const lessons = await res.json();
     
-    // បើអ្នកមាន ID Container សម្រាប់បង្ហាញ Lessons (ឧ. lessonList) អាចកែសម្រួលទីនេះ
+    // 🧮 កូដរាប់ចំនួនឯកសារមេរៀនសរុប ដាក់ចូលទៅកាន់កាត Summary
+    const totalLessonsEl = document.getElementById("totalLessonsCount");
+    if (totalLessonsEl && Array.isArray(lessons)) {
+      totalLessonsEl.textContent = lessons.length;
+    }
+
     const lessonContainer = document.getElementById("lessonList");
     if (lessonContainer && Array.isArray(lessons)) {
       lessonContainer.innerHTML = lessons.map(l => `
@@ -188,13 +192,18 @@ async function fetchLessons() {
   }
 }
 
-// 4. មុខងារទាញយក និងបង្ហាញទិន្នន័យកាលវិភាគសិក្សា (Schedules)
+// 4. មុខងារទាញយក និងបង្ហាញទិន្នន័យកាលវិភាគសិក្សា (Schedules) ព្រមទាំងរាប់ចំនួន Sessions
 async function fetchSchedules() {
   try {
     const res = await fetch(`${API_URL}?action=getSchedules`);
     const schedules = await res.json();
     
-    // បើអ្នកមាន ID Container សម្រាប់បង្ហាញ Schedules (ឧ. scheduleList) អាចកែសម្រួលទីនេះ
+    // 🧮 កូដរាប់ចំនួន Sessions សរុប ដាក់ចូលទៅកាន់កាត Summary
+    const totalSessionsEl = document.getElementById("totalSessionsCount");
+    if (totalSessionsEl && Array.isArray(schedules)) {
+      totalSessionsEl.textContent = `${schedules.length} Sessions`;
+    }
+
     const scheduleContainer = document.getElementById("scheduleList");
     if (scheduleContainer && Array.isArray(schedules)) {
       scheduleContainer.innerHTML = schedules.map(sch => `
