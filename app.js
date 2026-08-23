@@ -416,3 +416,77 @@ function searchStudents(keyword) {
   );
   renderStudents(filtered);
 }
+// ==========================================
+// [ADDED] BOTTOM NAVIGATION BAR FUNCTIONALITY
+// ==========================================
+
+// Function សម្រាប់បង្កើតនិងបង្ហាញ Bottom Navigation ស្វ័យប្រវត្តិពេល Load ទំព័រ
+document.addEventListener("DOMContentLoaded", () => {
+    createBottomNavigationBar();
+});
+
+function createBottomNavigationBar() {
+    // ពិនិត្យមើលថាតើមាន Bottom Nav រួចហ្សីនៅ ដើម្បីការពារការបង្កើតត្រួតគ្នា
+    if (document.getElementById("customBottomNav")) return;
+
+    // បង្កើត Element សម្រាប់ Bottom Nav
+    const bottomNav = document.createElement("div");
+    bottomNav.id = "customBottomNav";
+    bottomNav.className = "custom-bottom-nav";
+
+    bottomNav.innerHTML = `
+        <a href="#dashboard" class="nav-link-item active" onclick="switchNavTab('home', event)">
+            <span class="nav-icon">🏠</span>
+            <span>ទំព័រដើម</span>
+        </a>
+        <a href="#lessons" class="nav-link-item" onclick="switchNavTab('lessons', event)">
+            <span class="nav-icon">📚</span>
+            <span>មេរៀន</span>
+        </a>
+        <a href="#add" class="nav-link-item" onclick="switchNavTab('add', event)">
+            <span class="nav-center-btn">+</span>
+        </a>
+        <a href="#schedule" class="nav-link-item" onclick="switchNavTab('schedule', event)">
+            <span class="nav-icon">📅</span>
+            <span>កាលវិភាគ</span>
+        </a>
+        <a href="#profile" class="nav-link-item" onclick="switchNavTab('profile', event)">
+            <span class="nav-icon">👤</span>
+            <span>គណនី</span>
+        </a>
+    `;
+
+    // បញ្ចូលវាទៅក្នុង body របស់ HTML
+    document.body.appendChild(bottomNav);
+
+    // បន្ថែម padding ខាងក្រោម body ដើម្បីកុំឱ្យរបារនេះបាំងអត្ថបទ/conent ចុងក្រោយ
+    document.body.style.paddingBottom = "75px";
+}
+
+// Function សម្រាប់จัดการការចុចប្តូរ Tab លើ Bottom Navigation
+function switchNavTab(tabName, event) {
+    if (event) event.preventDefault();
+
+    // ដក active class ចេញពីគ្រប់ tab ទាំងអស់
+    document.querySelectorAll('.nav-link-item').forEach(item => {
+        item.classList.remove('active');
+    });
+
+    // ใส่ active class ទៅកាន់ tab ដែលទើបចុច
+    if (event && event.currentTarget) {
+        event.currentTarget.classList.add('active');
+    }
+
+    console.log("Switched to bottom nav tab: ", tabName);
+    
+    // អ្នកអាចសរសេរLogic បន្ថែមនៅទីនេះដើម្បី Scroll ទៅកាន់ Section នីមួយៗក្នុង Dashboard
+    if (tabName === 'home') {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else if (tabName === 'lessons') {
+        const lessonElem = document.getElementById("lessonList");
+        if (lessonElem) lessonElem.scrollIntoView({ behavior: 'smooth' });
+    } else if (tabName === 'schedule') {
+        const scheduleElem = document.getElementById("scheduleList");
+        if (scheduleElem) scheduleElem.scrollIntoView({ behavior: 'smooth' });
+    }
+}
