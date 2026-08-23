@@ -463,7 +463,7 @@ function createBottomNavigationBar() {
     document.body.style.paddingBottom = "75px";
 }
 
-// Function សម្រាប់จัดการការចុចប្តូរ Tab លើ Bottom Navigation (ត្រូវជាមួយឈ្មោះក្នុង HTML onclick)
+// Function សម្រាប់จัดการការចុចប្តូរ Tab លើ Bottom Navigation
 function switchTab(tabName, event) {
     if (event) event.preventDefault();
 
@@ -479,7 +479,7 @@ function switchTab(tabName, event) {
 
     console.log("Switched to bottom nav tab: ", tabName);
     
-    // មុខងារ Scroll ទៅកាន់ផ្នែកនីមួយៗតាម id
+    // មុខងារ Scroll ឬ បង្ហាញផ្នែកផ្សេងៗ
     if (tabName === 'home') {
         window.scrollTo({ top: 0, behavior: 'smooth' });
     } else if (tabName === 'lessons') {
@@ -492,34 +492,38 @@ function switchTab(tabName, event) {
         const elem = document.getElementById("adminPanel");
         if (elem) elem.scrollIntoView({ behavior: 'smooth', block: 'start' });
     } else if (tabName === 'profile') {
-        window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+        // ហៅមុខងារបើក Modal គណនី
+        openProfileModal();
     }
 }
 
 // Function បើក Profile Modal
 function openProfileModal() {
     const modal = document.getElementById('profileModal');
+    if (!modal) {
+        console.error("មិនទាន់បានបង្កើត HTML របស់ profileModal ទេ!");
+        return;
+    }
+    
     const modalContent = document.getElementById('profileModalContent');
     
-    // ទីកន្លែងសម្រាប់ទាញយក Role ឬ Name ពី Header មកបង្ហាញក្នុង Modal ស្វ័យប្រវត្តិ
-    const currentRoleBadge = document.querySelector('.user-role-badge, .uppercase'); // ปรับ selector តាមកូដពិត
-    const currentName = document.querySelector('.font-bold, h3, span'); 
+    // កំណត់ Role តាមទិន្នន័យពិតនៅលើ Header (USER ឬ ADMIN)
+    const roleBadge = document.querySelector('.uppercase'); 
+    const roleText = roleBadge ? roleBadge.innerText : 'USER';
+    
+    const modalRoleElem = document.getElementById('modalUserRole');
+    if (modalRoleElem) modalRoleElem.innerText = roleText;
 
-    // បើចង់ឱ្យវាអានតាមទិន្នន័យពិតរបស់អ្នក (ឧទាហរណ៍ Admin ឬ User)
-    // ឧបមាថាវាអានពី UI ខាងលើ
-    const roleText = document.body.innerText.includes('ADMIN') ? 'ADMIN' : 'USER';
-    
-    document.getElementById('modalUserRole').innerText = roleText;
-    
-    // បង្ហាញ Modal ជាមួយ Animation ស្អាត
+    // បង្ហាញ Modal
     modal.classList.remove('hidden');
     setTimeout(() => {
         modal.classList.remove('opacity-0');
-        modalContent.classList.remove('scale-95');
-        modalContent.classList.add('scale-100');
+        if (modalContent) {
+            modalContent.classList.remove('scale-95');
+            modalContent.classList.add('scale-100');
+        }
     }, 10);
 
-    // Refresh Icons ក្នុង Modal បើមានប្រើ Lucide
     if (window.lucide) lucide.createIcons();
 }
 
@@ -527,18 +531,15 @@ function openProfileModal() {
 function closeProfileModal() {
     const modal = document.getElementById('profileModal');
     const modalContent = document.getElementById('profileModalContent');
+    if (!modal) return;
     
     modal.classList.add('opacity-0');
-    modalContent.classList.remove('scale-100');
-    modalContent.classList.add('scale-95');
+    if (modalContent) {
+        modalContent.classList.remove('scale-100');
+        modalContent.classList.add('scale-95');
+    }
     
     setTimeout(() => {
         modal.classList.add('hidden');
-    }, 300); // រង់ចាំឱ្យ Animation ចប់សិនាំលាក់
-}
-
-// កែសម្រួលកូដក្នុង switchTab ត្រង់កន្លែង tabName === 'profile'
-// (យកកូដនេះទៅជំនួសកន្លែងពិនិត្យ profile ក្នុង function switchTab)
-if (tabName === 'profile') {
-    openProfileModal();
+    }, 300);
 }
