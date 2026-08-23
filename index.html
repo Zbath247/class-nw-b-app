@@ -45,19 +45,16 @@
   <div id="loginSection" class="flex items-center justify-center min-h-screen p-4 relative z-10">
     <div class="glass-card-light text-slate-800 p-8 rounded-3xl shadow-2xl w-full max-w-md border border-white/20 animate-fade-in">
       <div class="text-center mb-8">
-        <!-- Logo សាកលវិទ្យាល័យ -->
         <div class="inline-flex mb-3">
           <div class="w-20 h-20 bg-gradient-to-tr from-indigo-600 to-blue-600 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-indigo-500/30">
             <i data-lucide="graduation-cap" class="w-10 h-10"></i>
           </div>
         </div>
-        <!-- ឈ្មោះសាកលវិទ្យាល័យ ខ្មែរ និង អង់គ្លេស -->
         <h2 class="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-blue-600 bg-clip-text text-transparent">សាកលវិទ្យាល័យឌីជីថលកម្ពុជា</h2>
         <p class="text-xs font-bold text-indigo-900 tracking-wider uppercase mt-0.5">DIGITAL UNIVERSITY OF CAMBODIA</p>
         <p class="text-xs text-slate-500 font-medium mt-1">ប្រព័ន្ធគ្រប់គ្រងថ្នាក់រៀន G1-NW-B</p>
       </div>
 
-      <!-- Quick Demo Login Hint -->
       <div class="mb-5 p-3 rounded-xl bg-indigo-50 border border-indigo-100 text-[11px] text-indigo-900 flex flex-col gap-1">
         <div class="font-bold flex items-center gap-1.5 text-indigo-700">
           <i data-lucide="info" class="w-3.5 h-3.5"></i> គណនីសម្រាប់សាកល្បង (Demo Accounts):
@@ -178,7 +175,6 @@
 
       <!-- Dashboard Overview Stats -->
       <section id="statsSection" class="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <!-- Card 1 -->
         <div class="glass-card p-5 rounded-2xl shadow-lg flex items-center gap-4 border border-slate-800 hover:border-indigo-500/30 transition">
           <div class="p-3 bg-indigo-500/10 text-indigo-400 rounded-xl border border-indigo-500/20">
             <i data-lucide="book-open" class="w-5 h-5"></i>
@@ -189,7 +185,6 @@
           </div>
         </div>
 
-        <!-- Card 2 -->
         <div class="glass-card p-5 rounded-2xl shadow-lg flex items-center gap-4 border border-slate-800 hover:border-blue-500/30 transition">
           <div class="p-3 bg-blue-500/10 text-blue-400 rounded-xl border border-blue-500/20">
             <i data-lucide="clock" class="w-5 h-5"></i>
@@ -200,7 +195,6 @@
           </div>
         </div>
 
-        <!-- Card 3 -->
         <div class="glass-card p-5 rounded-2xl shadow-lg flex items-center gap-4 border border-slate-800 hover:border-emerald-500/30 transition">
           <div class="p-3 bg-emerald-500/10 text-emerald-400 rounded-xl border border-emerald-500/20">
             <i data-lucide="file-text" class="w-5 h-5"></i>
@@ -211,14 +205,13 @@
           </div>
         </div>
 
-        <!-- Card 4 -->
         <div class="glass-card p-5 rounded-2xl shadow-lg flex items-center gap-4 border border-slate-800 hover:border-amber-500/30 transition">
           <div class="p-3 bg-amber-500/10 text-amber-400 rounded-xl border border-amber-500/20">
             <i data-lucide="users" class="w-5 h-5"></i>
           </div>
           <div>
             <p class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">និស្សិតក្នុងថ្នាក់</p>
-            <h3 id="statTotalStudents" class="text-xl font-bold text-white mt-0.5">18</h3>
+            <h3 id="statTotalStudents" class="text-xl font-bold text-white mt-0.5">0</h3>
           </div>
         </div>
       </section>
@@ -304,7 +297,7 @@
             </div>
           </div>
           <span id="totalStudentsCountBadge" class="bg-indigo-500/10 text-indigo-300 border border-indigo-500/20 px-3.5 py-2 rounded-xl text-xs font-bold w-fit shadow-sm">
-            និស្សិតសរុប: 18 នាក់
+            និស្សិតសរុប: 0 នាក់
           </span>
         </div>
 
@@ -330,50 +323,15 @@
     </main>
   </div>
 
-  <!-- JavaScript Code (Integrated app.js) -->
+  <!-- JavaScript Code: Connected to Google Apps Script Backend API -->
   <script>
-    // Initial Data
-    const scheduleData = [
-      { day: "ច័ន្ទ (Monday)", time: "08:00 AM - 11:00 AM", subject: "Database Administration II (DA II)", room: "Lab 302", teacher: "លោកគ្រូ ហេង សុខា" },
-      { day: "អង្គារ (Tuesday)", time: "02:00 PM - 05:00 PM", subject: "Container I (CTN I)", room: "Lab 201", teacher: "លោកគ្រូ ចាន់ វុទ្ធី" },
-      { day: "ពុធ (Wednesday)", time: "08:00 AM - 11:00 AM", subject: "Cisco IV (CS IV)", room: "Network Lab 1", teacher: "លោកគ្រូ លឹម ពិសិដ្ឋ" },
-      { day: "ព្រហស្បតិ៍ (Thursday)", time: "02:00 PM - 05:00 PM", subject: "Network Administration II (NA II)", room: "Network Lab 2", teacher: "លោកគ្រូ សេង វណ្ណា" },
-      { day: "សុក្រ (Friday)", time: "08:00 AM - 11:00 AM", subject: "Cybersecurity II (CYB II)", room: "Cyber Security Center", teacher: "លោកគ្រូ កែវ រតនា" }
-    ];
+    const API_URL = "/api/proxy";
 
-    const studentData = [
-      { id: "DUC-2025-001", nameKh: "មុក សម្បត្តិ", nameEn: "Mok Sambath", gender: "ប្រុស", dob: "12/05/2003" },
-      { id: "DUC-2025-002", nameKh: "ចាន់ សុភក្ត្រា", nameEn: "Chan Sopheaktra", gender: "ប្រុស", dob: "22/01/2003" },
-      { id: "DUC-2025-003", nameKh: "សុខ លក្ខិណា", nameEn: "Sok Leakhena", gender: "ស្រី", dob: "15/08/2004" },
-      { id: "DUC-2025-004", nameKh: "ហេង វុទ្ធី", nameEn: "Heng Vutthy", gender: "ប្រុស", dob: "03/11/2003" },
-      { id: "DUC-2025-005", nameKh: "កែវ ពិសី", nameEn: "Keo Pisei", gender: "ស្រី", dob: "25/04/2004" },
-      { id: "DUC-2025-006", nameKh: "សេង រតនៈ", nameEn: "Seng Rotana", gender: "ប្រុស", dob: "10/09/2003" },
-      { id: "DUC-2025-007", nameKh: "អ៊ុក ជីវ័ន្ត", nameEn: "Ouk Cheavun", gender: "ប្រុស", dob: "18/12/2003" },
-      { id: "DUC-2025-008", nameKh: "លី ដារ៉ា", nameEn: "Ly Dara", gender: "ប្រុស", dob: "05/02/2003" },
-      { id: "DUC-2025-009", nameKh: "នួន សុខុម", nameEn: "Nuon Sokhom", gender: "ស្រី", dob: "30/06/2004" },
-      { id: "DUC-2025-010", nameKh: "ទុំ វណ្ណដា", nameEn: "Tum Vanda", gender: "ប្រុស", dob: "14/07/2003" },
-      { id: "DUC-2025-011", nameKh: "ខៀវ ចរិយា", nameEn: "Khiev Chariya", gender: "ស្រី", dob: "21/03/2004" },
-      { id: "DUC-2025-012", nameKh: "ម៉េង ហួរ", nameEn: "Meng Hour", gender: "ប្រុស", dob: "09/10/2003" },
-      { id: "DUC-2025-013", nameKh: "យ៉ាន សុខា", nameEn: "Yin Sokha", gender: "ប្រុស", dob: "17/11/2003" },
-      { id: "DUC-2025-014", nameKh: "ផន ស្រីនិច", nameEn: "Phon Sreyneath", gender: "ស្រី", dob: "04/05/2004" },
-      { id: "DUC-2025-015", nameKh: "គឹម សុវណ្ណ", nameEn: "Kim Sovann", gender: "ប្រុស", dob: "28/08/2003" },
-      { id: "DUC-2025-016", nameKh: "ប៊ុន ធារ៉ា", nameEn: "Bun Theara", gender: "ប្រុស", dob: "11/01/2003" },
-      { id: "DUC-2025-017", nameKh: "ស៊ន ណាគ្រី", nameEn: "Sorn Nakry", gender: "ស្រី", dob: "19/09/2004" },
-      { id: "DUC-2025-018", nameKh: "អ៊ឹម សុភា", nameEn: "Im Sophea", gender: "ប្រុស", dob: "07/12/2003" }
-    ];
-
-    // Default sample lessons
-    const defaultLessons = [
-      { id: 1, subject: "DA II", title: "Chapter 1: Advanced MySQL Indexing & Query Optimization", classCode: "G1-NW-B", fileName: "DA_II_Chapter_1_Optimization.pdf", fileSize: "2.4 MB", date: "2026-05-12", desc: "ការស្វែងយល់ពីរបៀបបង្កើត Index និងការធ្វើឱ្យការ Query ទិន្នន័យក្នុង MySQL/MariaDB មានល្បឿនលឿន។" },
-      { id: 2, subject: "CTN I", title: "Chapter 2: Docker Containers & Linux Namespaces Setup", classCode: "G1-NW-B", fileName: "Container_I_Docker_Lab.pdf", fileSize: "4.1 MB", date: "2026-05-15", desc: "ការតំឡើង Docker Engine និងការកំណត់ Network Bridges លើ Ubuntu Server។" },
-      { id: 3, subject: "CS IV", title: "Chapter 3: Multi-Area OSPFv2 & OSPFv3 Configuration", classCode: "G1-NW-B", fileName: "Cisco_IV_MultiArea_OSPF.pdf", fileSize: "5.8 MB", date: "2026-05-20", desc: "មេរៀនអនុវត្តលើ Cisco Packet Tracer និង GNS3 សម្រាប់ការតភ្ជាប់ប្រព័ន្ធរ៉ោតទ័រច្រើន Area។" },
-      { id: 4, subject: "NA II", title: "Chapter 4: MikroTik BIND9 DNS & Firewall Rules", classCode: "G1-NW-B", fileName: "Network_Admin_MikroTik_DNS.pdf", fileSize: "3.2 MB", date: "2026-05-25", desc: "ការកំណត់ BIND9 DNS Server និង iptables/MikroTik Filter Rules សម្រាប់គ្រប់គ្រងបណ្តាញសាលា។" },
-      { id: 5, subject: "CYB II", title: "Chapter 5: OpenVPN & WireGuard Point-to-Site Tunnel", classCode: "G1-NW-B", fileName: "Cybersecurity_VPN_Wireguard.pdf", fileSize: "3.9 MB", date: "2026-06-01", desc: "ការបង្កើតប្រព័ន្ធទស្សនកិច្ចសុវត្ថិភាព VPN ជាមួយ WireGuard និង OpenVPN บน Linux Server។" }
-    ];
-
-    // Load lessons from localStorage or use defaults
-    let lessons = JSON.parse(localStorage.getItem('duc_lessons_g1nwb')) || defaultLessons;
-    let currentUser = JSON.parse(localStorage.getItem('duc_current_user')) || null;
+    let currentUser = null;
+    let allLessons = [];
+    let allStudents = [];
+    let allSchedules = [];
+    let allClasses = [];
     let currentFilter = 'ALL';
 
     // Toast Notification System
@@ -386,98 +344,100 @@
       container.appendChild(toast);
       lucide.createIcons();
 
-      setTimeout(() => {
-        toast.classList.remove('translate-y-2', 'opacity-0');
-      }, 10);
-
+      setTimeout(() => toast.classList.remove('translate-y-2', 'opacity-0'), 10);
       setTimeout(() => {
         toast.classList.add('translate-y-2', 'opacity-0');
         setTimeout(() => toast.remove(), 300);
       }, 3500);
     }
 
-    // Auth Check on Load
+    // Helper for Lucide Icons
+    function refreshIcons() {
+      setTimeout(() => {
+        if (window.lucide) lucide.createIcons();
+      }, 50);
+    }
+
+    // Check user status on load
     window.addEventListener('DOMContentLoaded', () => {
-      lucide.createIcons();
-      if (currentUser) {
-        openDashboard(currentUser);
-      } else {
-        document.getElementById('loginSection').classList.remove('hidden');
-        document.getElementById('dashboardSection').classList.add('hidden');
+      refreshIcons();
+      const savedUser = localStorage.getItem("duc_current_user");
+      if (savedUser) {
+        try {
+          currentUser = JSON.parse(savedUser);
+          openDashboard(currentUser);
+        } catch (e) {
+          localStorage.removeItem("duc_current_user");
+        }
       }
+    });
 
-      // Login Form Listener
-      document.getElementById('loginForm').addEventListener('submit', (e) => {
+    // Login Form Listener (API Login Integration)
+    const loginForm = document.getElementById("loginForm");
+    if (loginForm) {
+      loginForm.addEventListener("submit", function(e) {
         e.preventDefault();
-        const email = document.getElementById('loginEmail').value.trim().toLowerCase();
-        const pass = document.getElementById('loginPassword').value.trim();
-
-        if (email === 'admin@duc.edu.kh' && pass === 'admin123') {
-          currentUser = { name: 'លោកគ្រូ Administrator', role: 'Admin / Professor', email: email };
-          showToast('ជោគជ័យ! បានចូលប្រព័ន្ធក្នុងនាមជាគ្រូបង្រៀន/Admin');
-        } else if (email.endsWith('@duc.edu.kh') || email.includes('sambath') || pass === '123456' || pass.length >= 4) {
-          currentUser = { name: 'មុក សម្បត្តិ (Mok Sambath)', role: 'និស្សិតបណ្តាញកុំព្យូទ័រ', email: email };
-          showToast('សួស្តី មក សម្បត្តិ! បានចូលប្រព័ន្ធដោយជោគជ័យ');
-        } else {
-          showToast('អ៊ីម៉ែល ឬ ពាក្យសម្ងាត់មិនត្រឹមត្រូវ!', 'error');
-          return;
+        const btn = document.getElementById("loginBtn");
+        if (btn) {
+          btn.innerHTML = `<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i><span>កំពុងផ្ទៀងផ្ទាត់...</span>`;
+          btn.disabled = true;
+          refreshIcons();
         }
 
-        localStorage.setItem('duc_current_user', JSON.stringify(currentUser));
-        openDashboard(currentUser);
+        const emailInput = document.getElementById("loginEmail");
+        const passwordInput = document.getElementById("loginPassword");
+        const email = emailInput ? encodeURIComponent(emailInput.value.trim()) : "";
+        const password = passwordInput ? encodeURIComponent(passwordInput.value.trim()) : "";
+
+        fetch(`${API_URL}?action=login&email=${email}&password=${password}`)
+          .then(res => {
+            if (!res.ok) throw new Error(`Server status: ${res.status}`);
+            return res.json();
+          })
+          .then(data => {
+            if (data && data.status === "success") {
+              currentUser = data.user;
+              localStorage.setItem("duc_current_user", JSON.stringify(currentUser));
+              showToast("ចូលប្រព័ន្ធដោយជោគជ័យ!");
+              openDashboard(currentUser);
+            } else {
+              const errorMsg = (data && data.message) ? data.message : "អ៊ីម៉ែល ឬពាក្យសម្ងាត់មិនត្រឹមត្រូវ!";
+              showToast(errorMsg, "error");
+            }
+          })
+          .catch(err => {
+            console.error("Login error:", err);
+            showToast("មានបញ្ហាក្នុងការភ្ជាប់ទៅកាន់ Server!", "error");
+          })
+          .finally(() => {
+            if (btn) {
+              btn.innerHTML = `<span>ចូលប្រព័ន្ធ</span><i data-lucide="arrow-right" class="w-4 h-4"></i>`;
+              btn.disabled = false;
+              refreshIcons();
+            }
+          });
       });
-
-      // Add Lesson Form Listener
-      document.getElementById('addLessonForm').addEventListener('submit', (e) => {
-        e.preventDefault();
-        const subject = document.getElementById('lessonSubject').value;
-        const title = document.getElementById('lessonTitle').value.trim();
-        const desc = document.getElementById('lessonDesc').value.trim();
-        const fileInput = document.getElementById('lessonFileInput');
-        const fileName = fileInput.files.length > 0 ? fileInput.files[0].name : 'document.pdf';
-        const fileSize = fileInput.files.length > 0 ? (fileInput.files[0].size / (1024*1024)).toFixed(1) + ' MB' : '2.0 MB';
-
-        const newLesson = {
-          id: Date.now(),
-          subject: subject,
-          title: title,
-          classCode: 'G1-NW-B',
-          fileName: fileName,
-          fileSize: fileSize,
-          date: new Date().toISOString().split('T')[0],
-          desc: desc || 'ឯកសារមេរៀនសម្រាប់ថ្នាក់ G1-NW-B'
-        };
-
-        lessons.unshift(newLesson);
-        localStorage.setItem('duc_lessons_g1nwb', JSON.stringify(lessons));
-        
-        document.getElementById('addLessonForm').reset();
-        document.getElementById('classCode').value = 'G1-NW-B';
-        renderLessons();
-        updateStats();
-        showToast('បានរក្សាទុក និងបង្ហោះមេរៀនដោយជោគជ័យ!');
-      });
-    });
+    }
 
     function openDashboard(user) {
       document.getElementById('loginSection').classList.add('hidden');
       document.getElementById('dashboardSection').classList.remove('hidden');
 
-      document.getElementById('userNameDisplay').textContent = user.name;
-      document.getElementById('userRoleDisplay').textContent = user.role;
+      document.getElementById('userNameDisplay').textContent = user.name || "អ្នកប្រើប្រាស់";
+      document.getElementById('userRoleDisplay').textContent = user.role || "សិស្ស";
 
-      // Toggle Admin Panel
       const adminPanel = document.getElementById('adminPanel');
-      if (user.email === 'admin@duc.edu.kh' || user.role.includes('Admin')) {
-        adminPanel.classList.remove('hidden');
-      } else {
-        adminPanel.classList.add('hidden');
+      if (adminPanel) {
+        if (user.role === "admin" || user.email === "admin@duc.edu.kh") {
+          adminPanel.classList.remove('hidden');
+        } else {
+          adminPanel.classList.add('hidden');
+        }
       }
 
-      renderSchedules();
-      renderStudents();
-      renderLessons();
-      updateStats();
+      // Fetch all live data from Google Sheet via Apps Script Backend
+      fetchAllDataTogether();
+      refreshIcons();
     }
 
     function logout() {
@@ -489,52 +449,85 @@
       showToast('បានចាកចេញពីប្រព័ន្ធដោយសុវត្ថិភាព');
     }
 
-    function updateStats() {
-      document.getElementById('statTotalLessons').textContent = lessons.length;
-      document.getElementById('statTotalStudents').textContent = studentData.length + ' នាក់';
+    // Fetch All Data Function from Google Apps Script
+    function fetchAllDataTogether() {
+      fetch(`${API_URL}?action=getAllData`)
+        .then(res => res.json())
+        .then(data => {
+          console.log("ទិន្នន័យទាញបានពី Google Sheet:", data);
+
+          // 1. Lessons
+          allLessons = Array.isArray(data.lessons) ? data.lessons : [];
+          const statLessons = document.getElementById("statTotalLessons");
+          if (statLessons) statLessons.innerText = allLessons.length;
+          renderLessonsByFilter();
+
+          // 2. Schedules
+          allSchedules = Array.isArray(data.schedules) ? data.schedules : [];
+          renderSchedulesData(allSchedules);
+
+          // 3. Students
+          allStudents = Array.isArray(data.students) ? data.students : [];
+          renderStudents(allStudents);
+
+          // 4. Classes
+          allClasses = Array.isArray(data.classes) ? data.classes : [];
+          const statClasses = document.getElementById("statTotalClasses");
+          if (statClasses) statClasses.innerText = allClasses.length || 5;
+
+        })
+        .catch(err => {
+          console.error("Error fetching all data:", err);
+          showToast("មិនអាចទាញយកទិន្នន័យពី Server បានទេ", "error");
+        });
     }
 
-    function renderSchedules() {
-      const tbody = document.getElementById('scheduleList');
-      tbody.innerHTML = scheduleData.map(s => `
-        <tr class="hover:bg-slate-900/40 transition">
-          <td class="p-4 pl-6 font-semibold text-white flex items-center gap-2">
-            <span class="w-2 h-2 rounded-full bg-indigo-500"></span>
-            ${s.day}
-          </td>
-          <td class="p-4 text-indigo-300 font-mono">${s.time}</td>
-          <td class="p-4 font-medium text-slate-200">${s.subject}</td>
-          <td class="p-4"><span class="bg-slate-900 border border-slate-800 text-slate-300 px-2.5 py-1 rounded-lg text-[11px]">${s.room}</span></td>
-          <td class="p-4 pr-6 text-slate-400">${s.teacher}</td>
-        </tr>
-      `).join('');
-    }
+    // Render Schedules
+    function renderSchedulesData(data) {
+      const scheduleTbody = document.getElementById("scheduleList");
+      if (!scheduleTbody) return;
 
-    function renderStudents() {
-      const tbody = document.getElementById('studentList');
-      tbody.innerHTML = studentData.map((st, idx) => {
-        const isUserSelf = st.nameEn.includes('Sambath');
-        const rowBg = isUserSelf ? 'bg-indigo-600/10 border-indigo-500/30' : '';
-        return `
-          <tr class="hover:bg-slate-900/40 transition ${rowBg}">
-            <td class="py-3 px-4 font-mono text-slate-400">${idx + 1}</td>
-            <td class="py-3 px-4 font-mono text-indigo-300 font-semibold">${st.id}</td>
-            <td class="py-3 px-4 font-bold text-white flex items-center gap-2">
-              ${st.nameKh}
-              ${isUserSelf ? '<span class="text-[9px] bg-indigo-500 text-white px-2 py-0.5 rounded-full font-semibold shadow-sm">អ្នក (You)</span>' : ''}
+      scheduleTbody.innerHTML = "";
+
+      if (!data || data.length === 0) {
+        scheduleTbody.innerHTML = `<tr><td colspan="5" class="p-8 text-center text-slate-400 font-medium">មិនទាន់មានកាលវិភាគនៅឡើយទេ។</td></tr>`;
+        updateScheduleStats(0, 0);
+        return;
+      }
+
+      const totalSessions = data.length;
+      const uniqueSubjects = new Set(data.map(item => item.subject ? item.subject.trim() : '')).size;
+      updateScheduleStats(uniqueSubjects, totalSessions);
+
+      data.forEach(item => {
+        scheduleTbody.innerHTML += `
+          <tr class="hover:bg-slate-900/45 transition border-b border-slate-800/60">
+            <td class="p-4 pl-6 font-semibold text-white flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-indigo-500"></span>
+              ${item.day || ''}
             </td>
-            <td class="py-3 px-4 text-slate-300">${st.nameEn}</td>
-            <td class="py-3 px-4"><span class="px-2 py-0.5 rounded text-[10px] ${st.gender === 'ប្រុស' ? 'bg-blue-500/10 text-blue-300 border border-blue-500/20' : 'bg-pink-500/10 text-pink-300 border border-pink-500/20'}">${st.gender}</span></td>
-            <td class="py-3 px-4 font-mono text-slate-400">${st.dob}</td>
+            <td class="p-4 text-indigo-300 font-mono">${item.time || ''}</td>
+            <td class="p-4 font-medium text-slate-200">${item.subject || ''}</td>
+            <td class="p-4"><span class="bg-slate-900 border border-slate-800 text-slate-300 px-2.5 py-1 rounded-lg text-[11px]">${item.room || ''}</span></td>
+            <td class="p-4 pr-6 text-slate-400">${item.teacher || ''}</td>
           </tr>
         `;
-      }).join('');
+      });
+      refreshIcons();
     }
 
+    function updateScheduleStats(totalClasses, totalSessions) {
+      const statClasses = document.getElementById("statTotalClasses");
+      const statSessions = document.getElementById("statTotalSessions");
+
+      if (statClasses) statClasses.innerText = totalClasses;
+      if (statSessions) statSessions.innerText = `${totalSessions} Sessions`;
+    }
+
+    // Filter Lessons
     function filterLessons(subject) {
       currentFilter = subject;
       
-      // Update button styles
       document.querySelectorAll('.subject-filter-btn').forEach(btn => {
         if (btn.textContent.includes(subject) || (subject === 'ALL' && btn.textContent.includes('ទាំងអស់'))) {
           btn.className = "subject-filter-btn active-filter bg-indigo-600 text-white px-4 py-2 rounded-xl text-xs font-semibold shadow-lg shadow-indigo-600/20 transition";
@@ -543,73 +536,218 @@
         }
       });
 
-      renderLessons();
+      renderLessonsByFilter();
     }
 
-    function renderLessons() {
-      const container = document.getElementById('lessonList');
-      const filtered = currentFilter === 'ALL' ? lessons : lessons.filter(l => l.subject === currentFilter);
-      
-      document.getElementById('lessonCountBadge').textContent = `បង្ហាញ ${filtered.length} ឯកសារ`;
+    function getMobilePreviewLink(url) {
+      if (!url) return '#';
+      const match = url.match(/[-\w]{25,}/);
+      return match ? `https://drive.google.com/file/d/${match[0]}/preview` : url;
+    }
+
+    // Render Lessons List
+    function renderLessonsByFilter() {
+      const lessonListDiv = document.getElementById("lessonList");
+      const countBadge = document.getElementById("lessonCountBadge");
+      if (!lessonListDiv) return;
+
+      lessonListDiv.innerHTML = "";
+
+      let filtered = allLessons;
+      if (currentFilter !== "ALL") {
+        filtered = allLessons.filter(item => 
+          item.title && item.title.toUpperCase().includes(currentFilter.toUpperCase())
+        );
+      }
+
+      if (countBadge) countBadge.textContent = `បង្ហាញ ${filtered.length} ឯកសារ`;
 
       if (filtered.length === 0) {
-        container.innerHTML = `
+        lessonListDiv.innerHTML = `
           <div class="text-center py-12 text-slate-400 border border-dashed border-slate-800 rounded-2xl">
             <i data-lucide="folder-open" class="w-10 h-10 mx-auto mb-2 text-slate-600"></i>
             <p class="text-xs">មិនទាន់មានឯកសារសម្រាប់មុខវិជ្ជានេះនៅឡើយទេ</p>
           </div>
         `;
-        lucide.createIcons();
+        refreshIcons();
         return;
       }
 
-      container.innerHTML = filtered.map(l => `
-        <div class="p-4 rounded-2xl bg-slate-900/60 border border-slate-800 hover:border-indigo-500/30 transition flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div class="flex items-start gap-3.5">
-            <div class="p-3 bg-indigo-500/10 text-indigo-400 rounded-xl border border-indigo-500/20 shrink-0 mt-0.5">
-              <i data-lucide="file-text" class="w-5 h-5"></i>
-            </div>
-            <div>
-              <div class="flex items-center gap-2 mb-1">
-                <span class="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-indigo-500/10 text-indigo-300 border border-indigo-500/20">${l.subject}</span>
-                <span class="text-[10px] text-slate-400 font-mono">${l.date}</span>
-                <span class="text-[10px] text-slate-500 font-mono">• ${l.fileSize}</span>
+      filtered.forEach(item => {
+        const isAdmin = currentUser && (currentUser.role === "admin" || currentUser.email === "admin@duc.edu.kh");
+        const previewUrl = getMobilePreviewLink(item.file_url || item.fileUrl);
+
+        lessonListDiv.innerHTML += `
+          <div class="p-4 rounded-2xl bg-slate-900/60 border border-slate-800 hover:border-indigo-500/30 transition flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div class="flex items-start gap-3.5">
+              <div class="p-3 bg-indigo-500/10 text-indigo-400 rounded-xl border border-indigo-500/20 shrink-0 mt-0.5">
+                <i data-lucide="file-text" class="w-5 h-5"></i>
               </div>
-              <h3 class="font-bold text-white text-sm">${l.title}</h3>
-              <p class="text-xs text-slate-400 mt-1">${l.desc}</p>
-              <p class="text-[11px] text-indigo-400/80 font-mono mt-1.5 flex items-center gap-1">
-                <i data-lucide="paperclip" class="w-3 h-3"></i> ${l.fileName}
-              </p>
+              <div>
+                <div class="flex items-center gap-2 mb-1">
+                  <span class="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-indigo-500/10 text-indigo-300 border border-indigo-500/20">${item.class_code || 'G1-NW-B'}</span>
+                </div>
+                <h3 class="font-bold text-white text-sm">${item.title || ''}</h3>
+                <p class="text-xs text-slate-400 mt-1">${item.description || "គ្មានការពិពណ៌នា"}</p>
+              </div>
+            </div>
+            <div class="flex items-center gap-2 self-end md:self-center shrink-0">
+              <a href="${previewUrl}" target="_blank" class="px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold flex items-center gap-1.5 shadow-md shadow-indigo-600/20 transition">
+                <i data-lucide="eye" class="w-3.5 h-3.5"></i>
+                <span>មើល / Download</span>
+              </a>
+              ${isAdmin ? `
+                <button onclick="deleteLesson('${item.lesson_id}')" class="p-2 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/20 transition" title="លុបមេរៀន">
+                  <i data-lucide="trash-2" class="w-4 h-4"></i>
+                </button>
+              ` : ''}
             </div>
           </div>
-          <div class="flex items-center gap-2 self-end md:self-center shrink-0">
-            <button onclick="downloadLesson('${l.fileName}')" class="px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold flex items-center gap-1.5 shadow-md shadow-indigo-600/20 transition">
-              <i data-lucide="download" class="w-3.5 h-3.5"></i>
-              <span>ទាញយក</span>
-            </button>
-            ${(currentUser && (currentUser.email === 'admin@duc.edu.kh' || currentUser.role.includes('Admin'))) ? `
-              <button onclick="deleteLesson(${l.id})" class="p-2 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/20 transition" title="លុបមេរៀន">
-                <i data-lucide="trash-2" class="w-4 h-4"></i>
-              </button>
-            ` : ''}
-          </div>
-        </div>
-      `).join('');
-      lucide.createIcons();
+        `;
+      });
+      refreshIcons();
     }
 
-    function downloadLesson(fileName) {
-      showToast(`កំពុងទាញយកឯកសារ: ${fileName}`);
+    // Helper: Convert File to Base64 for Upload
+    function fileToBase64(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => resolve(reader.result.split(',')[1]);
+        reader.onerror = error => reject(error);
+      });
     }
 
-    function deleteLesson(id) {
-      if (confirm('តើអ្នកពិតជាចង់លុបមេរៀននេះមែនទេ?')) {
-        lessons = lessons.filter(l => l.id !== id);
-        localStorage.setItem('duc_lessons_g1nwb', JSON.stringify(lessons));
-        renderLessons();
-        updateStats();
-        showToast('បានលុបមេរៀនដោយជោគជ័យ', 'error');
+    // Add Lesson Form Handler (POST to Google Apps Script)
+    const addLessonForm = document.getElementById("addLessonForm");
+    if (addLessonForm) {
+      addLessonForm.addEventListener("submit", async function(e) {
+        e.preventDefault();
+        const btn = document.getElementById("addLessonBtn");
+        const fileInput = document.getElementById("lessonFileInput");
+        
+        if (!fileInput || !fileInput.files || fileInput.files.length === 0) {
+          showToast("សូមជ្រើសរើស File ឯកសារជាមុនសិន!", "error");
+          return;
+        }
+
+        const file = fileInput.files[0];
+        if (btn) {
+          btn.innerHTML = `<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i><span>កំពុង Upload និង រក្សាទុក...</span>`;
+          btn.disabled = true;
+          refreshIcons();
+        }
+
+        try {
+          const base64File = await fileToBase64(file);
+          const lessonId = "LES-" + Date.now();
+          const subjectSelect = document.getElementById("lessonSubject");
+          const rawTitle = document.getElementById("lessonTitle").value.trim();
+          const subjectPrefix = subjectSelect ? subjectSelect.value : "";
+          const fullTitle = subjectPrefix ? `${subjectPrefix} - ${rawTitle}` : rawTitle;
+          const desc = document.getElementById("lessonDesc").value.trim();
+          const classCode = document.getElementById("classCode").value.trim();
+
+          const payload = {
+            action: "addLesson",
+            lesson_id: lessonId,
+            title: fullTitle,
+            description: desc,
+            class_code: classCode,
+            file_name: file.name,
+            mime_type: file.type,
+            file_data: base64File
+          };
+
+          const res = await fetch(API_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload)
+          });
+
+          const data = await res.json();
+
+          if (data && data.status === "success") {
+            showToast("បញ្ចូល និង Upload មេរៀនជោគជ័យ!");
+            addLessonForm.reset();
+            document.getElementById("classCode").value = "G1-NW-B";
+            fetchAllDataTogether(); 
+          } else {
+            showToast((data && data.message) ? data.message : "មានបញ្ហាក្នុងការបញ្ចូលមេរៀន!", "error");
+          }
+        } catch (err) {
+          console.error("Upload Lesson Error:", err);
+          showToast("មានបញ្ហាក្នុងការ Upload មេរៀន!", "error");
+        } finally {
+          if (btn) {
+            btn.innerHTML = `<i data-lucide="save" class="w-4 h-4"></i><span>រក្សាទុក និងបង្ហោះមេរៀន</span>`;
+            btn.disabled = false;
+            refreshIcons();
+          }
+        }
+      });
+    }
+
+    // Delete Lesson
+    function deleteLesson(lessonId) {
+      if (!lessonId) return;
+      if (confirm("តើអ្នកប្រាកដជាចង់លុបមេរៀននេះមែនទេ?")) {
+        fetch(`${API_URL}?action=deleteLesson&lesson_id=${encodeURIComponent(lessonId)}`)
+          .then(res => res.json())
+          .then(data => {
+            showToast("លុបមេរៀនជោគជ័យ!");
+            fetchAllDataTogether();
+          })
+          .catch(err => {
+            console.error("Delete Lesson Error:", err);
+            showToast("មានបញ្ហាក្នុងការលុបមេរៀន!", "error");
+          });
       }
+    }
+
+    // Render Students List
+    function renderStudents(students) {
+      const studentListTbody = document.getElementById("studentList");
+      const totalStudentsBadge = document.getElementById("totalStudentsCountBadge");
+      const statTotalStudents = document.getElementById("statTotalStudents");
+      
+      if (!studentListTbody) return;
+
+      studentListTbody.innerHTML = "";
+
+      if (!students || students.length === 0) {
+        studentListTbody.innerHTML = `<tr><td colspan="6" class="py-8 text-center text-slate-400 font-medium">មិនមានទិន្នន័យនិស្សិតទេ។</td></tr>`;
+        if (totalStudentsBadge) totalStudentsBadge.innerText = "និស្សិតសរុប: 0 នាក់";
+        if (statTotalStudents) statTotalStudents.innerText = "0 នាក់";
+        return;
+      }
+
+      if (totalStudentsBadge) totalStudentsBadge.innerText = `និស្សិតសរុប: ${students.length} នាក់`;
+      if (statTotalStudents) statTotalStudents.innerText = `${students.length} នាក់`;
+
+      students.forEach((student, index) => {
+        const isUserSelf = student.latin_name && student.latin_name.toLowerCase().includes('sambath');
+        const rowBg = isUserSelf ? 'bg-indigo-600/10 border-indigo-500/30' : '';
+
+        studentListTbody.innerHTML += `
+          <tr class="hover:bg-slate-900/40 transition border-b border-slate-800/60 ${rowBg}">
+            <td class="py-3 px-4 font-mono text-slate-400">${index + 1}</td>
+            <td class="py-3 px-4 font-mono text-indigo-300 font-semibold">${student.student_id || ''}</td>
+            <td class="py-3 px-4 font-bold text-white flex items-center gap-2">
+              ${student.khmer_name || ''}
+              ${isUserSelf ? '<span class="text-[9px] bg-indigo-500 text-white px-2 py-0.5 rounded-full font-semibold shadow-sm">អ្នក (You)</span>' : ''}
+            </td>
+            <td class="py-3 px-4 text-slate-300">${student.latin_name || '-'}</td>
+            <td class="py-3 px-4">
+              <span class="px-2 py-0.5 rounded text-[10px] ${student.gender === 'ស្រី' ? 'bg-pink-500/10 text-pink-300 border border-pink-500/20' : 'bg-blue-500/10 text-blue-300 border border-blue-500/20'}">
+                ${student.gender || '-'}
+              </span>
+            </td>
+            <td class="py-3 px-4 font-mono text-slate-400">${student.dob || '-'}</td>
+          </tr>
+        `;
+      });
+      refreshIcons();
     }
   </script>
 </body>
