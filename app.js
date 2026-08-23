@@ -472,21 +472,24 @@ function switchNavTab(tabName, event) {
         item.classList.remove('active');
     });
 
-    // ใส่ active class ទៅកាន់ tab ដែលទើបចុច
+    // បន្ថែម active class ទៅកាន់ tab ដែលទើបចុច
     if (event && event.currentTarget) {
         event.currentTarget.classList.add('active');
     }
 
-    console.log("Switched to bottom nav tab: ", tabName);
-    
-    // អ្នកអាចសរសេរLogic បន្ថែមនៅទីនេះដើម្បី Scroll ទៅកាន់ Section នីមួយៗក្នុង Dashboard
+    // មុខងារ Scroll ទៅកាន់ផ្នែកនីមួយៗតាម id
     if (tabName === 'home') {
         window.scrollTo({ top: 0, behavior: 'smooth' });
     } else if (tabName === 'lessons') {
-        const lessonElem = document.getElementById("lessonList");
-        if (lessonElem) lessonElem.scrollIntoView({ behavior: 'smooth' });
+        const elem = document.getElementById("lessonList") || document.getElementById("lessonsSection");
+        if (elem) elem.scrollIntoView({ behavior: 'smooth', block: 'start' });
     } else if (tabName === 'schedule') {
-        const scheduleElem = document.getElementById("scheduleList");
-        if (scheduleElem) scheduleElem.scrollIntoView({ behavior: 'smooth' });
+        const elem = document.getElementById("scheduleList") || document.getElementById("scheduleSection");
+        if (elem) elem.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    } else if (tabName === 'add') {
+        const elem = document.getElementById("addLessonForm") || document.getElementById("adminPanel");
+        if (elem) elem.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    } else if (tabName === 'profile') {
+        window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
     }
 }
