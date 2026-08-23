@@ -473,7 +473,7 @@ function createBottomNavigationBar() {
     document.body.style.paddingBottom = "75px";
 }
 
-// Function សម្រាប់จัดการការចុចប្តូរ Tab លើ Bottom Navigation
+// Function សម្រាប់ការចុចប្តូរ Tab លើ Bottom Navigation
 function switchTab(tabName, event) {
     if (event) event.preventDefault();
 
