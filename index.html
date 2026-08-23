@@ -412,7 +412,7 @@
           })
           .catch(err => {
             console.error("Login error:", err);
-            showToast("មានបញ្ហាក្នុងការភ្ជាប់ទៅកាន់ Server!", "error");
+            showToast("មានបញ្ហាក្នុងการភ្ជាប់ទៅកាន់ Server!", "error");
           })
           .finally(() => {
             if (btn) {
@@ -664,11 +664,11 @@
             document.getElementById("classCode").value = "G1-NW-B";
             fetchAllDataTogether(); 
           } else {
-            showToast((data && data.message) ? data.message : "មានបញ្ហាក្នុងការបញ្ចូលមេរៀន!", "error");
+            showToast((data && data.message) ? data.message : "មានបញ្ហាក្នុងการបញ្ចូលមេរៀន!", "error");
           }
         } catch (err) {
           console.error("Upload Lesson Error:", err);
-          showToast("មានបញ្ហាក្នុងការ Upload មេរៀន!", "error");
+          showToast("មានបញ្ហាក្នុងการ Upload មេរៀន!", "error");
         } finally {
           if (btn) {
             btn.innerHTML = `<i data-lucide="save" class="w-4 h-4"></i><span>រក្សាទុក និងបង្ហោះមេរៀន</span>`;
@@ -715,7 +715,12 @@
       if (statTotalStudents) statTotalStudents.innerText = `${students.length} នាក់`;
 
       students.forEach((student, index) => {
-        const isUserSelf = student.latin_name && student.latin_name.toLowerCase().includes('sambath');
+        // ផ្ទៀងផ្ទាត់ជាមួយ currentUser ដែលកំពុង Login ជាក់ស្តែង (ឆែកតាម email ឬ ឈ្មោះឡាតាំង)
+        const isUserSelf = currentUser && (
+          (currentUser.email && student.student_id && currentUser.email.toLowerCase().includes(student.student_id.toLowerCase())) ||
+          (currentUser.name && student.latin_name && student.latin_name.toLowerCase().includes(currentUser.name.toLowerCase()))
+        );
+        
         const rowBg = isUserSelf ? 'bg-indigo-600/10 border-indigo-500/30' : '';
 
         studentListTbody.innerHTML += `
