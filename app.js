@@ -463,8 +463,8 @@ function createBottomNavigationBar() {
     document.body.style.paddingBottom = "75px";
 }
 
-// Function សម្រាប់จัดการការចុចប្តូរ Tab លើ Bottom Navigation
-function switchNavTab(tabName, event) {
+// Function សម្រាប់จัดการការចុចប្តូរ Tab លើ Bottom Navigation (ត្រូវជាមួយឈ្មោះក្នុង HTML onclick)
+function switchTab(tabName, event) {
     if (event) event.preventDefault();
 
     // ដក active class ចេញពីគ្រប់ tab ទាំងអស់
@@ -477,17 +477,19 @@ function switchNavTab(tabName, event) {
         event.currentTarget.classList.add('active');
     }
 
+    console.log("Switched to bottom nav tab: ", tabName);
+    
     // មុខងារ Scroll ទៅកាន់ផ្នែកនីមួយៗតាម id
     if (tabName === 'home') {
         window.scrollTo({ top: 0, behavior: 'smooth' });
     } else if (tabName === 'lessons') {
-        const elem = document.getElementById("lessonList") || document.getElementById("lessonsSection");
+        const elem = document.getElementById("lessonList");
         if (elem) elem.scrollIntoView({ behavior: 'smooth', block: 'start' });
     } else if (tabName === 'schedule') {
-        const elem = document.getElementById("scheduleList") || document.getElementById("scheduleSection");
+        const elem = document.getElementById("scheduleList");
         if (elem) elem.scrollIntoView({ behavior: 'smooth', block: 'start' });
     } else if (tabName === 'add') {
-        const elem = document.getElementById("addLessonForm") || document.getElementById("adminPanel");
+        const elem = document.getElementById("adminPanel");
         if (elem) elem.scrollIntoView({ behavior: 'smooth', block: 'start' });
     } else if (tabName === 'profile') {
         window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
