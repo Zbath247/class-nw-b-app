@@ -81,30 +81,48 @@
 <body class="bg-slate-950 min-h-screen text-slate-100 relative overflow-x-hidden selection:bg-indigo-500 selection:text-white pb-20">
 
 <!-- Profile Pop-up Modal -->
-<div id="profileModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center hidden">
-    <div class="bg-[#0b1329] border border-blue-500/30 rounded-2xl p-6 w-full max-w-sm shadow-2xl relative text-white">
+<div id="profileModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center hidden opacity-0 transition-opacity duration-300">
+    <div id="profileModalContent" class="bg-[#0b1329] border border-blue-500/30 rounded-2xl p-6 w-full max-w-sm shadow-2xl relative text-white transform scale-95 transition-transform duration-300">
         
         <!-- ប៊ូតុងបិទ (Close X button) -->
-        <button onclick="closeProfileModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white">
-            ✕
+        <button onclick="closeProfileModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors">
+            <i data-lucide="x" class="w-6 h-6"></i>
         </button>
 
-        <!-- រូបភាព Profile និង ឈ្មោះ -->
-        <div class="flex flex-col items-center text-center">
-            <div class="w-24 h-24 rounded-full p-0.5 bg-gradient-to-tr from-blue-500 to-indigo-500 mb-3 overflow-hidden shadow-lg">
-                <img id="modalAvatarImg" src="https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=500&auto=format&fit=crop&q=60" alt="Profile Image" class="w-full h-full object-cover rounded-full">
+        <!-- រូបភាព Profile (អាច Upload បាន) និង ឈ្មោះ -->
+        <div class="flex flex-col items-center text-center mt-2">
+            <div class="relative group cursor-pointer" onclick="document.getElementById('profileImageInput').click()" title="ចុចដើម្បីផ្លាស់ប្ដូររូបភាព Profile">
+              <div id="modalAvatarContainer" class="w-24 h-24 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center text-white text-2xl font-bold shadow-lg mb-3 shadow-blue-500/30 overflow-hidden border-2 border-blue-400/40">
+                <span id="modalAvatarFallback">
+                  <i data-lucide="user" class="w-12 h-12"></i>
+                </span>
+                <img id="modalAvatarImg" src="" alt="Profile Image" class="w-full h-full object-cover hidden">
+              </div>
+              <!-- Overlay Camera Icon on Hover -->
+              <div class="absolute inset-0 bg-black/50 rounded-full flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 mb-3">
+                <i data-lucide="camera" class="w-6 h-6 text-white mb-0.5"></i>
+                <span class="text-[9px] text-white font-medium">ប្ដូររូប</span>
+              </div>
             </div>
+
+            <!-- Hidden File Input for Avatar Upload -->
+            <input type="file" id="profileImageInput" accept="image/*" class="hidden" onchange="handleProfileImageUpload(event)">
             
-            <h2 id="student-latin-name" class="text-xl font-bold">MOK SAMBATH</h2>
-            <span class="bg-blue-600/30 text-blue-400 border border-blue-500/30 text-xs px-3 py-1 rounded-full mt-1">ADMIN</span>
+            <h2 id="modalUserName" class="text-xl font-bold tracking-wide">-</h2>
+            <span id="modalUserRole" class="mt-2 px-3 py-1 rounded-full text-xs font-semibold bg-blue-500/20 text-blue-400 border border-blue-500/30 uppercase tracking-wider">
+              -
+            </span>
         </div>
 
-        <!-- ផ្នែកព័ត៌មានលម្អិតដែលមាន ID សម្រាប់ទទួលទិន្នន័យ -->
+        <!-- ផ្នែកព័ត៌មានលម្អិតទាញយកពី Google Sheet -->
         <div class="mt-6 space-y-2.5 text-sm border-t border-gray-700/60 pt-4">
-            
             <div class="flex justify-between items-center">
                 <span class="text-gray-400">អត្តលេខ:</span>
                 <span id="student-id" class="font-medium text-white">-</span>
+            </div>
+            <div class="flex justify-between items-center">
+                <span class="text-gray-400">ឈ្មោះឡាតាំង:</span>
+                <span id="student-latin-name" class="font-medium text-white">-</span>
             </div>
             <div class="flex justify-between items-center">
                 <span class="text-gray-400">ភេទ:</span>
@@ -115,7 +133,7 @@
                 <span id="student-dob" class="font-medium text-white">-</span>
             </div>
 
-            <!-- ព័ត៌មានផ្សេងទៀត -->
+            <!-- ព័ត៌មានថ្នាក់ និងគ្រឹះស្ថាន -->
             <div class="flex justify-between items-center">
                 <span class="text-gray-400">ថ្នាក់រៀន:</span>
                 <span class="font-medium text-white">G1-NW-B</span>
@@ -126,76 +144,17 @@
             </div>
             <div class="flex justify-between items-center">
                 <span class="text-gray-400">ស្ថានភាព:</span>
-                <span class="text-green-400 font-medium">● កំពុងរក្សាទុក (Active)</span>
+                <span class="text-green-400 font-medium">● កំពុងតភ្ជាប់ (Active)</span>
             </div>
         </div>
 
         <!-- ប៊ូតុងបិទខាងក្រោម -->
-        <button class="w-full mt-6 bg-gray-800 hover:bg-gray-700 text-white py-2.5 rounded-xl transition-all font-medium border border-gray-700" onclick="closeProfileModal()">
+        <button class="w-full mt-6 bg-gray-800 hover:bg-gray-700 text-white py-2.5 rounded-xl transition-all font-medium border border-gray-700 text-sm" onclick="closeProfileModal()">
             បិទ (Close)
         </button>
 
     </div>
 </div>
-      
-      <!-- Close Button -->
-      <button onclick="closeProfileModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors">
-        <i data-lucide="x" class="w-6 h-6"></i>
-      </button>
-
-      <!-- Modal Header / Profile Info with Upload Image Feature -->
-      <div class="flex flex-col items-center text-center mt-2">
-        <div class="relative group cursor-pointer" onclick="document.getElementById('profileImageInput').click()" title="ចុចเพื่อเปลี่ยนរូបភាព Profile">
-          <div id="modalAvatarContainer" class="w-24 h-24 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center text-white text-2xl font-bold shadow-lg mb-3 shadow-blue-500/30 overflow-hidden border-2 border-blue-400/40">
-            <span id="modalAvatarFallback">
-              <i data-lucide="user" class="w-12 h-12"></i>
-            </span>
-            <img id="modalAvatarImg" src="" alt="Profile Image" class="w-full h-full object-cover hidden">
-          </div>
-          <!-- Overlay Camera Icon on Hover -->
-          <div class="absolute inset-0 bg-black/50 rounded-full flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 mb-3">
-            <i data-lucide="camera" class="w-6 h-6 text-white mb-0.5"></i>
-            <span class="text-[9px] text-white font-medium">ប្ដូររូប</span>
-          </div>
-        </div>
-
-        <!-- Hidden File Input for Avatar -->
-        <input type="file" id="profileImageInput" accept="image/*" class="hidden" onchange="handleProfileImageUpload(event)">
-        
-        <h3 id="modalUserName" class="text-xl font-bold text-white tracking-wide">MOK SAMBATH</h3>
-        
-        <span id="modalUserRole" class="mt-2 px-3 py-1 rounded-full text-xs font-semibold bg-blue-500/20 text-blue-400 border border-blue-500/30 uppercase tracking-wider">
-          ADMIN
-        </span>
-      </div>
-
-      <!-- Additional Details -->
-      <div class="mt-6 space-y-3 border-t border-gray-800 pt-4 text-sm text-gray-300">
-        <div class="flex justify-between">
-          <span class="text-gray-400">ថ្នាក់រៀន៖</span>
-          <span class="font-medium text-white">G1-NW-B</span>
-        </div>
-        <div class="flex justify-between">
-          <span class="text-gray-400">គ្រឹះស្ថាន៖</span>
-          <span class="font-medium text-white">Digital University of Cambodia</span>
-        </div>
-        <div class="flex justify-between">
-          <span class="text-gray-400">ស្ថានភាព៖</span>
-          <span class="text-emerald-400 font-medium flex items-center gap-1.5">
-            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> កំពុងតភ្ជាប់ (Active)
-          </span>
-        </div>
-      </div>
-
-      <!-- Footer Actions -->
-      <div class="mt-6 flex gap-3">
-        <button onclick="closeProfileModal()" class="w-full py-2.5 rounded-xl bg-gray-800 hover:bg-gray-700 text-white font-medium transition-colors text-sm">
-          បិទ (Close)
-        </button>
-      </div>
-
-    </div>
-  </div>
 
   <!-- Bottom Navigation Bar -->
   <div class="custom-bottom-nav">
@@ -497,9 +456,6 @@
     </main>
   </div>
 
-  
- 
-  
   <!-- JavaScript Code -->
   <script>
     const API_URL = "/api/proxy";
@@ -571,7 +527,6 @@
             if (data && data.status === "success") {
               currentUser = data.user;
               
-              // Load saved custom profile avatar from localStorage if available
               const savedAvatars = JSON.parse(localStorage.getItem("duc_user_avatars") || "{}");
               if (currentUser.email && savedAvatars[currentUser.email]) {
                 currentUser.avatar = savedAvatars[currentUser.email];
@@ -946,19 +901,41 @@
       }
     }
 
+    // បើក Profile Modal និងទាញទិន្នន័យមកបំពេញពី Google Sheet (allStudents)
     function openProfileModal() {
       const modal = document.getElementById('profileModal');
+      const modalContent = document.getElementById('profileModalContent');
       if (!modal) return;
       
-      const modalContent = document.getElementById('profileModalContent');
-      
       if (currentUser) {
-        const nameElem = document.getElementById('modalUserName');
-        const roleElem = document.getElementById('modalUserRole');
-        if (nameElem) nameElem.textContent = currentUser.name || "MOK SAMBATH";
-        if (roleElem) roleElem.textContent = currentUser.role || "ADMIN";
+        document.getElementById('modalUserName').textContent = currentUser.name || "MOK SAMBATH";
+        document.getElementById('modalUserRole').textContent = currentUser.role || "ADMIN";
 
-        // Display Avatar Image if available
+        // រកមើលទិន្នន័យបន្ថែមពី Google Sheet (allStudents) តាមរយៈ Email ឬ Name របស់អ្នកប្រើប្រាស់ដែល Login
+        let matchedStudent = allStudents.find(s => 
+          (currentUser.email && s.student_id && currentUser.email.toLowerCase().includes(s.student_id.toLowerCase())) ||
+          (currentUser.name && s.latin_name && s.latin_name.toLowerCase().includes(currentUser.name.toLowerCase()))
+        );
+
+        if (matchedStudent) {
+          document.getElementById('student-id').textContent = matchedStudent.student_id || '-';
+          document.getElementById('student-latin-name').textContent = matchedStudent.latin_name || '-';
+          document.getElementById('student-gender').textContent = matchedStudent.gender || '-';
+          document.getElementById('student-dob').textContent = matchedStudent.dob || '-';
+          
+          // បើគណនីជា Admin អាចបង្ហាញឈ្មោះខ្មែរជំនួសប្រសិនបើចង់ ឬរក្សាឈ្មោះឡាតាំង
+          if (currentUser.role === 'admin' || currentUser.role === 'ADMIN') {
+            document.getElementById('modalUserName').textContent = matchedStudent.latin_name || currentUser.name;
+          }
+        } else {
+          // ប្រសិនបើរកមិនឃើញក្នុងបញ្ជីនិស្សិត (ករណី Admin ដាច់ដោយឡែក)
+          document.getElementById('student-id').textContent = currentUser.student_id || 'DUC-ADMIN';
+          document.getElementById('student-latin-name').textContent = currentUser.name || '-';
+          document.getElementById('student-gender').textContent = '-';
+          document.getElementById('student-dob').textContent = '-';
+        }
+
+        // បង្ហាញ Image Profile ប្រសិនបើមានរក្សាទុក
         const avatarImg = document.getElementById('modalAvatarImg');
         const avatarFallback = document.getElementById('modalAvatarFallback');
         if (currentUser.avatar) {
@@ -998,69 +975,58 @@
       }, 300);
     }
 
-    // Handle Upload Avatar Image Locally
-async function handleProfileImageUpload(event) {
-  const file = event.target.files[0];
-  if (!file) return;
+    // មុខងារ Upload រូបភាព Profile របស់អ្នកប្រើប្រាស់
+    async function handleProfileImageUpload(event) {
+      const file = event.target.files[0];
+      if (!file) return;
 
-  if (!file.type.startsWith('image/')) {
-    showToast("សូមជ្រើសរើសឯកសាររូបភាព (Image) ប៉ុណ្ណោះ!", "error");
-    return;
-  }
-
-  try {
-    showToast(" Upload រូបភាព...", "success");
-    const base64Full = await fileToBase64(file); // បានទម្រង់ data:image/jpeg;base64,...
-
-    const payload = {
-      action: "updateProfileImage",
-      email: currentUser.email,
-      file_data: base64Full // ផ្ញើទាំងមូលចូលទៅកាន់ Sheet តែម្តង
-    };
-
-    const res = await fetch(API_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload)
-    });
-
-    const data = await res.json();
-
-    if (data && data.status === "success") {
-      // ផ្លាស់ប្ដូររូបភាពក្នុង State និង localStorage
-      currentUser.avatar = data.avatar_url;
-      localStorage.setItem("duc_current_user", JSON.stringify(currentUser));
-
-      // អាប់ដេត UI ក្នុង Modal ភ្លាមៗ
-      const avatarImg = document.getElementById('modalAvatarImg');
-      const avatarFallback = document.getElementById('modalAvatarFallback');
-      if (avatarImg) {
-        avatarImg.src = data.avatar_url;
-        avatarImg.classList.remove('hidden');
-      }
-      if (avatarFallback) {
-        avatarFallback.classList.add('hidden');
+      if (!file.type.startsWith('image/')) {
+        showToast("សូមជ្រើសរើសឯកសាររូបភាព (Image) ប៉ុណ្ណោះ!", "error");
+        return;
       }
 
-      showToast("Upload​ image to Profile ជោគជ័យ!");
-    } else {
-      showToast((data && data.message) ? data.message : "failed Upload រូបភាព!", "error");
+      try {
+        showToast("កំពុង Upload រូបភាព...", "success");
+        const base64Full = await fileToBase64(file);
+
+        const payload = {
+          action: "updateProfileImage",
+          email: currentUser.email,
+          file_data: base64Full
+        };
+
+        const res = await fetch(API_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+
+        const data = await res.json();
+
+        // រក្សាទុកក្នុង LocalStorage ផ្ទាល់ខ្លួនផងដែរ ដើម្បីកុំឱ្យបាត់ពេល Refresh
+        currentUser.avatar = base64Full;
+        let savedAvatars = JSON.parse(localStorage.getItem("duc_user_avatars") || "{}");
+        savedAvatars[currentUser.email] = base64Full;
+        localStorage.setItem("duc_user_avatars", JSON.stringify(savedAvatars));
+        localStorage.setItem("duc_current_user", JSON.stringify(currentUser));
+
+        // Update UI ក្នុង Modal ភ្លាមៗ
+        const avatarImg = document.getElementById('modalAvatarImg');
+        const avatarFallback = document.getElementById('modalAvatarFallback');
+        if (avatarImg) {
+          avatarImg.src = base64Full;
+          avatarImg.classList.remove('hidden');
+        }
+        if (avatarFallback) {
+          avatarFallback.classList.add('hidden');
+        }
+
+        showToast("Upload image to Profile ជោគជ័យ!");
+      } catch (err) {
+        console.error("Avatar upload error:", err);
+        showToast("មានបញ្ហាក្នុងការ Upload រូបភាព!", "error");
+      }
     }
-  } catch (err) {
-    console.error("Avatar upload error:", err);
-    showToast("មានបញ្ហាក្នុងការភ្ជាប់ទៅកាន់ Server!", "error");
-  }
-}
-
-// មុខងារជំនួយសម្រាប់បម្លែង File ទៅជា Base64 (ប្រសិនបើក្នុងកូដរបស់អ្នកមិនទាន់មាន)
-function fileToBase64(file) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = () => resolve(reader.result);
-    reader.onerror = error => reject(error);
-  });
-}
   </script>
 </body>
 </html>
