@@ -149,9 +149,9 @@
             <span id="modalUserRole" class="mt-2 px-3 py-1 rounded-full text-xs font-semibold bg-blue-500/20 text-blue-400 border border-blue-500/30 uppercase tracking-wider shadow-sm">-</span>
         </div>
         <div class="mt-6 space-y-2.5 text-sm border-t border-slate-800 pt-4">
-            <div class="flex justify-between items-center py-1 border-b border-slate-800/50"><span class="text-slate-400">អត្តលេខ:</span><span id="student-id" class="font-medium text-white">DUC-001</span></div>
-            <div class="flex justify-between items-center py-1 border-b border-slate-800/50"><span class="text-slate-400">ឈ្មោះឡាតាំង:</span><span id="student-latin-name" class="font-medium text-white">Mok Sambath</span></div>
-            <div class="flex justify-between items-center py-1 border-b border-slate-800/50"><span class="text-slate-400">ភេទ:</span><span id="student-gender" class="font-medium text-white">ប្រុស</span></div>
+            <div class="flex justify-between items-center py-1 border-b border-slate-800/50"><span class="text-slate-400">អត្តលេខ:</span><span id="student-id" class="font-medium text-white">-</span></div>
+            <div class="flex justify-between items-center py-1 border-b border-slate-800/50"><span class="text-slate-400">ឈ្មោះឡាតាំង:</span><span id="student-latin-name" class="font-medium text-white">-</span></div>
+            <div class="flex justify-between items-center py-1 border-b border-slate-800/50"><span class="text-slate-400">ភេទ:</span><span id="student-gender" class="font-medium text-white">-</span></div>
             <div class="flex justify-between items-center py-1 border-b border-slate-800/50"><span class="text-slate-400">ថ្នាក់រៀន:</span><span class="font-medium text-white">G1-NW-B</span></div>
         </div>
         <button class="w-full mt-6 bg-slate-800 hover:bg-slate-700 text-white py-3 rounded-2xl transition-all font-medium border border-slate-700 text-sm shadow-lg btn-interactive" onclick="closeProfileModal()">បិទ (Close)</button>
@@ -439,7 +439,6 @@
         .then(data => {
           allLessons = Array.isArray(data.lessons) ? data.lessons : [];
           document.getElementById("statTotalLessons").setAttribute('data-target', allLessons.length);
-          document.getElementById("lessonCountBadge").textContent = `បង្ហាញ ${allLessons.length} ឯកសារ`;
           renderLessons();
 
           allSchedules = Array.isArray(data.schedules) ? data.schedules : [];
