@@ -24,7 +24,7 @@ export default async function handler(req, res) {
   }
 
   // URL Google Apps Script Web App
-  const GOOGLE_SCRIPT_URL = process.env.GOOGLE_SCRIPT_URL || "https://script.google.com/macros/s/AKfycbx8UJKhNJLvLmKlR1XeEmDA3Qy_GgHdjBeL8oVFCnbUEeTHK_l2wnA67ecxnWik-b4/exec";
+  const GOOGLE_SCRIPT_URL = process.env.GOOGLE_SCRIPT_URL || "https://script.google.com/macros/s/AKfycbxhYsauH2Imxje6Aw_5cml83geRjj4cA7fsDUxHxv17gyxirBuaW18L_x6I_FdK3E6l/exec";
 
   try {
     let fetchOptions = {
