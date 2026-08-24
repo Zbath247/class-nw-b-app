@@ -443,33 +443,47 @@
     </main>
   </div>
 
-  <!-- ឈ្មោះឡាតាំង -->
-<h2 id="student-latin-name">MOK SAMBATH</h2>
-
-<!-- បន្ថែម ID សម្រាប់បង្ហាញឈ្មោះខ្មែរ និងព័ត៌មានលម្អិតផ្សេងៗ -->
-<p id="student-khmer-name" class="text-gray-400">-</p>
-
-<div class="profile-details">
-    <div class="detail-row">
-        <span>អត្តលេខ (ID):</span>
-        <span id="student-id">-</span>
+  
+ <div id="profileModal" class="profile-modal" style="display: none;">
+    <!-- រូបភាព Profile -->
+    <div class="profile-img-container">
+        <img id="student-avatar" src="default-avatar.png" alt="Profile Image">
     </div>
-    <div class="detail-row">
-        <span>ភេទ (Gender):</span>
-        <span id="student-gender">-</span>
+    
+    <!-- ឈ្មោះ -->
+    <h2 id="student-latin-name">MOK SAMBATH</h2>
+    <p id="student-khmer-name">-</p>
+    <span id="student-role" class="badge">ADMIN</span>
+    
+    <!-- ព័ត៌មានលម្អិត -->
+    <div class="profile-details">
+        <div class="detail-row">
+            <span>អត្តលេខ (ID):</span>
+            <span id="student-id">-</span>
+        </div>
+        <div class="detail-row">
+            <span>ភេទ (Gender):</span>
+            <span id="student-gender">-</span>
+        </div>
+        <div class="detail-row">
+            <span>ថ្ងៃខែឆ្នាំកំណើត (DOB):</span>
+            <span id="student-dob">-</span>
+        </div>
+        <div class="detail-row">
+            <span>ថ្នាក់រៀន:</span>
+            <span>G1-NW-B</span>
+        </div>
+        <div class="detail-row">
+            <span>គ្រឹះស្ថាន:</span>
+            <span>Digital University of Cambodia</span>
+        </div>
+        <div class="detail-row">
+            <span>ស្ថានភាព:</span>
+            <span class="text-success">● កំពុងសិក្សា (Active)</span>
+        </div>
     </div>
-    <div class="detail-row">
-        <span>ថ្ងៃខែឆ្នាំកំណើត (DOB):</span>
-        <span id="student-dob">-</span>
-    </div>
-    <div class="detail-row">
-        <span>ថ្នាក់រៀន:</span>
-        <span>G1-NW-B</span>
-    </div>
-    <div class="detail-row">
-        <span>គ្រឹះស្ថាន:</span>
-        <span>Digital University of Cambodia</span>
-    </div>
+    
+    <button class="btn-close" onclick="document.getElementById('profileModal').style.display='none'">បិទ (Close)</button>
 </div>
 
   <!-- JavaScript Code -->
