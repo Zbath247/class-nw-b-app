@@ -553,3 +553,38 @@ function closeProfileModal() {
         modal.classList.add('hidden');
     }, 300);
 }
+
+// Function សម្រាប់ទាញយកទិន្នន័យនិស្សិតតាម ID
+async function loadStudentProfile(studentId) {
+    const webAppUrl = "YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL"; // ជំនួសដោយ URL របស់អ្នក
+    
+    try {
+        let response = await fetch(webAppUrl);
+        let students = await response.json();
+        
+        // ស្វែងរកនិស្សិតតាម student_id (ឧទាហរណ៍: "DUC2024-0036")
+        let student = students.find(s => s.student_id === studentId);
+        
+        if (student) {
+            // เอาទិន្នន័យมายัดใส่ Modal
+            document.getElementById('student-id').innerText = student.student_id;
+            document.getElementById('student-khmer-name').innerText = student.khmer_name;
+            document.getElementById('student-latin-name').innerText = student.latin_name;
+            document.getElementById('student-gender').innerText = student.gender;
+            document.getElementById('student-dob').innerText = student.dob;
+            
+            // បង្ហាញ Modal ឡើង
+            document.getElementById('profileModal').style.display = 'block';
+        } else {
+            console.log("រកមិនឃើញទិន្នន័យនិស្សិតនេះទេ។");
+        }
+    } catch (error) {
+        console.error("Error fetching data:", error);
+    }
+}
+
+// ឧទាហរណ៍ពេលចុចលើ Profile របស់និស្សិតម្នាក់
+document.querySelector('.user-profile-icon').addEventListener('click', function() {
+    let currentStudentId = "DUC2024-0036"; // អាចយកតាម ID របស់អ្នកដែល Login ចូល
+    loadStudentProfile(currentStudentId);
+});
