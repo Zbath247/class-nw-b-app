@@ -14,12 +14,7 @@
   <!-- FontAwesome សម្រាប់ Magic Menu Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
-    body { 
-      font-family: 'Kantumruy Pro', sans-serif; 
-      /* កំណត់ Padding ខាងក្រោមសម្រាប់ទូរស័ព្ទ កុំឱ្យ Menu บังមាតិកា */
-      padding-bottom: 110px; 
-    }
-
+    body { font-family: 'Kantumruy Pro', sans-serif; }
     .glass-card {
       background: rgba(15, 23, 42, 0.75);
       backdrop-filter: blur(16px);
@@ -163,20 +158,10 @@
     .custom-bottom-nav ul li:nth-child(5).active ~ .indicator {
       transform: translateX(calc(70px * 4));
     }
-
-    /* ការកំណត់សម្រាប់កុំព្យូទ័រ (Desktop: 768px ឡើងទៅ) */
-    @media (min-width: 768px) {
-      .custom-bottom-nav {
-        display: none !important; /* លាក់ Menu ខាងក្រោមចោលនៅលើ Computer */
-      }
-      body {
-        padding-bottom: 2rem !important; /* កែ Padding ឱ្យមកធម្មតាវិញនៅលើ Computer */
-      }
-    }
   </style>
 </head>
 
-<body class="bg-slate-950 min-h-screen text-slate-100 relative overflow-x-hidden selection:bg-indigo-500 selection:text-white">
+<body class="bg-slate-950 min-h-screen text-slate-100 relative overflow-x-hidden selection:bg-indigo-500 selection:text-white pb-24">
 
 <!-- Profile Pop-up Modal -->
 <div id="profileModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center hidden opacity-0 transition-opacity duration-300">
@@ -187,7 +172,7 @@
             <i data-lucide="x" class="w-6 h-6"></i>
         </button>
 
-        <!-- រូបភាព Profile និង ឈ្មោះ -->
+        <!-- រូបភាព Profile (អាច Upload បាន) និង ឈ្មោះ -->
         <div class="flex flex-col items-center text-center mt-2">
             <div class="relative group cursor-pointer" onclick="document.getElementById('profileImageInput').click()" title="ចុចដើម្បីផ្លាស់ប្ដូររូបភាព Profile">
               <div id="modalAvatarContainer" class="w-24 h-24 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center text-white text-2xl font-bold shadow-lg mb-3 shadow-blue-500/30 overflow-hidden border-2 border-blue-400/40">
@@ -196,12 +181,14 @@
                 </span>
                 <img id="modalAvatarImg" src="" alt="Profile Image" class="w-full h-full object-cover hidden">
               </div>
+              <!-- Overlay Camera Icon on Hover -->
               <div class="absolute inset-0 bg-black/50 rounded-full flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 mb-3">
                 <i data-lucide="camera" class="w-6 h-6 text-white mb-0.5"></i>
                 <span class="text-[9px] text-white font-medium">ប្ដូររូប</span>
               </div>
             </div>
 
+            <!-- Hidden File Input for Avatar Upload -->
             <input type="file" id="profileImageInput" accept="image/*" class="hidden" onchange="handleProfileImageUpload(event)">
             
             <h2 id="modalUserName" class="text-xl font-bold tracking-wide">-</h2>
@@ -210,7 +197,7 @@
             </span>
         </div>
 
-        <!-- ព័ត៌មានលម្អិត -->
+        <!-- ផ្នែកព័ត៌មានលម្អិតទាញយកពី Google Sheet -->
         <div class="mt-6 space-y-2.5 text-sm border-t border-gray-700/60 pt-4">
             <div class="flex justify-between items-center">
                 <span class="text-gray-400">អត្តលេខ:</span>
@@ -228,6 +215,8 @@
                 <span class="text-gray-400">ថ្ងៃខែឆ្នាំកំណើត:</span>
                 <span id="student-dob" class="font-medium text-white">-</span>
             </div>
+
+            <!-- ព័ត៌មានថ្នាក់ និងគ្រឹះស្ថាន -->
             <div class="flex justify-between items-center">
                 <span class="text-gray-400">ថ្នាក់រៀន:</span>
                 <span class="font-medium text-white">G1-NW-B</span>
@@ -242,13 +231,15 @@
             </div>
         </div>
 
+        <!-- ប៊ូតុងបិទខាងក្រោម -->
         <button class="w-full mt-6 bg-gray-800 hover:bg-gray-700 text-white py-2.5 rounded-xl transition-all font-medium border border-gray-700 text-sm" onclick="closeProfileModal()">
             បិទ (Close)
         </button>
+
     </div>
 </div>
 
-  <!-- Magic Navigation Menu (បង្ហាញតែលើទូរស័ព្ទ) -->
+  <!-- Magic Navigation Menu -->
   <div class="custom-bottom-nav">
     <ul>
       <li class="list active" onclick="switchTab('home', event)">
@@ -342,8 +333,10 @@
   <!-- 2. DASHBOARD SECTION -->
   <div id="dashboardSection" class="hidden min-h-screen relative z-10 pb-16 animate-fade-in">
     
+    <!-- Responsive Navbar with Logo -->
     <header class="bg-slate-900/90 backdrop-blur-xl sticky top-0 z-50 border-b border-slate-800 shadow-lg">
       <div class="max-w-6xl mx-auto px-4 py-3 flex flex-col md:flex-row items-center justify-between gap-3">
+        
         <div class="flex items-center gap-3 w-full md:w-auto justify-between md:justify-start">
           <div class="flex items-center gap-2.5">
             <div class="w-10 h-10 bg-slate-900 rounded-xl p-1 flex items-center justify-center shadow-md border border-amber-500/30 shrink-0">
@@ -370,6 +363,7 @@
             <span>ចាកចេញ</span>
           </button>
         </div>
+
       </div>
     </header>
 
@@ -643,7 +637,7 @@
           })
           .catch(err => {
             console.error("Login error:", err);
-            showToast("មានបញ្ហាក្នុងការភ្ជាប់ទៅកាន់ Server!", "error");
+            showToast("មានបញ្ហាក្នុងการភ្ជាប់ទៅកាន់ Server!", "error");
           })
           .finally(() => {
             if (btn) {
@@ -1001,6 +995,7 @@
       }
     }
 
+    // បើក Profile Modal និងទាញទិន្នន័យមកបំពេញពី Google Sheet (allStudents)
     function openProfileModal() {
       const modal = document.getElementById('profileModal');
       const modalContent = document.getElementById('profileModalContent');
@@ -1010,6 +1005,7 @@
         document.getElementById('modalUserName').textContent = currentUser.name || "MOK SAMBATH";
         document.getElementById('modalUserRole').textContent = currentUser.role || "ADMIN";
 
+        // រកមើលទិន្នន័យបន្ថែមពី Google Sheet (allStudents) តាមរយៈ Email ឬ Name របស់អ្នកប្រើប្រាស់ដែល Login
         let matchedStudent = allStudents.find(s => 
           (currentUser.email && s.student_id && currentUser.email.toLowerCase().includes(s.student_id.toLowerCase())) ||
           (currentUser.name && s.latin_name && s.latin_name.toLowerCase().includes(currentUser.name.toLowerCase()))
@@ -1070,6 +1066,7 @@
       }, 300);
     }
 
+    // មុខងារ Upload រូបភាព Profile របស់អ្នកប្រើប្រាស់
     async function handleProfileImageUpload(event) {
       const file = event.target.files[0];
       if (!file) return;
@@ -1116,7 +1113,7 @@
         showToast("Upload image to Profile ជោគជ័យ!");
       } catch (err) {
         console.error("Avatar upload error:", err);
-        showToast("មានបញ្ហាក្នុងការ Upload រូបភាព!", "error");
+        showToast("មានបញ្ហាក្នុងการ Upload រូបភាព!", "error");
       }
     }
   </script>
