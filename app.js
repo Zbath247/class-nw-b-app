@@ -588,3 +588,12 @@ document.querySelector('.user-profile-icon').addEventListener('click', function(
     let currentStudentId = "DUC2024-0036"; // អាចយកតាម ID របស់អ្នកដែល Login ចូល
     loadStudentProfile(currentStudentId);
 });
+
+// ឧទាហរណ៍៖ នៅពេលអ្នកចុចលើរូប Profile
+document.querySelector('.user-profile-icon').addEventListener('click', function() {
+    // យក Student ID របស់អ្នកប្រើប្រាស់ដែលកំពុង Login (ឧទាហរណ៍៖ "DUC2024-0036" ឬយកចេញពី localStorage)
+    let loggedInStudentId = "DUC2024-0036"; 
+    
+    // ហៅ Function ដែលយើងបានសរសេរខាងលើ
+    loadStudentProfileData(loggedInStudentId);
+});
