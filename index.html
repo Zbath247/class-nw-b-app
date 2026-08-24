@@ -17,19 +17,30 @@
       background: rgba(15, 23, 42, 0.75);
       backdrop-filter: blur(16px);
       border: 1px solid rgba(255, 255, 255, 0.1);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .glass-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 25px -5px rgba(59, 130, 246, 0.15);
     }
     .glass-card-light {
       background: rgba(255, 255, 255, 0.85);
       backdrop-filter: blur(12px);
       border: 1px solid rgba(229, 231, 235, 0.8);
     }
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
+    
+    /* Smooth Animations */
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(15px); }
       to { opacity: 1; transform: translateY(0); }
     }
     .animate-fade-in {
-      animation: fadeIn 0.3s ease-out forwards;
+      animation: fadeInUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     }
+    .delay-1 { animation-delay: 0.05s; }
+    .delay-2 { animation-delay: 0.1s; }
+    .delay-3 { animation-delay: 0.15s; }
+    .delay-4 { animation-delay: 0.2s; }
 
     /* Bottom Navigation Bar សម្រាប់ Dark Theme */
     .custom-bottom-nav {
@@ -55,7 +66,10 @@
       color: #8a99ad;
       font-size: 12px;
       font-family: 'Kantumruy Pro', sans-serif, Arial;
-      transition: color 0.3s ease;
+      transition: color 0.3s ease, transform 0.2s ease;
+    }
+    .nav-link-item:hover {
+      transform: translateY(-2px);
     }
 
     .nav-link-item:hover,
@@ -74,6 +88,10 @@
       align-items: center;
       box-shadow: 0 4px 10px rgba(59, 130, 246, 0.4);
       margin-bottom: 5px;
+      transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .nav-center-btn:hover {
+      transform: scale(1.1);
     }
   </style>
 </head>
@@ -92,7 +110,7 @@
         <!-- រូបភាព Profile (អាច Upload បាន) និង ឈ្មោះ -->
         <div class="flex flex-col items-center text-center mt-2">
             <div class="relative group cursor-pointer" onclick="document.getElementById('profileImageInput').click()" title="ចុចដើម្បីផ្លាស់ប្ដូររូបភាព Profile">
-              <div id="modalAvatarContainer" class="w-24 h-24 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center text-white text-2xl font-bold shadow-lg mb-3 shadow-blue-500/30 overflow-hidden border-2 border-blue-400/40">
+              <div id="modalAvatarContainer" class="w-24 h-24 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center text-white text-2xl font-bold shadow-lg mb-3 shadow-blue-500/30 overflow-hidden border-2 border-blue-400/40 transition-transform duration-300 group-hover:scale-105">
                 <span id="modalAvatarFallback">
                   <i data-lucide="user" class="w-12 h-12"></i>
                 </span>
@@ -236,7 +254,7 @@
   </div>
 
   <!-- 2. DASHBOARD SECTION -->
-  <div id="dashboardSection" class="hidden min-h-screen relative z-10 pb-16 animate-fade-in">
+  <div id="dashboardSection" class="hidden min-h-screen relative z-10 pb-16">
     
     <!-- Responsive Navbar with Logo -->
     <header class="bg-slate-900/90 backdrop-blur-xl sticky top-0 z-50 border-b border-slate-800 shadow-lg">
@@ -275,7 +293,7 @@
     <main class="max-w-6xl mx-auto px-4 mt-8 space-y-8">
 
       <!-- Admin Panel Form -->
-      <section id="adminPanel" class="hidden glass-card p-6 sm:p-8 rounded-3xl shadow-xl border border-indigo-500/30">
+      <section id="adminPanel" class="hidden glass-card p-6 sm:p-8 rounded-3xl shadow-xl border border-indigo-500/30 animate-fade-in">
         <div class="flex items-center justify-between mb-6 text-indigo-400 border-b border-slate-800 pb-4">
           <div class="flex items-center gap-3">
             <div class="p-2.5 bg-indigo-500/10 rounded-xl border border-indigo-500/20">
@@ -327,9 +345,9 @@
         </form>
       </section>
 
-      <!-- Dashboard Overview Stats -->
+      <!-- Dashboard Overview Stats with Stagger Animation -->
       <section id="statsSection" class="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div class="glass-card p-5 rounded-2xl shadow-lg flex items-center gap-4 border border-slate-800 hover:border-indigo-500/30 transition">
+        <div class="glass-card p-5 rounded-2xl shadow-lg flex items-center gap-4 border border-slate-800 animate-fade-in delay-1">
           <div class="p-3 bg-indigo-500/10 text-indigo-400 rounded-xl border border-indigo-500/20">
             <i data-lucide="book-open" class="w-5 h-5"></i>
           </div>
@@ -339,7 +357,7 @@
           </div>
         </div>
 
-        <div class="glass-card p-5 rounded-2xl shadow-lg flex items-center gap-4 border border-slate-800 hover:border-blue-500/30 transition">
+        <div class="glass-card p-5 rounded-2xl shadow-lg flex items-center gap-4 border border-slate-800 animate-fade-in delay-2">
           <div class="p-3 bg-blue-500/10 text-blue-400 rounded-xl border border-blue-500/20">
             <i data-lucide="clock" class="w-5 h-5"></i>
           </div>
@@ -349,7 +367,7 @@
           </div>
         </div>
 
-        <div class="glass-card p-5 rounded-2xl shadow-lg flex items-center gap-4 border border-slate-800 hover:border-emerald-500/30 transition">
+        <div class="glass-card p-5 rounded-2xl shadow-lg flex items-center gap-4 border border-slate-800 animate-fade-in delay-3">
           <div class="p-3 bg-emerald-500/10 text-emerald-400 rounded-xl border border-emerald-500/20">
             <i data-lucide="file-text" class="w-5 h-5"></i>
           </div>
@@ -359,7 +377,7 @@
           </div>
         </div>
 
-        <div class="glass-card p-5 rounded-2xl shadow-lg flex items-center gap-4 border border-slate-800 hover:border-amber-500/30 transition">
+        <div class="glass-card p-5 rounded-2xl shadow-lg flex items-center gap-4 border border-slate-800 animate-fade-in delay-4">
           <div class="p-3 bg-amber-500/10 text-amber-400 rounded-xl border border-amber-500/20">
             <i data-lucide="users" class="w-5 h-5"></i>
           </div>
@@ -371,7 +389,7 @@
       </section>
 
       <!-- Schedules Section -->
-      <section class="glass-card rounded-3xl shadow-xl overflow-hidden border border-slate-800">
+      <section class="glass-card rounded-3xl shadow-xl overflow-hidden border border-slate-800 animate-fade-in">
         <div class="p-6 border-b border-slate-800 flex items-center gap-3 text-indigo-400">
           <div class="p-2.5 bg-indigo-500/10 rounded-xl border border-indigo-500/20">
             <i data-lucide="calendar" class="w-5 h-5"></i>
@@ -398,7 +416,7 @@
       </section>
 
       <!-- Lessons Section -->
-      <section class="glass-card p-6 sm:p-8 rounded-3xl shadow-xl border border-slate-800">
+      <section class="glass-card p-6 sm:p-8 rounded-3xl shadow-xl border border-slate-800 animate-fade-in">
         <div class="flex items-center justify-between mb-6 pb-4 border-b border-slate-800">
           <div class="flex items-center gap-3 text-indigo-400">
             <div class="p-2.5 bg-indigo-500/10 rounded-xl border border-indigo-500/20">
@@ -422,7 +440,7 @@
       </section>
 
       <!-- Student List Section -->
-      <section class="glass-card p-6 sm:p-8 rounded-3xl shadow-xl border border-slate-800">
+      <section class="glass-card p-6 sm:p-8 rounded-3xl shadow-xl border border-slate-800 animate-fade-in">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 pb-4 border-b border-slate-800">
           <div class="flex items-center gap-3">
             <div class="p-2.5 bg-indigo-500/10 rounded-xl border border-indigo-500/20 text-indigo-400">
@@ -901,7 +919,6 @@
       }
     }
 
-    // បើក Profile Modal និងទាញទិន្នន័យមកបំពេញពី Google Sheet (allStudents)
     function openProfileModal() {
       const modal = document.getElementById('profileModal');
       const modalContent = document.getElementById('profileModalContent');
@@ -911,7 +928,6 @@
         document.getElementById('modalUserName').textContent = currentUser.name || "MOK SAMBATH";
         document.getElementById('modalUserRole').textContent = currentUser.role || "ADMIN";
 
-        // រកមើលទិន្នន័យបន្ថែមពី Google Sheet (allStudents) តាមរយៈ Email ឬ Name របស់អ្នកប្រើប្រាស់ដែល Login
         let matchedStudent = allStudents.find(s => 
           (currentUser.email && s.student_id && currentUser.email.toLowerCase().includes(s.student_id.toLowerCase())) ||
           (currentUser.name && s.latin_name && s.latin_name.toLowerCase().includes(currentUser.name.toLowerCase()))
@@ -923,19 +939,16 @@
           document.getElementById('student-gender').textContent = matchedStudent.gender || '-';
           document.getElementById('student-dob').textContent = matchedStudent.dob || '-';
           
-          // បើគណនីជា Admin អាចបង្ហាញឈ្មោះខ្មែរជំនួសប្រសិនបើចង់ ឬរក្សាឈ្មោះឡាតាំង
           if (currentUser.role === 'admin' || currentUser.role === 'ADMIN') {
             document.getElementById('modalUserName').textContent = matchedStudent.latin_name || currentUser.name;
           }
         } else {
-          // ប្រសិនបើរកមិនឃើញក្នុងបញ្ជីនិស្សិត (ករណី Admin ដាច់ដោយឡែក)
           document.getElementById('student-id').textContent = currentUser.student_id || 'DUC-ADMIN';
           document.getElementById('student-latin-name').textContent = currentUser.name || '-';
           document.getElementById('student-gender').textContent = '-';
           document.getElementById('student-dob').textContent = '-';
         }
 
-        // បង្ហាញ Image Profile ប្រសិនបើមានរក្សាទុក
         const avatarImg = document.getElementById('modalAvatarImg');
         const avatarFallback = document.getElementById('modalAvatarFallback');
         if (currentUser.avatar) {
@@ -975,7 +988,6 @@
       }, 300);
     }
 
-    // មុខងារ Upload រូបភាព Profile របស់អ្នកប្រើប្រាស់
     async function handleProfileImageUpload(event) {
       const file = event.target.files[0];
       if (!file) return;
@@ -1003,14 +1015,12 @@
 
         const data = await res.json();
 
-        // រក្សាទុកក្នុង LocalStorage ផ្ទាល់ខ្លួនផងដែរ ដើម្បីកុំឱ្យបាត់ពេល Refresh
         currentUser.avatar = base64Full;
         let savedAvatars = JSON.parse(localStorage.getItem("duc_user_avatars") || "{}");
         savedAvatars[currentUser.email] = base64Full;
         localStorage.setItem("duc_user_avatars", JSON.stringify(savedAvatars));
         localStorage.setItem("duc_current_user", JSON.stringify(currentUser));
 
-        // Update UI ក្នុង Modal ភ្លាមៗ
         const avatarImg = document.getElementById('modalAvatarImg');
         const avatarFallback = document.getElementById('modalAvatarFallback');
         if (avatarImg) {
