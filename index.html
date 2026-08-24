@@ -89,24 +89,20 @@
             <i data-lucide="x" class="w-6 h-6"></i>
         </button>
 
-        <!-- រូបភាព Profile និង ឈ្មោះដើមរបស់អ្នក -->
+        <!-- រូបភាព Profile និង ឈ្មោះដើមរបស់អ្នក (រក្សារូបឡានដដែល) -->
         <div class="flex flex-col items-center text-center mt-2">
-            <div class="relative group cursor-pointer" onclick="document.getElementById('profileImageInput').click()" title="ចុចដើម្បីប្តូររូបភាព Profile">
-                <div id="modalAvatarContainer" class="w-24 h-24 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center text-white text-2xl font-bold shadow-lg mb-3 shadow-blue-500/30 overflow-hidden border-2 border-blue-400/40">
-                    <span id="modalAvatarFallback">
-                        <i data-lucide="user" class="w-12 h-12"></i>
-                    </span>
-                    <img id="modalAvatarImg" src="" alt="Profile Image" class="w-full h-full object-cover hidden">
-                </div>
+            <div class="w-24 h-24 rounded-full bg-gradient-to-tr from-red-600 to-orange-500 flex items-center justify-center text-white text-2xl font-bold shadow-lg mb-3 shadow-red-500/30 overflow-hidden border-2 border-red-400/40">
+                <img src="https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=500&auto=format&fit=crop&q=60" alt="Profile Image" class="w-full h-full object-cover">
             </div>
             
             <h2 id="student-latin-name" class="text-xl font-bold text-white">MOK SAMBATH</h2>
             <span class="bg-blue-600/30 text-blue-400 border border-blue-500/30 text-xs px-3 py-1 rounded-full mt-1">ADMIN</span>
         </div>
 
-        <!-- ផ្នែកព័ត៌មានលម្អិត (ដែលបានបន្ថែម ID ទាំង ៣ ចំណុចចូលគ្នា) -->
+        <!-- ផ្នែកព័ត៌មានលម្អិត (ថែមតែ ៣ ចំណុចនេះពីលើរបស់ចាស់) -->
         <div class="profile-details mt-6 space-y-3 text-sm text-gray-300 border-t border-gray-700/50 pt-4">
             
+            <!-- ៣ ចំណុចថ្មីដែលចង់បាន -->
             <div class="flex justify-between">
                 <span class="text-gray-400">អត្តលេខ:</span>
                 <span id="student-id" class="font-semibold text-white">-</span>
@@ -120,7 +116,7 @@
                 <span id="student-dob" class="font-semibold text-white">-</span>
             </div>
 
-            <!-- ព័ត៌មានចាស់ដែលមានស្រាប់ -->
+            <!-- ព័ត៌មានដើមរបស់អ្នក -->
             <div class="flex justify-between">
                 <span class="text-gray-400">ថ្នាក់រៀន:</span>
                 <span class="text-white">G1-NW-B</span>
@@ -131,7 +127,7 @@
             </div>
             <div class="flex justify-between">
                 <span class="text-gray-400">ស្ថានភាព:</span>
-                <span class="text-green-400 flex items-center gap-1">● កំពុងតភ្ជាប់ (Active)</span>
+                <span class="text-green-400 flex items-center gap-1">● កំពុងរក្សាទុក (Active)</span>
             </div>
         </div>
 
