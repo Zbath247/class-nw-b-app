@@ -11,6 +11,8 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- FontAwesome សម្រាប់ Magic Menu Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     body { font-family: 'Kantumruy Pro', sans-serif; }
     .glass-card {
@@ -31,54 +33,135 @@
       animation: fadeIn 0.3s ease-out forwards;
     }
 
-    /* Bottom Navigation Bar សម្រាប់ Dark Theme */
+    /* Magic Navigation Menu Styles */
     .custom-bottom-nav {
       position: fixed;
       bottom: 0;
       left: 0;
       width: 100%;
-      height: 65px;
-      background-color: #0b1329;
-      display: flex;
-      justify-content: space-around;
-      align-items: center;
-      border-top: 1px solid rgba(255, 255, 255, 0.1);
-      box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.5);
-      z-index: 9999;
-    }
-
-    .nav-link-item {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      text-decoration: none;
-      color: #8a99ad;
-      font-size: 12px;
-      font-family: 'Kantumruy Pro', sans-serif, Arial;
-      transition: color 0.3s ease;
-    }
-
-    .nav-link-item:hover,
-    .nav-link-item.active {
-      color: #3b82f6;
-    }
-
-    .nav-center-btn {
-      background: linear-gradient(135deg, #3b82f6, #1d4ed8);
-      color: white;
-      border-radius: 50%;
-      width: 42px;
-      height: 42px;
+      height: 80px;
+      background: #242433;
       display: flex;
       justify-content: center;
       align-items: center;
-      box-shadow: 0 4px 10px rgba(59, 130, 246, 0.4);
-      margin-bottom: 5px;
+      z-index: 9999;
+      box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.5);
+    }
+
+    .custom-bottom-nav ul {
+      position: relative;
+      display: flex;
+      width: 350px;
+    }
+
+    .custom-bottom-nav ul li {
+      position: relative;
+      list-style: none;
+      width: 70px;
+      height: 80px;
+      z-index: 1;
+    }
+
+    .custom-bottom-nav ul li a {
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      width: 100%;
+      text-align: center;
+      font-weight: 500;
+      text-decoration: none;
+    }
+
+    .custom-bottom-nav ul li a .icon {
+      position: relative;
+      display: block;
+      line-height: 75px;
+      font-size: 1.4em;
+      color: #aaa;
+      transition: 0.5s;
+    }
+
+    .custom-bottom-nav ul li.active a .icon {
+      transform: translateY(-32px);
+      color: #1d1d27;
+    }
+
+    .custom-bottom-nav ul li a .text {
+      position: absolute;
+      color: #aaa;
+      font-weight: 400;
+      font-size: 0.7em;
+      letter-spacing: 0.05em;
+      transition: 0.5s;
+      opacity: 0;
+      transform: translateY(20px);
+      font-family: 'Kantumruy Pro', sans-serif;
+    }
+
+    .custom-bottom-nav ul li.active a .text {
+      opacity: 1;
+      transform: translateY(8px);
+      color: #fff;
+    }
+
+    /* ប៊ូតុងរង្វង់រំកិល (Indicator) */
+    .indicator {
+      position: absolute;
+      top: -50%;
+      width: 70px;
+      height: 70px;
+      background: #29fd53;
+      border-radius: 50%;
+      border: 6px solid #1d1d27;
+      transition: 0.5s;
+    }
+
+    .indicator::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: -22px;
+      width: 20px;
+      height: 20px;
+      background: transparent;
+      border-top-right-radius: 20px;
+      box-shadow: 0px -10px 0 0 #1d1d27;
+    }
+
+    .indicator::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      right: -22px;
+      width: 20px;
+      height: 20px;
+      background: transparent;
+      border-top-left-radius: 20px;
+      box-shadow: 0px -10px 0 0 #1d1d27;
+    }
+
+    /* កូដបញ្ជាទីតាំង Indicator ពេលចុចតាម Tab នីមួយៗ */
+    .custom-bottom-nav ul li:nth-child(1).active ~ .indicator {
+      transform: translateX(calc(70px * 0));
+    }
+    .custom-bottom-nav ul li:nth-child(2).active ~ .indicator {
+      transform: translateX(calc(70px * 1));
+    }
+    .custom-bottom-nav ul li:nth-child(3).active ~ .indicator {
+      transform: translateX(calc(70px * 2));
+    }
+    .custom-bottom-nav ul li:nth-child(4).active ~ .indicator {
+      transform: translateX(calc(70px * 3));
+    }
+    .custom-bottom-nav ul li:nth-child(5).active ~ .indicator {
+      transform: translateX(calc(70px * 4));
     }
   </style>
 </head>
 
-<body class="bg-slate-950 min-h-screen text-slate-100 relative overflow-x-hidden selection:bg-indigo-500 selection:text-white pb-20">
+<body class="bg-slate-950 min-h-screen text-slate-100 relative overflow-x-hidden selection:bg-indigo-500 selection:text-white pb-24">
 
 <!-- Profile Pop-up Modal -->
 <div id="profileModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center hidden opacity-0 transition-opacity duration-300">
@@ -156,29 +239,41 @@
     </div>
 </div>
 
-  <!-- Bottom Navigation Bar -->
+  <!-- Magic Navigation Menu -->
   <div class="custom-bottom-nav">
-    <a href="#" class="nav-link-item active" onclick="switchTab('home', event)">
-      <i data-lucide="home" class="w-5 h-5 mb-1"></i>
-      <span>ទំព័រដើម</span>
-    </a>
-    <a href="#" class="nav-link-item" onclick="switchTab('lessons', event)">
-      <i data-lucide="book-open" class="w-5 h-5 mb-1"></i>
-      <span>មេរៀន</span>
-    </a>
-    <a href="#" class="nav-link-item" onclick="switchTab('add', event)">
-      <span class="nav-center-btn">
-        <i data-lucide="plus" class="w-6 h-6"></i>
-      </span>
-    </a>
-    <a href="#" class="nav-link-item" onclick="switchTab('schedule', event)">
-      <i data-lucide="calendar" class="w-5 h-5 mb-1"></i>
-      <span>កាលវិភាគ</span>
-    </a>
-    <a href="#" class="nav-link-item" onclick="switchTab('profile', event)">
-      <i data-lucide="user" class="w-5 h-5 mb-1"></i>
-      <span>គណនី</span>
-    </a>
+    <ul>
+      <li class="list active" onclick="switchTab('home', event)">
+        <a href="#">
+          <span class="icon"><i class="fa-solid fa-house"></i></span>
+          <span class="text">ទំព័រដើម</span>
+        </a>
+      </li>
+      <li class="list" onclick="switchTab('lessons', event)">
+        <a href="#">
+          <span class="icon"><i class="fa-solid fa-book-open"></i></span>
+          <span class="text">មេរៀន</span>
+        </a>
+      </li>
+      <li class="list" onclick="switchTab('add', event)">
+        <a href="#">
+          <span class="icon"><i class="fa-solid fa-plus"></i></span>
+          <span class="text">បន្ថែម</span>
+        </a>
+      </li>
+      <li class="list" onclick="switchTab('schedule', event)">
+        <a href="#">
+          <span class="icon"><i class="fa-solid fa-calendar-days"></i></span>
+          <span class="text">កាលវិភាគ</span>
+        </a>
+      </li>
+      <li class="list" onclick="switchTab('profile', event)">
+        <a href="#">
+          <span class="icon"><i class="fa-solid fa-user"></i></span>
+          <span class="text">គណនី</span>
+        </a>
+      </li>
+      <div class="indicator"></div>
+    </ul>
   </div>
 
   <!-- Background Animated Premium Blobs -->
@@ -542,7 +637,7 @@
           })
           .catch(err => {
             console.error("Login error:", err);
-            showToast("មានបញ្ហាក្នុងការភ្ជាប់ទៅកាន់ Server!", "error");
+            showToast("មានបញ្ហាក្នុងการភ្ជាប់ទៅកាន់ Server!", "error");
           })
           .finally(() => {
             if (btn) {
@@ -877,9 +972,8 @@
     function switchTab(tabName, event) {
       if (event) event.preventDefault();
 
-      document.querySelectorAll('.nav-link-item').forEach(item => {
-        item.classList.remove('active');
-      });
+      const listItems = document.querySelectorAll('.custom-bottom-nav ul li.list');
+      listItems.forEach((item) => item.classList.remove('active'));
 
       if (event && event.currentTarget) {
         event.currentTarget.classList.add('active');
@@ -923,19 +1017,16 @@
           document.getElementById('student-gender').textContent = matchedStudent.gender || '-';
           document.getElementById('student-dob').textContent = matchedStudent.dob || '-';
           
-          // បើគណនីជា Admin អាចបង្ហាញឈ្មោះខ្មែរជំនួសប្រសិនបើចង់ ឬរក្សាឈ្មោះឡាតាំង
           if (currentUser.role === 'admin' || currentUser.role === 'ADMIN') {
             document.getElementById('modalUserName').textContent = matchedStudent.latin_name || currentUser.name;
           }
         } else {
-          // ប្រសិនបើរកមិនឃើញក្នុងបញ្ជីនិស្សិត (ករណី Admin ដាច់ដោយឡែក)
           document.getElementById('student-id').textContent = currentUser.student_id || 'DUC-ADMIN';
           document.getElementById('student-latin-name').textContent = currentUser.name || '-';
           document.getElementById('student-gender').textContent = '-';
           document.getElementById('student-dob').textContent = '-';
         }
 
-        // បង្ហាញ Image Profile ប្រសិនបើមានរក្សាទុក
         const avatarImg = document.getElementById('modalAvatarImg');
         const avatarFallback = document.getElementById('modalAvatarFallback');
         if (currentUser.avatar) {
@@ -1003,14 +1094,12 @@
 
         const data = await res.json();
 
-        // រក្សាទុកក្នុង LocalStorage ផ្ទាល់ខ្លួនផងដែរ ដើម្បីកុំឱ្យបាត់ពេល Refresh
         currentUser.avatar = base64Full;
         let savedAvatars = JSON.parse(localStorage.getItem("duc_user_avatars") || "{}");
         savedAvatars[currentUser.email] = base64Full;
         localStorage.setItem("duc_user_avatars", JSON.stringify(savedAvatars));
         localStorage.setItem("duc_current_user", JSON.stringify(currentUser));
 
-        // Update UI ក្នុង Modal ភ្លាមៗ
         const avatarImg = document.getElementById('modalAvatarImg');
         const avatarFallback = document.getElementById('modalAvatarFallback');
         if (avatarImg) {
@@ -1024,7 +1113,7 @@
         showToast("Upload image to Profile ជោគជ័យ!");
       } catch (err) {
         console.error("Avatar upload error:", err);
-        showToast("មានបញ្ហាក្នុងការ Upload រូបភាព!", "error");
+        showToast("មានបញ្ហាក្នុងการ Upload រូបភាព!", "error");
       }
     }
   </script>
