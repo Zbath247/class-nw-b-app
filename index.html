@@ -444,29 +444,29 @@
   </div>
 
   
- <div id="profileModal" class="profile-modal" style="display: none;">
+ <div class="profile-modal">
     <!-- រូបភាព Profile -->
     <div class="profile-img-container">
         <img id="student-avatar" src="default-avatar.png" alt="Profile Image">
     </div>
     
-    <!-- ឈ្មោះ -->
+    <!-- ឈ្មោះឡាតាំង និងខ្មែរ -->
     <h2 id="student-latin-name">MOK SAMBATH</h2>
-    <p id="student-khmer-name">-</p>
+    <p id="student-khmer-name" style="color: gray; font-size: 14px;">ឈ្មោះខ្មែរ</p>
     <span id="student-role" class="badge">ADMIN</span>
     
-    <!-- ព័ត៌មានលម្អិត -->
+    <!-- ផ្នែកព័ត៌មានលម្អិតដែលត្រូវបន្ថែម ID -->
     <div class="profile-details">
         <div class="detail-row">
-            <span>អត្តលេខ (ID):</span>
+            <span>អត្តលេខ:</span>
             <span id="student-id">-</span>
         </div>
         <div class="detail-row">
-            <span>ភេទ (Gender):</span>
+            <span>ភេទ:</span>
             <span id="student-gender">-</span>
         </div>
         <div class="detail-row">
-            <span>ថ្ងៃខែឆ្នាំកំណើត (DOB):</span>
+            <span>ថ្ងៃខែឆ្នាំកំណើត:</span>
             <span id="student-dob">-</span>
         </div>
         <div class="detail-row">
@@ -479,13 +479,13 @@
         </div>
         <div class="detail-row">
             <span>ស្ថានភាព:</span>
-            <span class="text-success">● កំពុងសិក្សា (Active)</span>
+            <span class="text-success">● កំពុងរក្សាទុក (Active)</span>
         </div>
     </div>
     
-    <button class="btn-close" onclick="document.getElementById('profileModal').style.display='none'">បិទ (Close)</button>
+    <button class="btn-close" onclick="closeModal()">បិទ (Close)</button>
 </div>
-
+  
   <!-- JavaScript Code -->
   <script>
     const API_URL = "/api/proxy";
