@@ -83,6 +83,48 @@
   <!-- Profile Pop-up Modal -->
   <div id="profileModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center hidden opacity-0 transition-opacity duration-300">
     <div class="bg-[#0b1329] border border-blue-500/30 rounded-2xl p-6 w-11/12 max-w-md shadow-2xl relative transform scale-95 transition-transform duration-300" id="profileModalContent">
+
+<div class="profile-modal">
+    <!-- រូបភាព Profile -->
+    <div class="profile-img-container">
+        <img id="student-avatar" src="default-avatar.png" alt="Profile Image">
+    </div>
+    
+    <!-- ឈ្មោះឡាតាំង និងខ្មែរ -->
+    <h2 id="student-latin-name">MOK SAMBATH</h2>
+    <p id="student-khmer-name" style="color: gray; font-size: 14px;">ឈ្មោះខ្មែរ</p>
+    <span id="student-role" class="badge">ADMIN</span>
+    
+    <!-- ផ្នែកព័ត៌មានលម្អិតដែលត្រូវបន្ថែម ID -->
+    <div class="profile-details">
+        <div class="detail-row">
+            <span>អត្តលេខ:</span>
+            <span id="student-id">-</span>
+        </div>
+        <div class="detail-row">
+            <span>ភេទ:</span>
+            <span id="student-gender">-</span>
+        </div>
+        <div class="detail-row">
+            <span>ថ្ងៃខែឆ្នាំកំណើត:</span>
+            <span id="student-dob">-</span>
+        </div>
+        <div class="detail-row">
+            <span>ថ្នាក់រៀន:</span>
+            <span>G1-NW-B</span>
+        </div>
+        <div class="detail-row">
+            <span>គ្រឹះស្ថាន:</span>
+            <span>Digital University of Cambodia</span>
+        </div>
+        <div class="detail-row">
+            <span>ស្ថានភាព:</span>
+            <span class="text-success">● កំពុងរក្សាទុក (Active)</span>
+        </div>
+    </div>
+    
+    <button class="btn-close" onclick="closeModal()">បិទ (Close)</button>
+</div>
       
       <!-- Close Button -->
       <button onclick="closeProfileModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors">
@@ -444,47 +486,7 @@
   </div>
 
   
- <div class="profile-modal">
-    <!-- រូបភាព Profile -->
-    <div class="profile-img-container">
-        <img id="student-avatar" src="default-avatar.png" alt="Profile Image">
-    </div>
-    
-    <!-- ឈ្មោះឡាតាំង និងខ្មែរ -->
-    <h2 id="student-latin-name">MOK SAMBATH</h2>
-    <p id="student-khmer-name" style="color: gray; font-size: 14px;">ឈ្មោះខ្មែរ</p>
-    <span id="student-role" class="badge">ADMIN</span>
-    
-    <!-- ផ្នែកព័ត៌មានលម្អិតដែលត្រូវបន្ថែម ID -->
-    <div class="profile-details">
-        <div class="detail-row">
-            <span>អត្តលេខ:</span>
-            <span id="student-id">-</span>
-        </div>
-        <div class="detail-row">
-            <span>ភេទ:</span>
-            <span id="student-gender">-</span>
-        </div>
-        <div class="detail-row">
-            <span>ថ្ងៃខែឆ្នាំកំណើត:</span>
-            <span id="student-dob">-</span>
-        </div>
-        <div class="detail-row">
-            <span>ថ្នាក់រៀន:</span>
-            <span>G1-NW-B</span>
-        </div>
-        <div class="detail-row">
-            <span>គ្រឹះស្ថាន:</span>
-            <span>Digital University of Cambodia</span>
-        </div>
-        <div class="detail-row">
-            <span>ស្ថានភាព:</span>
-            <span class="text-success">● កំពុងរក្សាទុក (Active)</span>
-        </div>
-    </div>
-    
-    <button class="btn-close" onclick="closeModal()">បិទ (Close)</button>
-</div>
+ 
   
   <!-- JavaScript Code -->
   <script>
