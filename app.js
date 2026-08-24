@@ -554,46 +554,50 @@ function closeProfileModal() {
     }, 300);
 }
 
-// Function សម្រាប់ទាញយកទិន្នន័យនិស្សិតតាម ID
+// Function សម្រាប់ទាញយកនិងបង្ហាញព័ត៌មាននិស្សិតក្នុង Modal
 async function loadStudentProfile(studentId) {
-    const webAppUrl = "YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL"; // ជំនួសដោយ URL របស់អ្នក
+    const webAppUrl = "URL_WEB_APP_របស់អ្នក"; // ជំនួសដោយ URL របស់អ្នក
     
     try {
-        let response = await fetch(webAppUrl);
+        // ត្រូវមាន ?action=getStudents ដើម្បីឱ្យ Apps Script ដឹងថាចង់ទាញពី Sheet Students
+        let response = await fetch(`${webAppUrl}?action=getStudents`);
         let students = await response.json();
         
-        // ស្វែងរកនិស្សិតតាម student_id (ឧទាហរណ៍: "DUC2024-0036")
-        let student = students.find(s => s.student_id === studentId);
+        // ស្វែងរកនិស្សិតតាម student_id (ប្រើ String និង trim ការពារខុសទម្រង់)
+        let student = students.find(s => String(s.student_id).trim() === String(studentId).trim());
         
         if (student) {
-            // เอาទិន្នន័យมายัดใส่ Modal
-            document.getElementById('student-id').innerText = student.student_id;
-            document.getElementById('student-khmer-name').innerText = student.khmer_name;
-            document.getElementById('student-latin-name').innerText = student.latin_name;
-            document.getElementById('student-gender').innerText = student.gender;
-            document.getElementById('student-dob').innerText = student.dob;
+            // យកទិន្នន័យមកដាក់បញ្ចូលក្នុង HTML Elements របស់ Modal ឱ្យចំ IDs
+            document.getElementById('student-id').innerText = student.student_id || '';
+            document.getElementById('student-khmer-name').innerText = student.khmer_name || '';
+            document.getElementById('student-latin-name').innerText = student.latin_name || '';
+            document.getElementById('student-gender').innerText = student.gender || '';
+            document.getElementById('student-dob').innerText = student.dob || '';
             
-            // បង្ហាញ Modal ឡើង
-            document.getElementById('profileModal').style.display = 'block';
+            // បង្ហាញ Modal ឡើង (អាស្រ័យលើ CSS របស់អ្នក អាចជា style.display = 'block' ឬ classList)
+            let modal = document.getElementById('profileModal');
+            if (modal) {
+                modal.style.display = 'block';
+            }
         } else {
-            console.log("រកមិនឃើញទិន្នន័យនិស្សិតនេះទេ។");
+            console.warn("រកមិនឃើញទិន្នន័យនិស្សិតដែលមាន ID:", studentId);
         }
     } catch (error) {
         console.error("Error fetching data:", error);
     }
 }
 
-// ឧទាហរណ៍ពេលចុចលើ Profile របស់និស្សិតម្នាក់
-document.querySelector('.user-profile-icon').addEventListener('click', function() {
-    let currentStudentId = "DUC2024-0036"; // អាចយកតាម ID របស់អ្នកដែល Login ចូល
-    loadStudentProfile(currentStudentId);
-});
-
-// ឧទាហរណ៍៖ នៅពេលអ្នកចុចលើរូប Profile
-document.querySelector('.user-profile-icon').addEventListener('click', function() {
-    // យក Student ID របស់អ្នកប្រើប្រាស់ដែលកំពុង Login (ឧទាហរណ៍៖ "DUC2024-0036" ឬយកចេញពី localStorage)
-    let loggedInStudentId = "DUC2024-0036"; 
+// ភ្ជាប់ព្រឹត្តិការណ៍ពេលចុចលើ Profile (សរសេរតែម្តងគ្រប់គ្រាន់)
+document.addEventListener('DOMContentLoaded', function() {
+    const profileIcon = document.querySelector('.user-profile-icon');
     
-    // ហៅ Function ដែលយើងបានសរសេរខាងលើ
-    loadStudentProfileData(loggedInStudentId);
+    if (profileIcon) {
+        profileIcon.addEventListener('click', function() {
+            // អ្នកអាចទាញយក ID របស់អ្នកប្រើប្រាស់ដែលកំពុង Login ពី localStorage 
+            // ឧទាហរណ៍: let loggedInStudentId = localStorage.getItem('student_id') || "DUC2024-0036";
+            let loggedInStudentId = "DUC2024-0036"; // ជំនួសដោយ ID ពិតប្រាកដ ឬទិន្នន័យ Login
+            
+            loadStudentProfile(loggedInStudentId);
+        });
+    }
 });
