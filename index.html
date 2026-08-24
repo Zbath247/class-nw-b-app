@@ -80,50 +80,67 @@
 
 <body class="bg-slate-950 min-h-screen text-slate-100 relative overflow-x-hidden selection:bg-indigo-500 selection:text-white pb-20">
 
-  <!-- Profile Pop-up Modal -->
-  <div id="profileModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center hidden opacity-0 transition-opacity duration-300">
+ <!-- Profile Pop-up Modal -->
+<div id="profileModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center hidden opacity-0 transition-opacity duration-300">
     <div class="bg-[#0b1329] border border-blue-500/30 rounded-2xl p-6 w-11/12 max-w-md shadow-2xl relative transform scale-95 transition-transform duration-300" id="profileModalContent">
-
-<div class="profile-modal">
-    <!-- រក្សារូបភាព និងឈ្មោះដើមរបស់អ្នកដដែល (មិនបាច់កែត្រង់នេះទេ) -->
-    <div class="profile-img-container">
-        <img src="...តំណររូបភាពដើមរបស់អ្នក..." alt="Profile Image">
-    </div>
-    
-    <h2>MOK SAMBATH</h2>
-    <span class="badge">ADMIN</span>
-    
-    <!-- ផ្នែកព័ត៌មានលម្អិត (ថែមតែ ៣ ចំណុចនេះចូលជាមួយរបស់ចាស់) -->
-    <div class="profile-details">
-        <div class="detail-row">
-            <span>អត្តលេខ:</span>
-            <span id="student-id">-</span>
-        </div>
-        <div class="detail-row">
-            <span>ភេទ:</span>
-            <span id="student-gender">-</span>
-        </div>
-        <div class="detail-row">
-            <span>ថ្ងៃខែឆ្នាំកំណើត:</span>
-            <span id="student-dob">-</span>
-        </div>
         
-        <!-- ព័ត៌មានដើមរបស់អ្នក -->
-        <div class="detail-row">
-            <span>ថ្នាក់រៀន:</span>
-            <span>G1-NW-B</span>
+        <!-- ប៊ូតុងបិទ (Close X button) -->
+        <button onclick="closeProfileModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors">
+            <i data-lucide="x" class="w-6 h-6"></i>
+        </button>
+
+        <!-- រូបភាព Profile និង ឈ្មោះដើមរបស់អ្នក -->
+        <div class="flex flex-col items-center text-center mt-2">
+            <div class="relative group cursor-pointer" onclick="document.getElementById('profileImageInput').click()" title="ចុចដើម្បីប្តូររូបភាព Profile">
+                <div id="modalAvatarContainer" class="w-24 h-24 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center text-white text-2xl font-bold shadow-lg mb-3 shadow-blue-500/30 overflow-hidden border-2 border-blue-400/40">
+                    <span id="modalAvatarFallback">
+                        <i data-lucide="user" class="w-12 h-12"></i>
+                    </span>
+                    <img id="modalAvatarImg" src="" alt="Profile Image" class="w-full h-full object-cover hidden">
+                </div>
+            </div>
+            
+            <h2 id="student-latin-name" class="text-xl font-bold text-white">MOK SAMBATH</h2>
+            <span class="bg-blue-600/30 text-blue-400 border border-blue-500/30 text-xs px-3 py-1 rounded-full mt-1">ADMIN</span>
         </div>
-        <div class="detail-row">
-            <span>គ្រឹះស្ថាន:</span>
-            <span>Digital University of Cambodia</span>
+
+        <!-- ផ្នែកព័ត៌មានលម្អិត (ដែលបានបន្ថែម ID ទាំង ៣ ចំណុចចូលគ្នា) -->
+        <div class="profile-details mt-6 space-y-3 text-sm text-gray-300 border-t border-gray-700/50 pt-4">
+            
+            <div class="flex justify-between">
+                <span class="text-gray-400">អត្តលេខ:</span>
+                <span id="student-id" class="font-semibold text-white">-</span>
+            </div>
+            <div class="flex justify-between">
+                <span class="text-gray-400">ភេទ:</span>
+                <span id="student-gender" class="font-semibold text-white">-</span>
+            </div>
+            <div class="flex justify-between">
+                <span class="text-gray-400">ថ្ងៃខែឆ្នាំកំណើត:</span>
+                <span id="student-dob" class="font-semibold text-white">-</span>
+            </div>
+
+            <!-- ព័ត៌មានចាស់ដែលមានស្រាប់ -->
+            <div class="flex justify-between">
+                <span class="text-gray-400">ថ្នាក់រៀន:</span>
+                <span class="text-white">G1-NW-B</span>
+            </div>
+            <div class="flex justify-between">
+                <span class="text-gray-400">គ្រឹះស្ថាន:</span>
+                <span class="text-white">Digital University of Cambodia</span>
+            </div>
+            <div class="flex justify-between">
+                <span class="text-gray-400">ស្ថានភាព:</span>
+                <span class="text-green-400 flex items-center gap-1">● កំពុងតភ្ជាប់ (Active)</span>
+            </div>
         </div>
-        <div class="detail-row">
-            <span>ស្ថានភាព:</span>
-            <span class="text-success">● កំពុងរក្សាទុក (Active)</span>
-        </div>
+
+        <!-- ប៊ូតុងបិទខាងក្រោម -->
+        <button class="w-full mt-6 bg-gray-800/80 hover:bg-gray-700 text-white py-2.5 rounded-xl transition-all font-medium border border-gray-700" onclick="closeProfileModal()">
+            បិទ (Close)
+        </button>
+
     </div>
-    
-    <button class="btn-close" onclick="closeModal()">បិទ (Close)</button>
 </div>
       
       <!-- Close Button -->
